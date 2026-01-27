@@ -9,16 +9,16 @@ A small tour of the results involved in this construction is presented in the fi
 ## Key results in the repository
 
 More specifically, here are selected facts and constructions formalized in this repository.
-- The presentation of symmetric groups as Coxeter groups: this is in `SymmMonCoherence/SymmetricGroupCoxeter.lean`.
-- A formalization of bicategories of spans: the basic definitions are in `SymmMonCoherence/Spans/Basic.lean`.
-- A constructor for pseudofunctors out of the pith of bicategories of spans. This is in the directory `SymmMonCoherence/Spans/PseudoFromBurnside`.
-- The construction of the free symmetric monoidal category on a type: this is in `SymmMonCoherence/FreeSMC.lean`.
-- The construction of the category of symmetric lists, a categorified version of multisets. This is in `SymmMonCoherence/SList/Basic.lean`.
-- The symmetric monoidal equivalence between symmetric lists and the free symmetric monoidal category. This is in `SymmMonCoherence/SList/Equivalence.lean`.
-- The link between morphisms of symmetric lists and permutations: this is in `SymmMonCoherence/SList/Relations.lean`
-- Symmetric monoidal equivalences between categories of symmetric lists and various categories related to finite sets: this is in `SymmMonCoherence/SList/Additive.lean`.
-- The Kleisli bicategory for the relative pseudomonad of symmetric lists: this is in `SymmMonCoherence/SList/Kleisli.lean`
-- The pseudofunctor out of `BurnsideFintype` attached to a symmetric monoidal category is defined in the directory `SymmMonCoherence/SList/ToPseudofunctor`.
+- The presentation of symmetric groups as Coxeter groups: this is in [`SymmMonCoherence/SymmetricGroupCoxeter.lean`](SymmMonCoherence/SymmetricGroupCoxeter.lean).
+- A formalization of bicategories of spans: the basic definitions are in [`SymmMonCoherence/Spans/Basic.lean`](SymmMonCoherence/Spans/Basic.lean).
+- A constructor for pseudofunctors out of the pith of bicategories of spans. This is in the directory [`SymmMonCoherence/Spans/PseudoFromBurnside`](SymmMonCoherence/Spans/PseudoFromBurnside).
+- The construction of the free symmetric monoidal category on a type: this is in [`SymmMonCoherence/FreeSMC.lean`](SymmMonCoherence/FreeSMC.lean).
+- The construction of the category of symmetric lists, a categorified version of multisets. This is in [`SymmMonCoherence/SList/Basic.lean`](SymmMonCoherence/SList/Basic.lean).
+- The symmetric monoidal equivalence between symmetric lists and the free symmetric monoidal category. This is in [`SymmMonCoherence/SList/Equivalence.lean`](SymmMonCoherence/SList/Equivalence.lean).
+- The link between morphisms of symmetric lists and permutations: this is in [`SymmMonCoherence/SList/Relations.lean`](SymmMonCoherence/SList/Relations.lean).
+- Symmetric monoidal equivalences between categories of symmetric lists and various categories related to finite sets: this is in [`SymmMonCoherence/SList/Additive.lean`](SymmMonCoherence/SList/Additive.lean).
+- The Kleisli bicategory for the relative pseudomonad of symmetric lists: this is in [`SymmMonCoherence/SList/Kleisli.lean`](SymmMonCoherence/SList/Kleisli.lean).
+- The pseudofunctor out of `BurnsideFintype` attached to a symmetric monoidal category is defined in the directory [`SymmMonCoherence/SList/ToPseudofunctor`](SymmMonCoherence/SList/ToPseudofunctor).
 
 ## Paper
 Yet to come.
