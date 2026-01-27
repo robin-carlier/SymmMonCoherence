@@ -15,6 +15,21 @@ public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Functor.Trifunctor
 public import Mathlib.CategoryTheory.Functor.CurryingThree
 
+/-! # Symmetric lists
+
+In this file, we define the category of symmetric lists on a type `J`.
+Symmetric lists are defined as a category by generators and relations, such
+that the underlying type is equivalent to the type of lists. The morphisms
+are defined inductively in a way that all constructors are naturals,
+and a generating morhism `swap : x ::~ y ::~ l ⟶ y ::~ x ::~ l` is
+added, subject to a symmetry and hexagon condition.
+
+The construction of this category was
+[previously carried](https://nva.sikt.no/registration/0198f1714e08-ec2b3f03-26a6-4e26-a74b-10cf6c5e4903)
+in a Rocq+HoTT setting by Stefano Piceghello, also as part of an effort towards
+the formalization of Mac Lane’s coherence theorem.
+
+-/
 attribute [-simp] CategoryTheory.Paths.of_obj
 attribute [-simp] CategoryTheory.Paths.of_map
 

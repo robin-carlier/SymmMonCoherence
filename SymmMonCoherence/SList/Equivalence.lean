@@ -15,7 +15,9 @@ public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 
 This file constructs the equivalence of symmetric monoidal categories between the category of
 symmetric lists `SList C` and the free symmetric monoidal category
-`FreeSymmetricMonoidalCategory C`.
+`FreeSymmetricMonoidalCategory C`. The idea of encoding part of the coherence
+theorem in this way is due to Stefano Piceghello, and we mostly follow his
+work here.
 
 ## Main definitions
 

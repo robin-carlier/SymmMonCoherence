@@ -557,7 +557,7 @@ public lemma consTensSingletonIso_inv_naturality (x : C) {l l' : SList C} (f : l
   simp
 
 /-! Now that we have the monoidal structure, the rest of this file is devoted to extend it to a
-symmetric monoidal structure. -/
+symmetric monoidal structure. The construction follows Piceghello’s thesis (chapter 4). -/
 
 section Q
 open MonoidalCategory
