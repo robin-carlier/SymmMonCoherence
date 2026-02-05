@@ -248,6 +248,52 @@ lemma w₂_app_consPath {i j : FreeSListQuiv C} (f : i ⟶ j) (x : C) :
   | id => simp
   | @comp u v p q h r => simp [r, ← FreeSListQuiv.cons_map_def]
 
+private lemma ainfToPerm_w₂_apply_lt_of_lt {L₁ L₂ : FreeSListQuiv C}
+    (f : L₁ ⟶ L₂) (i : ℕ)
+    (hi : i < L₂.toList.length) : (AinfToPerm (w₂.app f)) i < L₁.toList.length := by
+  induction f using FreeSListQuiv.hom_induction generalizing i with
+  | id => simpa using hi
+  | @comp L₁ L₂ L₃ p q hp =>
+    simp only [FreeSListQuiv.ι_toList, toList_length] at hp hi
+    have hl₁₂ : L₁.length = L₂.length := FreeSListQuiv.length_eq_of_hom p
+    have hl₂₃ : L₂.length = L₃.length := FreeSListQuiv.length_eq_of_hom ((FreeSListQuiv.ι _).map q)
+    simp only [weight.weight_comp, FreeSListQuiv.mkWeight_app_ι, labelling₂, map_mul,
+      AinfToPerm_simple, Equiv.Perm.coe_mul, Function.comp_apply, FreeSListQuiv.ι_toList,
+      toList_length, gt_iff_lt]
+    apply hp
+    grind [labelling₀_lt q]
+
+theorem _root_.List.getElem_of_eq' {α : Type*} {l : List α} {i i' : Nat} (h : i = i')
+    (w : i < l.length) :
+    l[i] = l[i']'(h ▸ w) := by cases h; rfl
+
+private lemma getElem_toList_eq_perm_apply'
+    {L₁ L₂ : SListQuiv C}
+    (f : L₁.Hom L₂) (i : ℕ)
+    (hi : i < L₂.toList.length) :
+    (L₂.toList)[i] =
+    (L₁.toList)[(AinfToPerm (w₂.app (FreeSListQuiv.ι C |>.map f))) i]'
+      (ainfToPerm_w₂_apply_lt_of_lt (FreeSListQuiv.ι C |>.map f) _ hi) := by
+  induction f generalizing i with grind [labelling₂, labelling₀, AinfToPerm_simple]
+
+private lemma getElem_toList_eq_perm_apply {L₁ L₂ : FreeSListQuiv C} (f : L₁ ⟶ L₂)
+    (i : ℕ) (hi : i < L₂.length) :
+    (L₂.toList)[i] =
+      (L₁.toList)[AinfToPerm (w₂.app f) i]'(ainfToPerm_w₂_apply_lt_of_lt f _ hi) := by
+  induction f using FreeSListQuiv.hom_induction generalizing i with
+  | id => simp
+  | @comp l₁ l₂ l₃ p q hr =>
+    simp only [toList_length, FreeSListQuiv.ι_length, FreeSListQuiv.ι_toList, weight.weight_comp,
+      FreeSListQuiv.mkWeight_app_ι, map_mul, Equiv.Perm.coe_mul, Function.comp_apply] at hi ⊢ hr
+    have := FreeSListQuiv.length_eq_of_hom p
+    have := getElem_toList_eq_perm_apply' q
+    simp only [toList_length, FreeSListQuiv.mkWeight_app_ι] at this
+    rw [this i hi]
+    have : (AinfToPerm (labelling₂ q)) i < l₂.length := by
+      simpa using ainfToPerm_w₂_apply_lt_of_lt
+        ((FreeSListQuiv.ι C).map q) i hi
+    exact hr (AinfToPerm (labelling₂ q) i) this
+
 lemma wFin_app_eq' (n : ℕ) {i j : FreeSListQuiv C} (f : i ⟶ j) :
     (wFin n).app f = PresentedMonoid.mk _ ((w₀Fin n).app f) := by
   induction f using FreeSListQuiv.hom_induction with
@@ -281,6 +327,104 @@ lemma w₂_app_eq_of_compClosure_homEquiv {i j : FreeSListQuiv C} (f g : i ⟶ j
     w₂.app f = w₂.app g := by
   cases h with | intro i j f m₁ m₂ g h =>
   simpa using w₂_app_eq_of_homEquiv m₁ m₂ h
+
+end SListQuiv
+
+public section toAinf
+open SListQuiv
+
+def toAinf : weight (SList C) Ainf.Group :=
+  .mk <| SList.lift w₂.F <| by
+    intro x y f g h
+    apply Quiver.Hom.unop_inj
+    simp_rw [weight.app_eq]
+    exact w₂_app_eq_of_homEquiv _ _ h
+
+@[simp, grind =]
+lemma toAinf_π {l l' : FreeSListQuiv C} (f : l ⟶ l') :
+    toAinf.app ((π C).map f) = w₂.app f := by
+  simp only [toAinf, weight.app_mk]
+  generalize_proofs h
+  simp [lift_π_obj (h := h), lift_π_map (h := h), weight.app_eq]
+
+@[simp, grind =]
+lemma toAinf_swap (x y : C) (l : SList C) :
+    toAinf.app (β~ x y l) = Ainf.simple 0 := by
+  simp only [toAinf, weight.app_mk]
+  rfl
+
+@[simp, grind =]
+lemma toAinf_cons (x : C) {l l' : SList C} (f : l ⟶ l') :
+    toAinf.app ((x>~).map f) = Ainf.shift 1 (toAinf.app f) := by
+  simp only [toAinf, weight.app_mk]
+  induction f with | @h u v f =>
+  generalize_proofs h
+  change ((lift w₂.F h).map (π C |>.map <| x ::_ₘ f)).unop = _
+  simp [weight.app_eq, SList.lift_π_obj (h := h), SList.lift_π_map (h := h)]
+
+end toAinf
+
+public section toPerm
+open SListQuiv
+
+def toPerm : weight (SList C) (Equiv.Perm ℕ) :=
+  toAinf.postComp AinfToPerm
+
+@[simp, grind =]
+lemma toPerm_swap (x y : C) (l : SList C) :
+    toPerm.app (β~ x y l) = Equiv.swap 0 1 := by
+  simp [toPerm]
+
+@[simp, grind =]
+lemma toPerm_app_cons_apply_zero (x : C) {l l' : SList C} (f : l ⟶ l') :
+    toPerm.app ((x>~).map f) 0 = 0 := by
+  simp only [toPerm, weight.postComp_app, toAinf_cons]
+  generalize toAinf.app f = u
+  induction u using Ainf.toCoxeterSystem.simple_induction with
+  | simple i => simp only [Ainf.shift_simple' 1, AinfToPerm_simple]; grind
+  | one => simp
+  | mul w w' h₀ h₀' => simp [h₀, h₀']
+
+@[simp, grind =]
+lemma toPerm_app_cons_apply_succ (x : C) {l l' : SList C} (f : l ⟶ l') (k : ℕ) :
+    toPerm.app ((x>~).map f) (k + 1) = (toPerm.app f) k + 1 := by
+  simp only [toPerm, weight.postComp_app, toAinf_cons]
+  generalize toAinf.app f = u
+  induction u using Ainf.toCoxeterSystem.simple_induction generalizing k with
+  | simple i => simp only [Ainf.shift_simple' 1, AinfToPerm_simple]; grind
+  | one => simp
+  | mul w w' h₀ h₀' => simp [h₀, h₀']
+
+theorem toPerm_app_eq_of_lt {x y : SList C} (f : x ⟶ y) (k : ℕ) (hk : y.length ≤ k) :
+    (toPerm.app f) k = k := by
+  simp only [toPerm, weight.postComp_app]
+  induction f using SList.hom_induction with | h f =>
+  induction f using FreeSListQuiv.hom_induction with
+  | id => simp
+  | comp p q hq =>
+    have := SListQuiv.length_eq_of_hom q
+    simp only [Functor.map_comp, weight.weight_comp, toAinf_π, FreeSListQuiv.mkWeight_app_ι,
+      labelling₂, map_mul, AinfToPerm_simple, Equiv.Perm.coe_mul, Function.comp_apply]
+    have := labelling₀_lt q
+    grind
+
+@[grind .]
+theorem toPerm_app_lt_of_lt {L₁ L₂ : SList C} (f : L₁ ⟶ L₂) (k : ℕ) (hk : k < L₂.length) :
+    (toPerm.app f) k < L₁.length := by
+  by_contra!
+  have := toPerm_app_eq_of_lt (inv f) (toPerm.app f k) this
+  simp only [weight.app_inv, Equiv.Perm.coe_inv, Equiv.symm_apply_apply] at this
+  grind [SList.length_eq_of_hom f]
+
+theorem getElem_toList_toPerm {L₁ L₂ : SList C} (f : L₁ ⟶ L₂) (i : ℕ) (hi : i < L₂.length) :
+    L₂.toList[i] = L₁.toList[toPerm.app f i]'(toPerm_app_lt_of_lt f i hi) := by
+  cases f with | @h x y f =>
+  simp only [π_obj_toList, toPerm, weight.postComp_app, toAinf_π]
+  exact getElem_toList_eq_perm_apply f _ _
+
+end toPerm
+
+namespace SListQuiv
 
 lemma eq_of_labelling₀_eq {i j : (SListQuiv C)} {f g : i ⟶ j}
     (h : labelling₀ f = labelling₀ g) :
@@ -641,99 +785,6 @@ lemma exists_cons_eq_of_weight_eq_shift
         rw [hf₀, hf₁]
         simp
 
-
--- TODO clean up this lemma
-private lemma getElem_toList_eq_perm_apply_lt_length {L₁ L₂ : FreeSListQuiv C}
-    (f : L₁ ⟶ L₂) {n : ℕ}
-    (hn : L₁.length = n + 2) (i : ℕ)
-    (hi : i < L₂.toList.length) : (AinfToPerm (w₂.app f)) i < L₁.toList.length := by
-  have : w₂.app f = ((AnToAinf (n + 1))
-      ((CoxeterMatrix.Aₙ (n + 1)).monoidToGroup <| (wFin n).app f)) := by
-    have := congr(Ainf.monoidToGroup $(w₂_app_eq'' n f hn.symm))
-    simp at this
-    have e₁ := Ainf.monoidToGroupMulEquiv.right_inv (w₂.app f)
-    simp only [MulEquiv.toEquiv_eq_coe, Equiv.invFun_as_coe, MulEquiv.coe_toEquiv_symm,
-      CoxeterMatrix.monoidToGroupMulEquiv_symm_apply, Equiv.toFun_as_coe, EquivLike.coe_coe,
-      CoxeterMatrix.monoidToGroupMulEquiv_apply] at e₁
-    simp only [← this]
-    suffices H : (Ainf.monoidToGroup.comp (AnToAinfMonoid (n + 1))) =
-        (AnToAinf (n + 1)).comp ((CoxeterMatrix.Aₙ (n + 1)).monoidToGroup) by
-      exact congr($H _)
-    apply PresentedMonoid.ext
-    intro x
-    simp only [MonoidHom.coe_comp, Function.comp_apply]
-    erw [CoxeterMatrix.monoidToGroup_of (CoxeterMatrix.Aₙ (n + 1)) x, AnToAinfMonoid_of (n + 1) x]
-    rfl
-  have := FreeSListQuiv.length_eq_of_hom f
-  let i₀ : Fin (n + 2) := ⟨i, by grind⟩
-  have := Aₙ_to_perm_apply_eq _ i₀ ((CoxeterMatrix.Aₙ (n + 1)).monoidToGroup <| (wFin n).app f)
-  grind
-
-theorem _root_.List.getElem_of_eq' {α : Type*} {l : List α} {i i' : Nat} (h : i = i')
-    (w : i < l.length) :
-    l[i] = l[i']'(h ▸ w) := by cases h; rfl
-
-private lemma getElem_toList_eq_perm_apply
-    {L₁ L₂ : SListQuiv C}
-    (f : L₁.Hom L₂) {n : ℕ}
-    (hn : L₁.length = n + 2) (i : ℕ)
-    (hi : i < L₂.toList.length) :
-    (L₂.toList)[i] =
-    (L₁.toList)[(AinfToPerm (w₂.app (FreeSListQuiv.ι C |>.map f))) i]'
-      (getElem_toList_eq_perm_apply_lt_length (FreeSListQuiv.ι C |>.map f) hn _ hi) := by
-  induction f generalizing i n with
-  | swap x y l =>
-    simp only [toList_cons, FreeSListQuiv.mkWeight_app_ι, labelling₂_swap, AinfToPerm_simple,
-      zero_add]
-    obtain _ | _ | i' := i
-    · simp
-    · simp
-    · change (x::y::l.toList)[i' + 1 + 1] = _
-      congr -- wtf?
-  | @cons x l z f hr' =>
-    obtain _ | i := i
-    · simp only [toList_length, FreeSListQuiv.mkWeight_app_ι, labelling₂, AinfToPerm_simple,
-        toList_cons, List.getElem_cons_zero, labelling₀] at hr' ⊢
-      congr -- again wtf?
-    · simp only [toList_length, FreeSListQuiv.mkWeight_app_ι, labelling₂, AinfToPerm_simple,
-        toList_cons, List.getElem_cons_succ, labelling₀] at hr' ⊢
-      have : (Equiv.swap (labelling₀ f + 1) (labelling₀ f + 1 + 1)) (i + 1) =
-          ((Equiv.swap (labelling₀ f) (labelling₀ f + 1)) i) + 1 := by
-        grind
-      rw [List.getElem_of_eq' this]
-      cases n with
-      | zero =>
-        cases l using SListQuiv.listCases with | h l =>
-        simp only [SListQuiv.length_cons, SListQuiv.asSlist₀_length, zero_add, Nat.reduceEqDiff,
-          SListQuiv.asSListQuiv_toList, List.getElem_cons_succ] at hn ⊢
-        obtain ⟨u, hu, rfl⟩ := List.length_eq_one_iff.mp hn
-        cases z using SListQuiv.listCases with | h z =>
-        obtain ⟨u', hu, rfl⟩ := List.length_eq_one_iff.mp <|
-          (show [u].length = z.length by simpa using length_eq_of_hom f) ▸ hn
-        cases f with | cons z f' => cases f'
-      | succ n => exact hr' (n := n) (by grind) _ (by grind)
-
-private lemma getElem_toList_eq_perm_apply'
-    {L₁ L₂ : FreeSListQuiv C}
-    (f : L₁ ⟶ L₂) {n : ℕ}
-    (hn : L₁.length = n + 2) (i : ℕ)
-    (hi : i < L₂.length) :
-    (L₂.toList)[i] =
-    (L₁.toList)[AinfToPerm (w₂.app f) i]'(getElem_toList_eq_perm_apply_lt_length f hn _ hi) := by
-  induction f using FreeSListQuiv.hom_induction generalizing n i with
-  | id => simp
-  | @comp l₁ l₂ l₃ p q hr =>
-    simp only [toList_length, FreeSListQuiv.ι_length, FreeSListQuiv.ι_toList, weight.weight_comp,
-      FreeSListQuiv.mkWeight_app_ι, map_mul, Equiv.Perm.coe_mul, Function.comp_apply] at hi ⊢ hr
-    have := FreeSListQuiv.length_eq_of_hom p
-    have := getElem_toList_eq_perm_apply (n := n) q (by grind [Paths.of_obj])
-    simp only [toList_length, FreeSListQuiv.mkWeight_app_ι] at this
-    rw [this i hi]
-    have : (AinfToPerm (labelling₂ q)) i < l₂.length := by
-      simpa using getElem_toList_eq_perm_apply_lt_length
-        ((FreeSListQuiv.ι C).map q) (n := n) (by grind) i hi
-    exact hr (n := n) hn (AinfToPerm (labelling₂ q) i) this
-
 /-- This is the first main "ugly lemma" where we check by hand that the relations implies that
 morphisms have consistent targets -/
 lemma eq_of_w₀Fin_monoidRelations {L₁ L₂ L₃ : FreeSListQuiv C}
@@ -756,7 +807,7 @@ lemma eq_of_w₀Fin_monoidRelations {L₁ L₂ L₃ : FreeSListQuiv C}
   apply List.ext_getElem (FreeSListQuiv.length_eq_of_hom f).symm
   intro i hi hi'
   simp_rw [FreeSListQuiv.equiv_ι_obj]
-  have := getElem_toList_eq_perm_apply' (f := f) (n := n) hn i
+  have := getElem_toList_eq_perm_apply (f := f) i
     (by grind [FreeSListQuiv.equiv_ι_obj])
   simp only [FreeSListQuiv.ι_toList] at this
   rw [this]
@@ -1106,7 +1157,7 @@ private theorem eq_of_path_of_length_eq_one {i j : FreeSListQuiv C}
 
 end EdgeCases
 
-theorem map_eq_of_w₂_eq {i j : FreeSListQuiv C} (f g : i ⟶ j)
+theorem π_map_eq_of_w₂_eq {i j : FreeSListQuiv C} (f g : i ⟶ j)
     (h : w₂.app f = w₂.app g) :
     (π C).map f = (π C).map g := by
   generalize hk : i.length = k
@@ -1188,42 +1239,13 @@ theorem map_eq_of_w₂_eq {i j : FreeSListQuiv C} (f g : i ⟶ j)
 
 public section toAinf
 
-def toAinf : weight (SList C) Ainf.Group :=
-  .mk <| SList.lift w₂.F <| by
-    intro x y f g h
-    apply Quiver.Hom.unop_inj
-    simp_rw [weight.app_eq]
-    exact w₂_app_eq_of_homEquiv _ _ h
-
-@[simp, grind =]
-lemma toAinf_π {l l' : FreeSListQuiv C} (f : l ⟶ l') :
-    toAinf.app ((π C).map f) = w₂.app f := by
-  simp only [toAinf, weight.app_mk]
-  generalize_proofs h
-  simp [lift_π_obj (h := h), lift_π_map (h := h), weight.app_eq]
-
-@[simp, grind =]
-lemma toAinf_swap (x y : C) (l : SList C) :
-    toAinf.app (β~ x y l) = Ainf.simple 0 := by
-  simp only [toAinf, weight.app_mk]
-  rfl
-
-@[simp, grind =]
-lemma toAinf_cons (x : C) {l l' : SList C} (f : l ⟶ l') :
-    toAinf.app ((x>~).map f) = Ainf.shift 1 (toAinf.app f) := by
-  simp only [toAinf, weight.app_mk]
-  induction f with | @h u v f =>
-  generalize_proofs h
-  change ((lift w₂.F h).map (π C |>.map <| x ::_ₘ f)).unop = _
-  simp [weight.app_eq, SList.lift_π_obj (h := h), SList.lift_π_map (h := h)]
-
 @[grind inj]
 theorem injective_toAinf_app {x y : SList C} : Function.Injective
     (@(toAinf (C := C)).app (x := x) (y := y)) := by
   intro f g h
   cases f with |_ f
   cases g with |_ g
-  exact map_eq_of_w₂_eq _ _ (by simpa using h)
+  exact π_map_eq_of_w₂_eq _ _ (by simpa using h)
 
 theorem hom_eq_iff_toAinf_eq {x y : SList C} (f g : x ⟶ y) :
     f = g ↔ toAinf.app f = toAinf.app g := by
@@ -1232,34 +1254,6 @@ theorem hom_eq_iff_toAinf_eq {x y : SList C} (f g : x ⟶ y) :
 end toAinf
 
 public section toPerm
-
-def toPerm : weight (SList C) (Equiv.Perm ℕ) :=
-  toAinf.postComp AinfToPerm
-
-@[simp, grind =]
-lemma toPerm_swap (x y : C) (l : SList C) :
-    toPerm.app (β~ x y l) = Equiv.swap 0 1 := by
-  simp [toPerm]
-
-@[simp, grind =]
-lemma toPerm_app_cons_apply_zero (x : C) {l l' : SList C} (f : l ⟶ l') :
-    toPerm.app ((x>~).map f) 0 = 0 := by
-  simp only [toPerm, weight.postComp_app, toAinf_cons]
-  generalize toAinf.app f = u
-  induction u using Ainf.toCoxeterSystem.simple_induction with
-  | simple i => simp only [Ainf.shift_simple' 1, AinfToPerm_simple]; grind
-  | one => simp
-  | mul w w' h₀ h₀' => simp [h₀, h₀']
-
-@[simp, grind =]
-lemma toPerm_app_cons_apply_succ (x : C) {l l' : SList C} (f : l ⟶ l') (k : ℕ) :
-    toPerm.app ((x>~).map f) (k + 1) = (toPerm.app f) k + 1 := by
-  simp only [toPerm, weight.postComp_app, toAinf_cons]
-  generalize toAinf.app f = u
-  induction u using Ainf.toCoxeterSystem.simple_induction generalizing k with
-  | simple i => simp only [Ainf.shift_simple' 1, AinfToPerm_simple]; grind
-  | one => simp
-  | mul w w' h₀ h₀' => simp [h₀, h₀']
 
 @[grind inj]
 theorem injective_toPerm_app {x y : SList C} : Function.Injective
@@ -1273,42 +1267,6 @@ theorem injective_toPerm_app {x y : SList C} : Function.Injective
 theorem hom_eq_iff_toPerm_eq {x y : SList C} (f g : x ⟶ y) :
     f = g ↔ toPerm.app f = toPerm.app g :=
   ⟨fun h => by rw [h], fun h => by rw [injective_toPerm_app h]⟩
-
-theorem toPerm_app_eq_of_lt {x y : SList C} (f : x ⟶ y) (k : ℕ) (hk : y.length ≤ k) :
-    (toPerm.app f) k = k := by
-  induction hl : x.length using Nat.twoStepInduction with
-  | zero =>
-    obtain rfl : x = []~ := length_eq_zero_iff.mp hl
-    obtain rfl : y = []~ := length_eq_zero_iff.mp (length_eq_of_hom f ▸ hl)
-    obtain rfl : f = 𝟙 []~ := eq_id_of_hom_nil f
-    simp
-  | one =>
-    obtain ⟨x, rfl⟩ := length_eq_one_iff.mp hl
-    obtain ⟨y, rfl⟩ := length_eq_one_iff.mp (length_eq_of_hom f ▸ hl)
-    cases f using cases_hom_singleton
-    simp
-  | more n hr hr' =>
-    cases f with | @h x y f =>
-    simp only [toPerm, weight.postComp_app, toAinf_π]
-    simp only [π_obj_length] at hk -- why is this not in simpNF yet?
-    have := congr(Ainf.monoidToGroup $(w₂_app_eq'' n f (by simpa using hl.symm)))
-    simp only [CoxeterMatrix.monoidToGroup_groupToMonoid] at this
-    simp only [← this, AnToAinfMonoid, MonoidHom.coe_comp, Function.comp_apply,
-      CoxeterMatrix.monoidToGroup_groupToMonoid]
-    have (x : (CoxeterMatrix.Aₙ (n +1)).Group) := congr($(Aₙ_to_perm_extend (n + 1)) x)
-    simp only [MonoidHom.coe_comp, Function.comp_apply, Equiv.Perm.extendDomainHom_apply] at this
-    rw [← this, Equiv.Perm.extendDomain_apply_not_subtype]
-    have := FreeSListQuiv.length_eq_of_hom f
-    grind
-
-@[grind .]
-theorem toPerm_app_lt_of_lt {x y : SList C} (f : x ⟶ y) (k : ℕ) (hk : k < y.length) :
-    (toPerm.app f) k < x.length := by
-  by_contra!
-  have := toPerm_app_eq_of_lt (inv f) (toPerm.app f k) this
-  simp only [weight.app_inv, Equiv.Perm.coe_inv, Equiv.symm_apply_apply] at this
-  have : x.length = y.length := length_eq_of_hom f
-  grind
 
 end toPerm
 
@@ -1375,26 +1333,9 @@ theorem getElem_toList_toEquiv {x y : SList C} (f : x ⟶ y) (i : Fin y.length) 
   cases f with | @h x y f =>
   simp only [Fin.getElem_fin, toEquiv_apply_val, π_obj_toList, toPerm,
     weight.postComp_app, toAinf_π]
-  induction hl : x.length using Nat.twoStepInduction with
-  | zero =>
-    obtain rfl : x = []_ := FreeSListQuiv.length_eq_zero_iff.mp hl -- todo
-    obtain rfl : y = []_ := FreeSListQuiv.length_eq_zero_iff.mp
-      (FreeSListQuiv.length_eq_of_hom f ▸ hl)
-    obtain rfl : f = 𝟙 []_ := FreeSListQuiv.eq_id_of_hom_nil f
-    simp
-  | one =>
-    obtain ⟨u, rfl⟩ := FreeSListQuiv.length_eq_one_iff.mp hl
-    obtain ⟨u', rfl⟩ := FreeSListQuiv.length_eq_one_iff.mp (FreeSListQuiv.length_eq_of_hom f ▸ hl)
-    cases f using FreeSListQuiv.cases_hom_singleton
-    simp
-  | more n hr hr' => exact getElem_toList_eq_perm_apply' f (n := n) hl _ _
+  exact getElem_toList_eq_perm_apply f _ _
 
-theorem getElem_toList_toPerm {x y : SList C} (f : x ⟶ y) (i : ℕ) (hi : i < y.length) :
-    y.toList[i] = x.toList[((toPerm.app f) i)]'(by
-      simpa [length_eq_of_hom f] using toPerm_app_lt_of_lt f i hi) :=
-  getElem_toList_toEquiv f ⟨i, hi⟩
-
-/-- An auxiliary lemma doing the heavy lifting for
+/-- An auxiliary lemma doing the heavy lifting (no pun intended) for
 `exists_lift_equiv`. This is essentially a variation on `exists_hom_of_weight_eq`. -/
 private lemma exists_lift_perm {x : SList C} (φ : Equiv.Perm (Fin x.length)) :
     ∃ (y : SList C) (f : x ⟶ y),
