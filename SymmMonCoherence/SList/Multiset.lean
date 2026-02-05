@@ -5,7 +5,6 @@ Authors: Robin Carlier
 -/
 module
 
-public import SymmMonCoherence.SList.Equivalence
 public import SymmMonCoherence.SList.Linear
 public import Mathlib.CategoryTheory.Pi.Monoidal
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory

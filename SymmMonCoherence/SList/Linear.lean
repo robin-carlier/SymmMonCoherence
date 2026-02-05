@@ -5,7 +5,7 @@ Authors: Robin Carlier
 -/
 module
 
-public import SymmMonCoherence.SList.Equivalence
+public import SymmMonCoherence.SList.Monoidal
 public import Mathlib.CategoryTheory.Pi.Monoidal
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
@@ -44,6 +44,19 @@ lemma linear_cons_of_not_mem (c : C) (x : SList C) (h : c ∉ x.toList) [l : Lin
     simp only [cons_toList, List.nodup_cons]
     exact ⟨h, l.nodup⟩
 
+lemma linear_of_length_one (x : SList C) (h : x.length = 1) : Linear x := by
+  obtain ⟨c, rfl⟩ := SList.length_eq_one_iff.mp h
+  infer_instance
+
+lemma Linear.of_iso {x y : SList C} (e : x ≅ y) [Linear x] : Linear y where
+  nodup :=
+    List.Nodup.perm Linear.nodup <|  SList.toList_perm_iff_nonempty_iso.mpr ⟨e⟩
+
+lemma linear_iff_of_iso {x y : SList C} (e : x ≅ y) : Linear x ↔ Linear y := by
+  constructor
+  · intro; apply Linear.of_iso e
+  · intro; apply Linear.of_iso e.symm
+
 instance subsingleton_hom_of_linear_left (L L' : SList C) [h₀ : Linear L] :
     Subsingleton (L ⟶ L') where
   allEq f g := by
@@ -74,6 +87,5 @@ instance subsingleton_hom_of_linear_right (L L' : SList C) [Linear L'] :
     Subsingleton (L ⟶ L') :=
   letI : Groupoid (SList C) := Groupoid.ofIsIso (fun _ ↦ by infer_instance)
   Equiv.subsingleton (Groupoid.isoEquivHom L L').symm
-
 
 end CategoryTheory.SList

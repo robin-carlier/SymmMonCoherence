@@ -6,7 +6,7 @@ Authors: Robin Carlier
 module
 
 public import SymmMonCoherence.FreeSMC
-public import SymmMonCoherence.SList.Monoidal
+public import SymmMonCoherence.SList.Linear
 public import Mathlib.Tactic.CategoryTheory.Coherence
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 
@@ -43,8 +43,10 @@ It is defined using the universal property of the free symmetric monoidal catego
 @[expose] public def normalization : FreeSymmetricMonoidalCategory C ⥤ SList C :=
   FreeSymmetricMonoidalCategory.project (fun c => [c]~)
 
-@[simp]
 public lemma normalization_of (c : C) : (normalization C).obj (of c) = [c]~ := rfl
+
+@[no_expose] public def normalizationOfIso (c : C) : (normalization C).obj (of c) ≅ [c]~ :=
+  eqToIso (normalization_of _ _)
 
 public instance : (normalization C).Monoidal :=
     inferInstanceAs (FreeSymmetricMonoidalCategory.project _).Monoidal
@@ -542,7 +544,7 @@ public def unitIso : 𝟭 (SList C) ≅ J C ⋙ normalization C :=
         J_map_swap, Category.assoc, Functor.map_comp, Iso.map_inv_hom_id_assoc]
       have e₁ := Functor.LaxMonoidal.μ_natural_right (normalization C) (of x) (JObjConsIso y l').inv
       have e₂ := Functor.LaxMonoidal.μ_natural_right (normalization C) (of y) (JObjConsIso x l').inv
-      dsimp at e₁ e₂
+      dsimp [normalization_of] at e₁ e₂
       simp only [reassoc_of% e₁, ← Functor.map_comp, whiskerLeft_inv_hom_assoc, reassoc_of% e₂]
       simp only [Functor.map_comp, ← Category.assoc, cancel_mono]; simp only [Category.assoc]
       simp_rw [Functor.Monoidal.map_whiskerRight_assoc (F := normalization C), Functor.map_braiding,
@@ -708,19 +710,7 @@ public instance : (unitIso C).hom.IsMonoidal where
         show (α_ _ _ _) = SList.associator _ _ _ by rfl,
         SList.leftUnitor, tensorObjConsIso, appendNilIso, unitIsoNil, SList.associator, eqToHom_map]
 
-instance : (unitIso C).inv.IsMonoidal where
-  unit := by
-    rw [← IsIso.inv_eq_inv]
-    have := NatTrans.IsMonoidal.unit (τ := (unitIso C).hom)
-    simp only [Functor.comp_obj, Functor.id_obj, Functor.LaxMonoidal.id_ε, Category.id_comp,
-      Functor.LaxMonoidal.comp_ε] at this
-    simp [← Functor.map_inv, this]
-  tensor x y := by
-    rw [← IsIso.inv_eq_inv]
-    have := NatTrans.IsMonoidal.tensor (τ := (unitIso C).hom) x y
-    simp only [Functor.id_obj, Functor.comp_obj, Functor.LaxMonoidal.id_μ, Category.id_comp,
-      Functor.LaxMonoidal.comp_μ] at this
-    simp [← Functor.map_inv, this]
+instance : (unitIso C).inv.IsMonoidal := by infer_instance
 
 /-- The natural isomorphism `ε : K ⋙ J ≅ 𝟭` on `FreeSMC C`:
 it is defined via the universal property of the free symmetric monoidal category,
@@ -772,6 +762,18 @@ lemma counitIso_inv_app_tensor (x y : FreeSymmetricMonoidalCategory C) :
 instance : (counitIso C).hom.IsMonoidal where
 instance : (counitIso C).inv.IsMonoidal where
 
+section
+
+variable {C D : Type*} [Category* C] [Category* D] [MonoidalCategory C] [MonoidalCategory D]
+variable {F : C ⥤ D} {G : D ⥤ C} [Functor.LaxMonoidal F] [Functor.LaxMonoidal G]
+  (η : 𝟭 C ≅ F ⋙ G) (ε : G ⋙ F ≅ 𝟭 D) [η.hom.IsMonoidal] [ε.hom.IsMonoidal]
+
+instance : (Equivalence.adjointifyη η ε).hom.IsMonoidal := by
+  dsimp [Equivalence.adjointifyη]
+  infer_instance
+
+end
+
 /-- The coherence theorem: `SList C` is equivalent to `FreeSymmetricMonoidalCategory C`
 as a symmetric monoidal category. -/
 @[simps, expose]
@@ -781,76 +783,47 @@ public def equivalence : SList C ≌ FreeSymmetricMonoidalCategory C where
   unitIso := unitIso C
   counitIso := counitIso C
   functor_unitIso_comp x := by
+    /- Instead of computing, we’ll use a trick here:
+    adjointifying the not-yet-half-adjoint equivalence will give an half-adjoint equivalence with
+    the correct unit, but potentially not the correct counit. But the adjointification process
+    preserves monoidal natural transformations, so in that adjointified equivalence,
+    the counit will be monoidal.
+    But then the counit is uniquely determined by its components on elemets from `C`,
+    and by fully faithfulness of `normalization C` (which we can know without knowing adjointness)
+    these elements have no automorphisms in the free symmetric monoidal category, so
+    this adjointified counit is the same as ours. -/
+    let E₀ := Equivalence.mk (normalization C) (J C) (counitIso C).symm (unitIso C).symm
+    letI : (E₀.symm.inverse ⋙ E₀.symm.functor).LaxMonoidal := by
+      dsimp [E₀, Equivalence.mk]; infer_instance
+    have E₀_unit : E₀.symm.unitIso = unitIso C := rfl
+    haveI : (unitIso C).symm.hom.IsMonoidal := by dsimp; infer_instance
+    haveI : (counitIso C).symm.hom.IsMonoidal := by dsimp; infer_instance
+    have : E₀.symm.counitIso.hom.IsMonoidal :=
+      inferInstanceAs (Equivalence.adjointifyη _ _).inv.IsMonoidal
+    suffices H : E₀.symm.counitIso = counitIso C by
+      rw [← H]
+      exact E₀.symm.functor_unitIso_comp x
+    ext : 1
+    dsimp [E₀, Equivalence.mk]
+    apply FreeSymmetricMonoidalCategory.ext_of_monoidal
+    intro x
     dsimp
-    induction x using SList.cons_induction with
-    | nil =>
-      simp only [unitIso, Functor.id_obj, Functor.comp_obj, Functor.mapIso_symm,
-        Functor.mapIso_trans, Iso.trans_assoc, recNatIso_hom_app_nil, Iso.trans_hom, Iso.symm_hom,
-        Functor.Monoidal.εIso_hom, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
-        Functor.mapIso_inv, Functor.map_comp, Category.assoc]
-      rw [← cancel_mono JObjNilIso.hom]
-      have := (counitIso C).hom.naturality JObjNilIso.hom
-      dsimp at this
-      simp only [← Functor.map_comp_assoc, Category.assoc, ← this, ← Functor.map_comp,
-        Iso.inv_hom_id, Functor.map_id, Category.comp_id, Category.id_comp]
-      simp [counitIso, J_η]
-    | cons c l hr =>
-      /- We use the computation rules for J to get terms of the form `of c ⊗ (J C).obj l` in the
-      counit, that we can then compute via counitIso_hom_app_tensor -/
-      have nat₁ := (counitIso C).hom.naturality (JObjConsIso c l).hom
-      simp only [Functor.comp_obj, Functor.id_obj, Functor.comp_map, counitIso_hom_app_tensor,
-        normalization_of, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, counitIso_hom_app_of,
-        Functor.id_map] at nat₁
-      simp_rw [← cancel_mono (JObjConsIso c l).hom, Category.assoc, ← nat₁]
-      /- Now unitIso_hom_app_cons gives also a computation for (unitIso C).hom.app (c ::~ l) in
-      terms of (unitIso C).hom.app l -/
-      simp only [unitIso_hom_app_cons, Functor.comp_obj, Functor.map_comp, tensorHom_def,
-        comp_whiskerRight, whisker_assoc, Category.assoc, triangle_assoc_comp_right,
-        Category.id_comp]
-      /- Now the idea is to slowly push the term involving (J C).map (unitIso C).hom.app l to
-      the bottom of the expression (where there is a (counitIso C).hom.app ((J C).obj l),
-      so that we can cancel them using the induction hypothesis, this is a lot of
-      monoidal rewriting. -/
-      simp_rw [← whiskerLeft_comp_assoc, ← whiskerLeft_comp, ← Functor.map_comp_assoc,
-        Iso.inv_hom_id, Functor.map_id, Category.id_comp, Functor.Monoidal.μ_δ]
-      simp only [Functor.map_comp, normalization_of, Category.comp_id, Category.assoc,
-        J_map_cons_map, Iso.inv_hom_id_assoc, whiskerLeft_comp]
-      simp_rw [Functor.Monoidal.map_whiskerRight, whiskerLeft_comp_assoc,
-        Functor.Monoidal.map_whiskerLeft_assoc, Functor.Monoidal.μ_δ_assoc, whisker_exchange_assoc,
-        whisker_assoc_symm_assoc, Iso.hom_inv_id_assoc, whisker_exchange_assoc,
-        associator_naturality_right_assoc]
-      simp_rw [← whiskerLeft_comp_assoc, ← whiskerLeft_comp, leftUnitor_naturality, Category.assoc]
-      /- we can finaly use the induction hyp: -/
-      rw [hr]
-      /- and now everything that remains should cancel out,
-      though this is going to be a bit slow. -/
-      rw [← cancel_epi ((JObjConsIso c l).inv)]
-      simp only [Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, whiskerLeft_comp, whisker_assoc,
-        Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, Category.comp_id, triangle, Category.assoc,
-        triangle_assoc_comp_right, Iso.inv_hom_id_assoc, Iso.inv_hom_id]
-      simp_rw [whisker_assoc_symm_assoc, Iso.hom_inv_id_assoc,
-        ← Functor.Monoidal.inv_μ, J_μ_app_cons_app]
-      simp only [Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, Functor.Monoidal.inv_μ,
-        Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, whisker_assoc, IsIso.inv_comp,
-        IsIso.Iso.inv_inv, inv_whiskerLeft, Category.assoc, IsIso.Iso.inv_hom, inv_whiskerRight,
-        triangle, triangle_assoc_comp_right, inv_hom_whiskerRight_assoc, Iso.inv_hom_id_assoc,
-        IsIso.hom_inv_id_assoc, Functor.Monoidal.whiskerLeft_μ_δ_assoc]
-      simp_rw [← whiskerLeft_comp_assoc, ← whiskerLeft_comp]
-      simp only [Functor.OplaxMonoidal.δ_natural_left_assoc, Category.assoc, whiskerLeft_comp]
-      simp_rw [← Functor.Monoidal.inv_μ, J_μ_app_nil_app]
-      simp only [Functor.map_comp, IsIso.inv_comp, IsIso.Iso.inv_hom,
-        Functor.OplaxMonoidal.left_unitality, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
-        Category.assoc, IsIso.inv_hom_id_assoc, inv_whiskerRight, whiskerLeft_comp,
-        whiskerLeft_hom_inv'_assoc]
-      simp_rw [← whiskerLeft_comp_assoc, ← whiskerLeft_comp]
-      simp
-
+    suffices H' : ∀ (y : FreeSymmetricMonoidalCategory C), Subsingleton (y ⟶ .of x) by
+      subsingleton
+    suffices H₀ : Linear ((normalization C).obj (.of x)) by
+      intro y
+      let : (normalization C).FullyFaithful := E₀.symm.fullyFaithfulInverse
+      rw [Equiv.subsingleton_congr this.homEquiv]
+      infer_instance
+    rw [normalization_of]
+    infer_instance
 
 public instance : (equivalence C).functor.Monoidal := inferInstanceAs (J C).Monoidal
 public instance : (equivalence C).functor.Braided := inferInstanceAs (J C).Braided
 public instance : (equivalence C).inverse.Monoidal := inferInstanceAs (normalization C).Monoidal
 public instance : (equivalence C).inverse.Braided := inferInstanceAs (normalization C).Braided
 
+/-- TODO: this should be generalized -/
 public instance : (equivalence C).IsMonoidal where
   leftAdjoint_ε := by
     dsimp [equivalence]
@@ -966,7 +939,7 @@ public section
 variable {F G : SList C ⥤ D} [F.Braided] [G.Braided] (φ : ∀ (c : C), F.obj [c]~ ⟶ G.obj [c]~)
 
 @[simp]
-lemma monoidalLiftNatTrans_app_singleton (c : C) : (monoidalLiftNatTrans φ).app ([c]~) = φ c := by
+lemma monoidalLiftNatTrans_app_singleton (c : C) : (monoidalLiftNatTrans φ).app [c]~ = φ c := by
   letI F' : FreeSymmetricMonoidalCategory C ⥤ D := (equivalence C).inverse ⋙ F
   letI G' : FreeSymmetricMonoidalCategory C ⥤ D := (equivalence C).inverse ⋙ G
   letI φ' : ∀ (c : C), F'.obj (of c) ⟶ G'.obj (of c) := φ
@@ -980,13 +953,13 @@ lemma monoidalLiftNatTrans_app_singleton (c : C) : (monoidalLiftNatTrans φ).app
   let nat₁ := α₀.naturality (JObjConsIso c []~ ≪≫ whiskerLeftIso (of c) JObjNilIso ≪≫ ρ_ _).hom
   simp [-NatTrans.naturality, G', F'] at nat₁
   have := (equivalence C).unitInv_app_inverse ((of c))
-  dsimp at this
+  dsimp [normalization_of] at this
   rw [this]
   dsimp [equivalence]
   rw [unitIso_hom_app_singleton]
   simp only [Functor.map_comp, normalization_of, equivalence_inverse, counitIso_hom_app_of, ← nat₁,
     liftNatTrans_app_of, Category.assoc, F', α₀, φ']
-  simp [← Functor.map_comp, ← Functor.map_comp_assoc]
+  simp [← Functor.map_comp, ← Functor.map_comp_assoc, normalization_of]
 
 lemma monoidalNatTrans_ext_app_singleton {α β : F ⟶ G} [α.IsMonoidal] [β.IsMonoidal]
     (h : ∀ c : C, α.app [c]~ = β.app [c]~) : α = β := by
@@ -1013,19 +986,6 @@ public instance {F G : SList C ⥤ D} [F.Braided] [G.Braided]
   inferInstanceAs <| NatTrans.IsMonoidal <| monoidalLiftNatTrans ..
 
 end
-
-  -- letI F' : FreeSymmetricMonoidalCategory C ⥤ D := (equivalence C).inverse ⋙ F
-  -- letI G' : FreeSymmetricMonoidalCategory C ⥤ D := (equivalence C).inverse ⋙ G
-  -- letI φ' : ∀ (c : C), F'.obj (of c) ⟶ G'.obj (of c) := φ
-  -- letI α₀ : F' ⟶ G' := FreeSymmetricMonoidalCategory.liftNatTrans φ'
-  -- (Functor.leftUnitor _).inv ≫
-  --   Functor.whiskerRight (equivalence C).unit _ ≫
-  --   (Functor.associator ..).hom ≫
-  --   Functor.whiskerLeft (equivalence C).functor α₀ ≫
-  --   (Functor.associator ..).inv ≫
-  --   Functor.whiskerRight (equivalence C).unitInv _ ≫
-  --   (Functor.leftUnitor _).hom
-
 
 end UniversalProperty
 
