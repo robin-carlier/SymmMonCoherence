@@ -238,8 +238,11 @@ abbrev mkHom {X Y : Spans C Wₗ Wᵣ} (apex : C) (l : apex ⟶ X.of) (r : apex 
   wl := wl
   wr := wr
 
+-- TODO: (lowprio): set up a delaborator for mkHom so that it appears nicely in the pretty printer
+
 /- Constructor for 2-morphisms in Spans C -/
-abbrev mkHom₂ {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y}
+@[simps]
+def mkHom₂ {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y}
     (e : S.apex ⟶ S'.apex)
     (hₗ : e ≫ S'.l = S.l := by cat_disch)
     (hᵣ : e ≫ S'.r = S.r := by cat_disch) :
@@ -513,6 +516,11 @@ lemma inv_hom {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y} (e : S ⟶ S') [IsIso e
     (inv e).hom = inv e.hom := by
   apply IsIso.eq_inv_of_inv_hom_id
   simp [← hom₂_comp_hom]
+
+lemma eqToHom_hom {X Y : Spans C Wₗ Wᵣ} (S S' : X ⟶ Y) (h : S = S') :
+    (eqToHom h).hom = eqToHom (congr($(h).apex)) := by
+  subst h
+  simp
 
 instance {X : Spans C Wₗ Wᵣ} : IsIso (𝟙 X:).r := by dsimp; infer_instance
 

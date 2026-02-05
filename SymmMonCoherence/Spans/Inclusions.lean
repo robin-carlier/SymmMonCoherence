@@ -21,8 +21,9 @@ variable (C : Type*) [Category* C]
 open Bicategory
 variable [Limits.HasPullbacks C]
 
-@[simps]
-noncomputable def inl :
+/-- The left inclusion that sends a morphism f : x ⟶ y to the span `x = x -> y`. -/
+@[simps!]
+noncomputable abbrev inl :
     LocallyDiscrete C ⥤ᵖ (Spans C (⊤ : MorphismProperty C) ⊤) where
   obj c := .mk c.as
   map {c c'} f := Spans.mkHom c.as (𝟙 _) f.as (by tauto) (by tauto)
@@ -38,9 +39,13 @@ noncomputable def inl :
           · conv_rhs => rw [← Category.comp_id (πᵣ _ _)]
             simpa [-Category.comp_id] using comp_comm _ _ }
 
+@[simp]
+lemma inl_obj (c : C) : (inl C).obj (.mk c) = .mk c := rfl
+
 open Opposite in
-@[simps]
-noncomputable def inr :
+/-- The right inclusion that sends a morphism f : x ⟶ y to the span `y <- x = x`. -/
+@[simps!]
+noncomputable abbrev inr :
     LocallyDiscrete Cᵒᵖ ⥤ᵖ (Spans C (⊤ : MorphismProperty C) ⊤) where
   obj c := .mk c.as.unop
   map {c c'} f := Spans.mkHom c'.as.unop f.as.unop (𝟙 _) (by tauto) (by tauto)
@@ -56,4 +61,6 @@ noncomputable def inr :
             simpa [-Category.comp_id] using (comp_comm _ _).symm
           · simp }
 
+@[simp]
+lemma inr_obj (c : C) : (inr C).obj (.mk (Opposite.op c)) = .mk c := rfl
 end CategoryTheory.Spans
