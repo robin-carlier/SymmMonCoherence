@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 /-! # Inclusions in spans
 Given a category with pullbacks `C`, we construct pseudofunctorial inclusions
-`inl : (LocallyDiscrete C) ⥤ᵖ Spans ⊤ ⊤` and `inr : (LocallyDiscrete Cᵒᵖ) ⥤ᵖ Spans ⊤ ⊤`
+`inr : (LocallyDiscrete C) ⥤ᵖ Spans ⊤ ⊤` and `inl : (LocallyDiscrete Cᵒᵖ) ⥤ᵖ Spans ⊤ ⊤`
 
 -/
 namespace CategoryTheory.Spans
@@ -21,9 +21,9 @@ variable (C : Type*) [Category* C]
 open Bicategory
 variable [Limits.HasPullbacks C]
 
-/-- The left inclusion that sends a morphism f : x ⟶ y to the span `x = x -> y`. -/
+/-- The right inclusion that sends a morphism f : x ⟶ y to the span `x = x -> y`. -/
 @[simps!]
-noncomputable abbrev inl :
+noncomputable abbrev inr :
     LocallyDiscrete C ⥤ᵖ (Spans C (⊤ : MorphismProperty C) ⊤) where
   obj c := .mk c.as
   map {c c'} f := Spans.mkHom c.as (𝟙 _) f.as (by tauto) (by tauto)
@@ -40,12 +40,12 @@ noncomputable abbrev inl :
             simpa [-Category.comp_id] using comp_comm _ _ }
 
 @[simp]
-lemma inl_obj (c : C) : (inl C).obj (.mk c) = .mk c := rfl
+lemma inr_obj (c : C) : (inr C).obj (.mk c) = .mk c := rfl
 
 open Opposite in
-/-- The right inclusion that sends a morphism f : x ⟶ y to the span `y <- x = x`. -/
+/-- The left inclusion that sends a morphism f : x ⟶ y to the span `y <- x = x`. -/
 @[simps!]
-noncomputable abbrev inr :
+noncomputable abbrev inl :
     LocallyDiscrete Cᵒᵖ ⥤ᵖ (Spans C (⊤ : MorphismProperty C) ⊤) where
   obj c := .mk c.as.unop
   map {c c'} f := Spans.mkHom c'.as.unop f.as.unop (𝟙 _) (by tauto) (by tauto)
@@ -62,5 +62,5 @@ noncomputable abbrev inr :
           · simp }
 
 @[simp]
-lemma inr_obj (c : C) : (inr C).obj (.mk (Opposite.op c)) = .mk c := rfl
+lemma inl_obj (c : C) : (inl C).obj (.mk (Opposite.op c)) = .mk c := rfl
 end CategoryTheory.Spans

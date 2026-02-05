@@ -504,7 +504,7 @@ end monoidal
 bursnide category. -/
 public noncomputable def const (J : BurnsideFintype.{u}) {K : BurnsideFintype.{u}} (k : K.as.of) :
       J ⟶ K :=
-  (Burnside.inl FintypeCat).map (FintypeCat.homMk fun (_ : J.as.of) ↦ k).toLoc
+  (Burnside.inr FintypeCat).map (FintypeCat.homMk fun (_ : J.as.of) ↦ k).toLoc
 
 public lemma const_apex (J : BurnsideFintype.{u}) {K : BurnsideFintype.{u}} (k : K.as.of) :
     (const J k).of.apex = J.as.of := (rfl)

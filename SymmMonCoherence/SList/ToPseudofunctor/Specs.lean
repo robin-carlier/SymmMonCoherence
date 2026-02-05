@@ -110,7 +110,7 @@ section
 -- identifying the action of the pseudofunctor with the tensor product
 
 noncomputable abbrev univFin₂Span :
-    (.mk <| .mk <| .of (Fin 2)) ⟶ (BurnsideFintype.unit) := (Burnside.inl (FintypeCat.{0})).map <|
+    (.mk <| .mk <| .of (Fin 2)) ⟶ (BurnsideFintype.unit) := (Burnside.inr (FintypeCat.{0})).map <|
   (FintypeCat.homMk <| (fun _ ↦ .unit) : (FintypeCat.of <| Fin 2) ⟶ (FintypeCat.of Unit)).toLoc
 end
 

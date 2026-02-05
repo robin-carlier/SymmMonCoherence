@@ -52,13 +52,13 @@ lemma _root_.CategoryTheory.Bicategory.Pith.id_iso (C : Type*) [Bicategory C] {x
 
 variable (C : Type*) [Category* C] [Limits.HasPullbacks C]
 
-/-- The left inclusion of `C` in `Burnside C`. -/
-noncomputable def inl : (LocallyDiscrete C) ⥤ᵖ (Burnside C) :=
-   Bicategory.Pith.pseudofunctorToPith <| Spans.inl C
-
-/-- The right inclusion of `Cᵒᵖ` in `Burnside C`. -/
-noncomputable def inr : (LocallyDiscrete Cᵒᵖ) ⥤ᵖ (Burnside C) :=
+/-- The right inclusion of `C` in `Burnside C`. -/
+noncomputable def inr : (LocallyDiscrete C) ⥤ᵖ (Burnside C) :=
    Bicategory.Pith.pseudofunctorToPith <| Spans.inr C
+
+/-- The left inclusion of `Cᵒᵖ` in `Burnside C`. -/
+noncomputable def inl : (LocallyDiscrete Cᵒᵖ) ⥤ᵖ (Burnside C) :=
+   Bicategory.Pith.pseudofunctorToPith <| Spans.inl C
 
 section
 

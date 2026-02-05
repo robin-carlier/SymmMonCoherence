@@ -13,8 +13,8 @@ public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 /-! # Adjunctions and Spans
 
 In this file, given an arrow `f : c ⟶ c'` in a category `C` with pullbacks,
-the 1-cells `(Spans.inl C).map f.toloc` and
-`(Spans.inr C).map f.op.toloc` are adjoint to each other in the bicategorical
+the 1-cells `(Spans.inr C).map f.toloc` and
+`(Spans.inl C).map f.op.toloc` are adjoint to each other in the bicategorical
 sense, and that the adjunction is pseudofunctorial.
 We furthermore show that a pullback square
 in `C` induces an adjointable square in the bicategory of spans.
@@ -30,20 +30,21 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 variable [Limits.HasPullbacks C]
 noncomputable section
+
 -- TODO: some API for this one
-/-- In bicategories of spans, the 1-morphisms `(Spans.inl C).map f.toLoc` and
-`(Spans.inr C).map f.op.toLoc` are adjoint to each other -/
+/-- In bicategories of spans, the 1-morphisms `(Spans.inr C).map f.toLoc` and
+`(Spans.inl C).map f.op.toLoc` are adjoint to each other -/
 def inrInlAdj {x y : C} (f : x ⟶ y) :
-    (Spans.inl C).map f.toLoc ⊣ (Spans.inr C).map f.op.toLoc where
+    (Spans.inr C).map f.toLoc ⊣ (Spans.inl C).map f.op.toLoc where
   unit := Spans.compLift (𝟙 _) (𝟙 _)
   counit := Spans.mkHom₂ (Spans.πₗ _ _ ≫ f) (by simp) (by
-    have := Spans.comp_comm ((inr C).map f.op.toLoc) ((inl C).map f.toLoc)
+    have := Spans.comp_comm ((inl C).map f.op.toLoc) ((inr C).map f.toLoc)
     dsimp at this
     simp only [Category.comp_id] at this
     simp [this])
   left_triangle := by
     dsimp [leftZigzag, bicategoricalComp]
-    have := Spans.comp_comm (𝟙 _) ((inl C).map f.toLoc)
+    have := Spans.comp_comm (𝟙 _) ((inr C).map f.toLoc)
     dsimp at this
     simp only [Category.comp_id] at this
     ext
@@ -51,7 +52,7 @@ def inrInlAdj {x y : C} (f : x ⟶ y) :
     · simp [this]
   right_triangle := by
     dsimp [rightZigzag, bicategoricalComp]
-    have := Spans.comp_comm ((inr C).map f.op.toLoc) (𝟙 _)
+    have := Spans.comp_comm ((inl C).map f.op.toLoc) (𝟙 _)
     dsimp at this
     simp only [Category.comp_id] at this
     ext
@@ -66,14 +67,14 @@ def inrInlAdj {x y : C} (f : x ⟶ y) :
 /-- The canonical decomposition of a morphism in the bicategory of spans. -/
 @[simps!]
 def decomposeIso {X Y : Spans C ⊤ ⊤} (S : X ⟶ Y) :
-    S ≅ (inr C).map S.l.op.toLoc ≫ (inl C).map S.r.toLoc :=
+    S ≅ (inl C).map S.l.op.toLoc ≫ (inr C).map S.r.toLoc :=
   Spans.mkIso₂
     ({ hom := compLiftApex (𝟙 _) (𝟙 _) rfl
-       inv := Spans.πₗ ((inr C).map S.l.op.toLoc) ((inl C).map S.r.toLoc)
+       inv := Spans.πₗ ((inl C).map S.l.op.toLoc) ((inr C).map S.r.toLoc)
        inv_hom_id := by
          ext
          · simp
-         · have := Spans.comp_comm ((inr C).map S.l.op.toLoc) ((inl C).map S.r.toLoc)
+         · have := Spans.comp_comm ((inl C).map S.l.op.toLoc) ((inr C).map S.r.toLoc)
            dsimp at this
            simp only [Category.comp_id] at this
            simp [this]
@@ -89,11 +90,11 @@ variable {c₀ c₁ c₂ c₃ : C} {t : c₀ ⟶ c₁} {l : c₀ ⟶ c₂} {r : 
 @[simps! inv_hom]
 def isoCompOfIsPullback :
     (Spans.mkHom (C := C) (Wₗ := ⊤) (Wᵣ := ⊤) c₀ l t (by tauto) (by tauto)) ≅
-      (inl C).map b.toLoc ≫ (inr C).map r.op.toLoc where
+      (inr C).map b.toLoc ≫ (inl C).map r.op.toLoc where
   hom := compLift l t (by simp) (by simp [S.w])
   inv := Spans.mkHom₂
     (S.lift (Spans.πᵣ ..) (Spans.πₗ ..)
-      (by simpa using (Spans.comp_comm ((inl C).map b.toLoc) ((inr C).map r.op.toLoc)).symm))
+      (by simpa using (Spans.comp_comm ((inr C).map b.toLoc) ((inl C).map r.op.toLoc)).symm))
     (by simp)
     (by simp)
   inv_hom_id := by
@@ -119,8 +120,8 @@ lemma isoCompOfIsPullback_hom_hom_πₗ :
 /-- The "base change" isomorphism that comes from a pullback square in `C`. We do not define
 it directly via the calculus of mates, and instead we show that -/
 def baseChangeIso :
-    (inr C).map l.op.toLoc ≫ (inl C).map t.toLoc ≅
-    (inl C).map b.toLoc ≫ (inr C).map r.op.toLoc :=
+    (inl C).map l.op.toLoc ≫ (inr C).map t.toLoc ≅
+    (inr C).map b.toLoc ≫ (inl C).map r.op.toLoc :=
   (decomposeIso
       (Spans.mkHom (C := C) (Wₗ := ⊤) (Wᵣ := ⊤) c₀ l t (by tauto) (by tauto))).symm ≪≫
     isoCompOfIsPullback S
@@ -131,14 +132,14 @@ proves that this morphism is indeed invertible. -/
 theorem mateEquiv_eq :
     (baseChangeIso S).hom =
     (Bicategory.mateEquiv (adj₁ := inrInlAdj b) (adj₂ := inrInlAdj t)
-      (g := (inr C).map l.op.toLoc) (h := (inr C).map r.op.toLoc) |>.symm
-        ((inr C).isoMapOfCommSq S.toCommSq.op.toLoc).hom) := by
+      (g := (inl C).map l.op.toLoc) (h := (inl C).map r.op.toLoc) |>.symm
+        ((inl C).isoMapOfCommSq S.toCommSq.op.toLoc).hom) := by
   rw [Bicategory.mateEquiv_symm_apply']
   dsimp [bicategoricalComp]
   ext
-  · simp [baseChangeIso, decomposeIso, isoCompOfIsPullback, inrInlAdj, inl, inr]
-  · simp [baseChangeIso, decomposeIso, isoCompOfIsPullback, inrInlAdj, inl, inr,
-      Pseudofunctor.isoMapOfCommSq, Pseudofunctor.mapComp', inl, inr,
+  · simp [baseChangeIso, decomposeIso, isoCompOfIsPullback, inrInlAdj, inr, inl]
+  · simp [baseChangeIso, decomposeIso, isoCompOfIsPullback, inrInlAdj, inr, inl,
+      Pseudofunctor.isoMapOfCommSq, Pseudofunctor.mapComp', inr, inl,
       reassoc_of% leftUnitor_inv_hom_πᵣ]
 
 end pullbacks
@@ -158,20 +159,20 @@ lemma _root_.CategoryTheory.Bicategory.Adj.eqToHom_τr
   subst h
   simp
 
-/-- The adjunction (inl f) ⊣ (inr f) is pseudofunctorial. -/
+/-- The adjunction (inr f) ⊣ (inl f) is pseudofunctorial. -/
 def toAdjPseudofunctor : LocallyDiscrete C ⥤ᵖ Adj (Spans C ⊤ ⊤) :=
   pseudofunctorOfIsLocallyDiscrete
     (obj := fun x ↦ Adj.mk <| Spans.mk <| x.as)
     (map := fun {x y} f ↦ Adj.Hom.mk <| inrInlAdj f.as)
     (mapId := fun b ↦ Adj.iso₂Mk
-      ((inl C).mapId b)
-      ((inr C).mapId (.mk <| .op b.as))
+      ((inr C).mapId b)
+      ((inl C).mapId (.mk <| .op b.as))
       (by
         ext
         simp [Bicategory.conjugateEquiv_apply', inrInlAdj, Bicategory.Adjunction.id]))
     (mapComp := fun {x y z} f g ↦ Adj.iso₂Mk
-      ((inl C).mapComp f g)
-      ((inr C).mapComp g.as.op.toLoc f.as.op.toLoc).symm
+      ((inr C).mapComp f g)
+      ((inl C).mapComp g.as.op.toLoc f.as.op.toLoc).symm
       (by
         ext
         simp [Bicategory.conjugateEquiv_apply', inrInlAdj]))
