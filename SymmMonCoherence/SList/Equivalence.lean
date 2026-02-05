@@ -144,9 +144,10 @@ public def μIso :
         congr 1
         rw [hom_eq_iff_toEquiv_eq]
         ext i : 1
+        obtain ⟨i, rfl⟩ := (Ψ _ _).surjective i
         cases i with
-        | left i => simp only [length_nil] at i; exact Fin.elim0 i
-        | right i => simp )
+        | inl i => simp only [length_nil] at i; exact Fin.elim0 i
+        | inr i => simp )
     (fun c l μ ↦
       NatIso.ofComponents
         (fun x ↦
@@ -563,23 +564,30 @@ public def unitIso : 𝟭 (SList C) ≅ J C ⋙ normalization C :=
       -- So we can just check that the remaining morphisms give the same permutations
       rw [hom_eq_iff_toEquiv_eq]
       ext i
-      cases i using finTensorObjCases with
-      | left i =>
-        cases i using fin_cons_obj_cases with
-        | right i => simp only [length_nil] at i; exact Fin.elim0 i
-        | zero =>
-          simp [toEquiv_tensorObjConsIso_inv_I_right, toEquiv_tensorObjConsIso_inv_I₀,
-            toEquiv_cons_map_I₀, toEquiv_cons_map_I_right, toEquiv_swap_I₀]
-      | right i =>
-        cases i using finTensorObjCases with
-        | left i =>
-          cases i using fin_cons_obj_cases with
-          | right i => simp only [length_nil] at i; exact Fin.elim0 i
-          | zero =>
-            simp [toEquiv_tensorObjConsIso_inv_I_right, toEquiv_tensorObjConsIso_inv_I₀,
-              toEquiv_cons_map_I₀, toEquiv_cons_map_I_right, toEquiv_swap_I_I₀_natAdd]
-        | right i =>
-          simp [toEquiv_tensorObjConsIso_inv_I_right, toEquiv_cons_map_I_right, toEquiv_swap_I_I])
+      obtain ⟨i, rfl⟩ := Ψ _ _ |>.surjective i
+      cases i with
+      | inl i =>
+        obtain ⟨i, rfl⟩ := Φ _ _ |>.surjective i
+        cases i with
+        | inr i => simp only [length_nil] at i; exact Fin.elim0 i
+        | inl i =>
+          obtain rfl : i = () := rfl
+          simp [toEquiv_tensorObjConsIso_inv_Φ_inr, toEquiv_tensorObjConsIso_inv_Φ_inl,
+            toEquiv_cons_map_Φ_inl, toEquiv_cons_map_Φ_inr, toEquiv_swap_Φ_inl]
+      | inr i =>
+        obtain ⟨i, rfl⟩ := Ψ _ _ |>.surjective i
+        cases i with
+        | inl i =>
+          obtain ⟨i, rfl⟩ := Φ _ _ |>.surjective i
+          cases i with
+          | inr i => simp only [length_nil] at i; exact Fin.elim0 i
+          | inl i =>
+            obtain rfl : i = () := rfl
+            simp [toEquiv_tensorObjConsIso_inv_Φ_inr, toEquiv_tensorObjConsIso_inv_Φ_inl,
+              toEquiv_cons_map_Φ_inl, toEquiv_cons_map_Φ_inr, toEquiv_swap_Φ_inr_Φ_inl]
+        | inr i =>
+          simp [toEquiv_tensorObjConsIso_inv_Φ_inr, toEquiv_cons_map_Φ_inr,
+            toEquiv_swap_Φ_inr_Φ_inr])
     (fun x l l' f pl pl' h ↦ by
       dsimp at h ⊢
       have := congr(x::~ₘ $h)

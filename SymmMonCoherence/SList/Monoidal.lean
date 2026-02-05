@@ -256,39 +256,29 @@ end
 open MonoidalCategory
 
 /-- The function ψ is essentially a cast along the equality
-`(x ⊗ y).length = x.length + y.length`, but giving it a name and hiding its
+`(x ⊗ y).length = x.length + y.length`, followed by the equivalence between
+`Fin (n + m)` and `Fin n ⊕ Fin m`, but giving it a name and hiding its
 implementation as a cast makes for better automation. -/
-public def Ψ (x y : SList C) :  Fin (x.length + y.length) ≃ Fin (x ⊗ y).length :=
-  Equiv.symm <| finCongr <| tensorObj_length x y
-
-@[expose] public def finSumTensEquiv (x y : SList C) :
+@[no_expose] public def Ψ (x y : SList C) :
     Fin x.length ⊕ Fin y.length ≃ Fin (x ⊗ y).length :=
-  finSumFinEquiv.trans (Ψ x y)
+  finSumFinEquiv.trans (Equiv.symm <| finCongr <| tensorObj_length x y)
+
+@[elab_as_elim, cases_eliminator]
+public lemma fin_tensor_obj_case {x y : SList C}
+    {motive : {x y : SList C} → Fin (x ⊗ y).length → Prop}
+    (inl : ∀ (i : Fin x.length), motive (Ψ x y (.inl i)))
+    (inr : ∀ (i : Fin y.length), motive (Ψ x y (.inr i)))
+    (i : Fin (x ⊗ y).length) : motive i := by
+  obtain ⟨i, rfl⟩ := (Ψ _ _).surjective i
+  grind
 
 @[simp, grind =]
-public lemma finSumTensEquiv_apply_inl (x y : SList C) (i : Fin x.length) :
-    finSumTensEquiv x y (.inl i) = Ψ x y (i.castAdd _) := rfl
+public lemma Ψ_apply_val_left (x y : SList C) (i : Fin x.length) :
+    (Ψ x y (.inl i)).val = i.val := (rfl)
 
 @[simp, grind =]
-public lemma finSumTensEquiv_apply_inr (x y : SList C) (i : Fin y.length) :
-    finSumTensEquiv x y (.inr i) = Ψ x y (i.natAdd _) := rfl
-
-@[simp, grind =]
-public lemma finSumTensEquiv_symm_apply_left (x y : SList C) (i : Fin x.length) :
-    (finSumTensEquiv x y).symm (Ψ x y (i.castAdd _)) = .inl i := by
-  rw [Equiv.symm_apply_eq]
-  rfl
-
-@[simp, grind =]
-public lemma finSumTensEquiv_symm_apply_right (x y : SList C) (i : Fin y.length) :
-    (finSumTensEquiv x y).symm (Ψ x y (i.natAdd _)) = .inr i := by
-  rw [Equiv.symm_apply_eq]
-  rfl
-
-@[simp, grind =]
-public lemma Ψ_apply_val (x y : SList C) (i : Fin (x.length + y.length)) :
-    (Ψ x y i).val = i.val :=
-  (rfl)
+public lemma Ψ_apply_val_right (x y : SList C) (i : Fin y.length) :
+    (Ψ x y (.inr i)).val = x.length + i.val := (rfl)
 
 attribute [local simp, local grind =]
   whiskerLeft_id whiskerLeft_comp id_whiskerRight comp_whiskerRight
@@ -356,42 +346,15 @@ lemma toPerm_whiskerRight_apply {x x' : SList C} (f : x ⟶ x') (y : SList C) (i
 
 end
 
-@[elab_as_elim, cases_eliminator]
-public def finTensorObjCases {x y : SList C}
-    {motive : {x y : SList C} → Fin (x ⊗ y).length → Sort*}
-    (left : ∀ (i : Fin x.length), motive ((Ψ x y) (i.castAdd y.length)))
-    (right : ∀ (i : Fin y.length), motive ((Ψ x y) (i.natAdd x.length)))
-    (i : Fin (x ⊗ y).length) : motive i :=
-  Fin.addCases (motive := fun i ↦ motive (Ψ _ _ i)) left right ((Ψ _ _).symm i)
-
-public lemma finTensorObjCases_left {x y : SList C}
-    {motive : {x y : SList C} → Fin (x ⊗ y).length → Sort*}
-    (left : ∀ (i : Fin x.length), motive ((Ψ x y) (i.castAdd y.length)))
-    (right : ∀ (i : Fin y.length), motive ((Ψ x y) (i.natAdd x.length)))
-    (i : Fin x.length) :
-    finTensorObjCases left right (Ψ x y (i.castAdd _)) = left i :=
-  Fin.addCases_left _
-
-public lemma finTensorObjCases_right {x y : SList C}
-    {motive : {x y : SList C} → Fin (x ⊗ y).length → Sort*}
-    (left : ∀ (i : Fin x.length), motive ((Ψ x y) (i.castAdd y.length)))
-    (right : ∀ (i : Fin y.length), motive ((Ψ x y) (i.natAdd x.length)))
-    (i : Fin y.length) :
-    finTensorObjCases left right (Ψ x y (i.natAdd _)) = right i :=
-  Fin.addCases_right _
-
 @[simp, grind =] public lemma tensorHom_apply_left {x y z t : SList C} (f : x ⟶ y) (g : z ⟶ t)
     (i : Fin y.length) :
-    toEquiv (f ⊗ₘ g) (Ψ y t <| i.castAdd _) =
-    (Ψ _ _) ((toEquiv f i).castAdd _) := by
+    toEquiv (f ⊗ₘ g) (Ψ y t <| .inl i) = Ψ _ _ (.inl <| toEquiv f i) := by
   ext
   simp [toEquiv_apply_val, tensorHom_def, toPerm_whiskerRight_apply,
     toPerm_whiskerLeft_apply_left]
 
 @[simp, grind =] public lemma tensorHom_apply_right {x y z t : SList C} (f : x ⟶ y) (g : z ⟶ t)
-    (i : Fin t.length) :
-    toEquiv (f ⊗ₘ g) (Ψ y t <| i.natAdd _) =
-    (Ψ _ _) ((toEquiv g i).natAdd _) := by
+    (i : Fin t.length) : toEquiv (f ⊗ₘ g) (Ψ y t <| .inr i) = Ψ _ _ (.inr <| toEquiv g i) := by
   ext
   simp [toEquiv_apply_val, tensorHom_def, toPerm_whiskerRight_apply,
     toPerm_whiskerLeft_apply_right, toPerm_app_eq_of_lt, length_eq_of_hom f]
@@ -405,90 +368,77 @@ lemma tensorHom_id {x y : SList C} (f : x ⟶ y) (z : SList C) :
 
 @[simp, grind =] public lemma whiskerLeft_apply_right (x : SList C) {y z : SList C} (f : y ⟶ z)
     (i : Fin z.length) :
-    toEquiv (x ◁ f) (Ψ x z <| i.natAdd _) =
-    (Ψ _ _) ((toEquiv f i).natAdd _) := by
+    toEquiv (x ◁ f) (Ψ x z <| .inr i) = (Ψ _ _) (.inr (toEquiv f i)) := by
   ext
   simp [← id_tensorHom]
 
 @[simp, grind =] public lemma whiskerLeft_apply_left (x : SList C) {y z : SList C} (f : y ⟶ z)
     (i : Fin x.length) :
-    toEquiv (x ◁ f) (Ψ x z <| i.castAdd _) =
-    (Ψ _ _) (i.castAdd _) := by
+    toEquiv (x ◁ f) (Ψ x z <| .inl i) = Ψ _ _ (.inl i) := by
   ext
   simp [← id_tensorHom]
 
 @[simp, grind =] public lemma whiskerRight_apply_left {x y : SList C} (f : x ⟶ y) (z : SList C)
     (i : Fin z.length) :
-    toEquiv (f ▷ z) (Ψ y z <| i.natAdd _) =
-    (Ψ _ _) (i.natAdd _) := by
+    toEquiv (f ▷ z) (Ψ y z <| .inr i) = Ψ _ _ (.inr i) := by
   ext
   simp [← tensorHom_id]
 
 @[simp, grind =] public lemma whiskerRight_apply_right {x y : SList C} (f : x ⟶ y) (z : SList C)
     (i : Fin y.length) :
-    toEquiv (f ▷ z) (Ψ y z <| i.castAdd _) =
-    (Ψ _ _) ((toEquiv f i).castAdd _) := by
+    toEquiv (f ▷ z) (Ψ y z <| .inl i) = Ψ _ _ (.inl (toEquiv f i)) := by
   ext
   simp [← tensorHom_id]
 
-@[simp, grind =] public lemma assocciator_hom_left_left (x y z : SList C) (i : Fin x.length) :
-    toEquiv (α_ x y z).hom (Ψ x (y ⊗ z) <| i.castAdd (y ⊗ z).length) =
-    (Ψ (x ⊗ y) z) (((Ψ x y) (i.castAdd y.length)).castAdd z.length) := by
+@[simp, grind =] public lemma associator_hom_left_left (x y z : SList C) (i : Fin x.length) :
+    toEquiv (α_ x y z).hom (Ψ x (y ⊗ z) <| .inl i) = Ψ (x ⊗ y) z (.inl <| Ψ x y <| .inl i) := by
   ext
   simp [MonoidalCategoryStruct.associator, associator, Ψ]
 
-@[simp, grind =] public lemma assocciator_hom_right_left (x y z : SList C) (i : Fin y.length) :
-    toEquiv (α_ x y z).hom
-      (Ψ x (y ⊗ z) <| (Ψ y z <| i.castAdd z.length).natAdd x.length) =
-    (Ψ (x ⊗ y) z) (((Ψ x y) (i.natAdd x.length)).castAdd _) := by
+@[simp, grind =] public lemma associator_hom_right_left (x y z : SList C) (i : Fin y.length) :
+    toEquiv (α_ x y z).hom (Ψ x (y ⊗ z) <| .inr <| Ψ y z <| .inl i) =
+      Ψ (x ⊗ y) z (.inl <| Ψ x y <| .inr i) := by
   ext
   simp [MonoidalCategoryStruct.associator, associator, Ψ]
 
-@[simp, grind =] public lemma assocciator_hom_right_right (x y z : SList C) (i : Fin z.length) :
-    toEquiv (α_ x y z).hom
-      (Ψ x (y ⊗ z) <| (Ψ y z <| i.natAdd y.length).natAdd x.length) =
-    (Ψ (x ⊗ y) z) (i.natAdd _) := by
+@[simp, grind =] public lemma associator_hom_right_right (x y z : SList C) (i : Fin z.length) :
+    toEquiv (α_ x y z).hom (Ψ x (y ⊗ z) <| .inr <| Ψ y z <| .inr i) = Ψ (x ⊗ y) z (.inr i) := by
   ext
   simp [MonoidalCategoryStruct.associator, associator, Ψ, Nat.add_assoc]
 
-@[simp, grind =] public lemma assocciator_inv_left_left (x y z : SList C) (i : Fin x.length) :
-    toEquiv (α_ x y z).inv
-      ((Ψ (x ⊗ y) z) (((Ψ x y) (i.castAdd y.length)).castAdd z.length)) =
-    (Ψ x (y ⊗ z) <| i.castAdd (y ⊗ z).length) := by
+@[simp, grind =] public lemma associator_inv_left_left (x y z : SList C) (i : Fin x.length) :
+    toEquiv (α_ x y z).inv ((Ψ (x ⊗ y) z) (.inl <| Ψ x y <| .inl i)) = Ψ x (y ⊗ z) (.inl i) := by
   ext
   simp [MonoidalCategoryStruct.associator, associator, Ψ]
 
-@[simp, grind =] public lemma assocciator_inv_left_right (x y z : SList C) (i : Fin y.length) :
-    toEquiv (α_ x y z).inv
-      ((Ψ (x ⊗ y) z) (((Ψ x y) (i.natAdd x.length)).castAdd z.length)) =
-    (Ψ x (y ⊗ z) <| (Ψ y z <| i.castAdd z.length).natAdd x.length) := by
+@[simp, grind =] public lemma associator_inv_left_right (x y z : SList C) (i : Fin y.length) :
+    toEquiv (α_ x y z).inv (Ψ (x ⊗ y) z (.inl <| Ψ x y <| .inr i)) =
+      Ψ x (y ⊗ z) (.inr <| Ψ y z <| .inl i) := by
   ext
   simp [MonoidalCategoryStruct.associator, associator, Ψ]
 
-@[simp, grind =] public lemma assocciator_inv_right (x y z : SList C) (i : Fin z.length) :
-    toEquiv (α_ x y z).inv
-      ((Ψ (x ⊗ y) z) (i.natAdd _)) =
-    (Ψ x (y ⊗ z) <| (Ψ y z <| i.natAdd y.length).natAdd x.length) := by
+@[simp, grind =] public lemma associator_inv_right (x y z : SList C) (i : Fin z.length) :
+    toEquiv (α_ x y z).inv (Ψ (x ⊗ y) z <| .inr i) = Ψ x (y ⊗ z) (.inr <| Ψ y z <| .inr i) := by
   ext
   simp [MonoidalCategoryStruct.associator, associator, Ψ, Nat.add_assoc]
 
 @[simp] public lemma toEquiv_leftUnitor_hom (x : SList C) (i : Fin x.length) :
-    toEquiv (λ_ x).hom i = (Ψ (𝟙_ (SList C)) x) (i.natAdd (𝟙_ (SList C)).length) := by
+    toEquiv (λ_ x).hom i = Ψ (𝟙_ (SList C)) x (.inr <| i) := by
   ext
   simp [MonoidalCategoryStruct.leftUnitor, leftUnitor, appendNilIso]
 
 @[simp] public lemma toEquiv_leftUnitor_inv (x : SList C) (i : Fin x.length) :
-    toEquiv (λ_ x).inv ((Ψ (𝟙_ (SList C)) x) (i.natAdd (𝟙_ (SList C)).length)) = i := by
+    toEquiv (λ_ x).inv (Ψ (𝟙_ (SList C)) x <| .inr i) = i := by
   ext
   simp [MonoidalCategoryStruct.leftUnitor, leftUnitor, appendNilIso]
 
 @[simp] public lemma toEquiv_rightUnitor_hom (x : SList C) (i : Fin x.length) :
-    toEquiv (ρ_ x).hom i = (Ψ _ _) (i.castAdd _) := by
+    toEquiv (ρ_ x).hom i = Ψ _ _ (.inl i) := by
   ext
   simp [MonoidalCategoryStruct.rightUnitor, rightUnitor]
 
 @[simp] public lemma toEquiv_rightUnitor_inv (x : SList C) (i : Fin x.length) :
-    toEquiv (ρ_ x).inv ((Ψ _ _) (i.castAdd _)) = i := by
+    toEquiv (ρ_ x).inv (Ψ _ _ (.inl i)) = i := by
   ext
   simp [MonoidalCategoryStruct.rightUnitor, rightUnitor]
 
@@ -498,20 +448,28 @@ lemma associator_naturality {x x' y y' z z' : SList C}
     (α_ x y z).hom ≫ (f ⊗ₘ g ⊗ₘ h) := by
   rw [hom_eq_iff_toEquiv_eq]
   ext i
+  obtain ⟨i, rfl⟩ := (Ψ _ _).surjective i
   cases i with
-  | left i => simp
-  | right i => cases i with simp
+  | inl i => simp
+  | inr i =>
+    obtain ⟨i, rfl⟩ := (Ψ _ _).surjective i
+    cases i with simp
 
 lemma pentagon_identity (w x y z : SList C) :
-    ((α_ w x y).hom ▷ z) ≫ (α_ w (x ⊗ y) z).hom ≫ (w ◁ (α_ x y z).hom) =
+    (α_ w x y).hom ▷ z ≫ (α_ w (x ⊗ y) z).hom ≫ w ◁ (α_ x y z).hom =
     (α_ (w ⊗ x) y z).hom ≫ (α_ w x (y ⊗ z)).hom := by
   rw [hom_eq_iff_toEquiv_eq]
   ext i
+  obtain ⟨i, rfl⟩ := (Ψ _ _).surjective i
   cases i with
-  | left i => simp
-  | right i => cases i with
-    | left i => simp
-    | right i => cases i with simp
+  | inl i => simp
+  | inr i =>
+    obtain ⟨i, rfl⟩ := (Ψ _ _).surjective i
+    cases i with
+      | inl i => simp
+      | inr i =>
+        obtain ⟨i, rfl⟩ := (Ψ _ _).surjective i
+        cases i with simp
 
 public instance : MonoidalCategory (SList C) where
   tensorHom_def f g := rfl
@@ -533,9 +491,9 @@ public instance : MonoidalCategory (SList C) where
   triangle u v := by
     rw [hom_eq_iff_toEquiv_eq]
     ext j : 1
-    cases j with
-    | left i => simp
-    | right i => simp
+    obtain ⟨j, rfl⟩ := (Ψ _ _).surjective j
+    cases j with simp
+
 
 /-- Giving a name to the isomorphism that translates between `SList.cons` and the
 tensor product with a singleton SList. -/
@@ -756,191 +714,164 @@ end
 section
 variable {l₁ l₂ : SList C}
 
-public def I (x : C) (l : SList C) : Fin (1 + l.length) ≃ Fin ((x ::~ l).length) :=
-    finCongr (by simp +arith)
-
-@[simp, grind =]
-public lemma I_apply_val (x : C) (l : SList C) (i : Fin (1 + l.length)) :
-    ((I x l) i).val = i.val := (rfl)
-
-@[simp, grind =]
-public lemma I_symm_apply_val (x : C) (l : SList C) (i : Fin (x ::~ l).length) :
-    ((I x l).symm i).val = i.val := (rfl)
-
-public def I₀ (x : C) (l : SList C) : Fin ((x ::~ l).length) := ⟨0, by simp⟩
-
-@[simp, grind =]
-lemma I₀_val (x : C) (l : SList C) : (I₀ x l).val = 0 := rfl
-
-@[simp]
-lemma default_eq_I₀ (x : C) : default = I₀ x []~ := by subsingleton
-
-@[expose] public def unitSumFinConsEquiv (x : C) (l : SList C) :
+@[no_expose] public def Φ (x : C) (l : SList C) :
     Unit ⊕ Fin l.length ≃ Fin (x ::~ l).length :=
-  Equiv.trans (Equiv.sumCongr finOneEquiv.symm (.refl _)) (finSumFinEquiv.trans (I x l))
+  Equiv.trans (Equiv.sumCongr finOneEquiv.symm (.refl _))
+    (finSumFinEquiv.trans (finCongr (by simp +arith)))
+
+@[elab_as_elim, cases_eliminator]
+public lemma fin_cons_obj_case {x : C} {L : SList C}
+    {motive : {x : C} → {L : SList C} → Fin (x ::~ L).length → Prop}
+    (inl : motive (Φ x L (.inl ())))
+    (inr : ∀ (i : Fin L.length), motive (Φ x L (.inr i)))
+    (i : Fin (x ::~ L).length) : motive i := by
+  obtain ⟨i, rfl⟩ := (Φ _ _).surjective i
+  grind
 
 @[simp, grind =]
-public lemma unitSumFinConsEquiv_apply_inl (x : C) (l : SList C) :
-    (unitSumFinConsEquiv x l) (.inl ()) = I₀ x l := (rfl)
+public lemma Φ_apply_val_right (x : C) (l : SList C) (i : Fin l.length) :
+    (Φ x l (.inr i)).val = 1 + i.val :=
+  (rfl)
 
 @[simp, grind =]
-public lemma unitSumFinConsEquiv_apply_inr (x : C) (l : SList C) (j : Fin l.length) :
-    (unitSumFinConsEquiv x l) (.inr j) = I x l (j.natAdd 1) := (rfl)
+public lemma Φ_apply_val_left (x : C) (l : SList C) :
+    (Φ x l (.inl ())).val = 0 := (rfl)
 
-@[elab_as_elim, local cases_eliminator]
-public lemma fin_cons_obj_cases {x : C} {l : SList C}
-  {motive : {x : C} → {l : SList C} → Fin (x ::~ l).length → Prop}
-  (right : ∀ (i : Fin l.length), motive (I x l (i.natAdd 1)))
-  (zero : motive (I₀ x l))
-  (i : Fin (x ::~ l).length) : motive i := by
-  have hi := i.prop
-  simp only [length_cons] at hi
-  let j : (Fin (1 + l.length)) := ⟨i, by simpa +arith using hi⟩
-  have : i = I x l j := rfl
-  rw [this]
-  cases j using Fin.addCases with
-  | left i =>
-    convert zero
-    ext
-    simp
-  | right i => exact right _
-
-@[local simp]
-public lemma toEquiv_cons_map_I_right (x : C) {l l' : SList C} (f : l ⟶ l') (i : Fin l'.length) :
-    toEquiv (x ::~ₘ f) (I _ _ <| i.natAdd _) =
-    (I _ _ (((toEquiv f) i).natAdd 1)) := by
+@[local simp, grind =]
+public lemma toEquiv_cons_map_Φ_inr (x : C) {l l' : SList C} (f : l ⟶ l') (i : Fin l'.length) :
+    toEquiv (x ::~ₘ f) (Φ _ _ <| .inr i) = (Φ _ _ <| .inr <| (toEquiv f) i) := by
   ext
-  simp [toEquiv, Nat.add_comm, toPerm_app_cons_apply_succ]
+  simp [toEquiv, Nat.add_comm, toPerm_app_cons_apply_succ, Φ]
 
-@[local simp]
-public lemma toEquiv_cons_map_I₀ (x : C) {l l' : SList C} (f : l ⟶ l') :
-    toEquiv (x ::~ₘ f) (I₀ x l') =
-    I₀ x l := by
+@[local simp, grind =]
+public lemma toEquiv_cons_map_Φ_inl (x : C) {l l' : SList C} (f : l ⟶ l') :
+    toEquiv (x ::~ₘ f) (Φ _ _ <| .inl ()) = (Φ _ _ <| .inl ()) := by
   ext
-  simp [toEquiv]
+  simp [toEquiv, Φ]
 
 @[local simp]
-public lemma toEquiv_swap_I₀ (x y : C) (l : SList C) :
-    toEquiv (β~ x y l) (I₀ y (x ::~ l)) =
-    I _ _ ((I₀ _ _).natAdd _) := by
+public lemma toEquiv_swap_Φ_inl (x y : C) (l : SList C) :
+    toEquiv (β~ x y l) (Φ _ _ <| .inl ()) = Φ _ _ (.inr <| Φ _ _ <| .inl ()) := by
   ext
-  simp [toEquiv]
+  simp [toEquiv, Φ]
 
 @[local simp]
-public lemma toEquiv_swap_I_I₀_natAdd (x y : C) (l : SList C) :
-    toEquiv (β~ x y l) (I _ _ ((I₀ _ _).natAdd _)) =
-    (I₀ x (y ::~ l)) := by
+public lemma toEquiv_swap_Φ_inr_Φ_inl (x y : C) (l : SList C) :
+    toEquiv (β~ x y l) (Φ _ _ (.inr <| Φ _ _ <| .inl ())) =
+    (Φ _ _ <| .inl ()) := by
   ext
-  simp [toEquiv]
+  simp [toEquiv, Φ]
 
-@[local simp]
-public lemma toEquiv_swap_I_I (x y : C) (l : SList C) (i : Fin l.length) :
-    toEquiv (β~ x y l) (I _ _ ((I _ _ (i.natAdd 1)).natAdd _)) =
-    (I _ _ ((I _ _ (i.natAdd 1)).natAdd _)) := by
+@[local simp, grind =]
+public lemma toEquiv_swap_Φ_inr_Φ_inr (x y : C) (l : SList C) (i : Fin l.length) :
+    toEquiv (β~ x y l) (Φ _ _ <| .inr <| Φ _ _ <| .inr i) =
+    (Φ _ _ <| .inr <| Φ _ _ <| .inr i) := by
   ext
-  simp only [toEquiv, toPerm_swap, Equiv.symm_swap, Equiv.coe_fn_mk, I_apply_val, Fin.val_natAdd]
-  grind [toEquiv]
+  grind [toEquiv, Φ]
 
-@[local simp]
-public lemma toEquiv_tensorObjConsIso_hom_I₀ (x : C) (l : SList C) (l' : SList C) :
-    toEquiv (tensorObjConsIso x l l').hom (I₀ _ _) =
-    Ψ _ _ ((I₀ _ _).castAdd _) := by
+@[local simp, grind =]
+public lemma toEquiv_tensorObjConsIso_hom_Φ_inl (x : C) (l : SList C) (l' : SList C) :
+    toEquiv (tensorObjConsIso x l l').hom (Φ _ _ <| .inl ()) =
+    Ψ _ _ (.inl <| Φ _ _ <| .inl ()) := by
+  ext
+  simp [tensorObjConsIso]
+
+@[local simp, grind =]
+public lemma toEquiv_tensorObjConsIso_hom_Φ_inl_Ψ_inl
+    (x : C) (l : SList C) (l' : SList C) (i : Fin l.length) :
+    toEquiv (tensorObjConsIso x l l').hom (Φ _ _ <| .inr <| Ψ _ _ <| .inl i) =
+    Ψ _ _ (.inl <| Φ _ _ <| .inr i) := by
   ext
   simp [tensorObjConsIso]
 
 @[local simp]
-public lemma toEquiv_tensorObjConsIso_hom_I_left
-    (x : C) (l : SList C) (l' : SList C) (i : Fin l.length) :
-    toEquiv (tensorObjConsIso x l l').hom (I _ _ <| (Ψ _ _ (i.castAdd _)).natAdd 1) =
-    Ψ _ _ ((I _ _ (i.natAdd 1)).castAdd _) := by
-  ext
-  simp [tensorObjConsIso, I]
-
-@[local simp]
-public lemma toEquiv_tensorObjConsIso_hom_I_right
+public lemma toEquiv_tensorObjConsIso_hom_Φ_inr
     (x : C) (l : SList C) (l' : SList C) (i : Fin l'.length) :
-    toEquiv (tensorObjConsIso x l l').hom (I _ _ <| Fin.natAdd 1 <| Ψ _ _ <| i.natAdd _) =
-    Ψ _ _ (i.natAdd _) := by
+    toEquiv (tensorObjConsIso x l l').hom (Φ _ _ <| .inr <| Ψ _ _ <| .inr i) =
+    Ψ _ _ (.inr i) := by
   ext
-  simp +arith [tensorObjConsIso, I]
+  simp +arith [tensorObjConsIso]
 
 @[local simp]
-public lemma toEquiv_tensorObjConsIso_inv_I₀ (x : C) (l : SList C) (l' : SList C) :
-    toEquiv (tensorObjConsIso x l l').inv (Ψ _ _ ((I₀ _ _).castAdd _)) =
-    (I₀ _ _) := by
+public lemma toEquiv_tensorObjConsIso_inv_Φ_inl (x : C) (l : SList C) (l' : SList C) :
+    toEquiv (tensorObjConsIso x l l').inv (Ψ _ _ <| .inl <| Φ _ _ <| .inl ()) =
+    (Φ _ _ <| .inl ()) := by
   ext
   simp [tensorObjConsIso]
 
 @[local simp]
-public lemma toEquiv_tensorObjConsIso_inv_I_left
+public lemma toEquiv_tensorObjConsIso_inv_Φ_inl_Ψ_inl
     (x : C) (l : SList C) (l' : SList C) (i : Fin l.length) :
-    toEquiv (tensorObjConsIso x l l').inv (Ψ _ _ ((I _ _ (i.natAdd 1)).castAdd _)) =
-    (I _ _ <| (Ψ _ _ (i.castAdd _)).natAdd 1) := by
+    toEquiv (tensorObjConsIso x l l').inv (Ψ _ _ <| .inl <| Φ _ _ <| .inr i) =
+    (Φ _ _ <| .inr <| Ψ _ _ <| .inl i) := by
   ext
-  simp [tensorObjConsIso, I]
+  simp [tensorObjConsIso]
 
 @[local simp]
-public lemma toEquiv_tensorObjConsIso_inv_I_right
+public lemma toEquiv_tensorObjConsIso_inv_Φ_inr
     (x : C) (l : SList C) (l' : SList C) (i : Fin l'.length) :
-    toEquiv (tensorObjConsIso x l l').inv (Ψ _ _ (i.natAdd _)) =
-    (I _ _ <| Fin.natAdd 1 <| Ψ _ _ <| i.natAdd _) := by
+    toEquiv (tensorObjConsIso x l l').inv (Ψ _ _ <| .inr i) =
+    (Φ _ _ <| .inr <| Ψ _ _ <| .inr i) := by
   ext
-  simp +arith [tensorObjConsIso, I]
+  simp +arith [tensorObjConsIso]
 
 @[simp]
 public lemma toEquiv_consTensSingletonIso_hom_right (x : C) (l : SList C) (t : Fin l.length) :
-    (toEquiv (consTensSingletonIso x l).hom) (Ψ _ _ (t.natAdd _)) = I _ _ (t.natAdd 1) := by
+    (toEquiv (consTensSingletonIso x l).hom) (Ψ _ _ <| .inr t) = Φ _ _ (.inr t) := by
   simp [consTensSingletonIso]
 
 @[simp]
 public lemma toEquiv_consTensSingletonIso_hom_left (x : C) (l : SList C) :
-    (toEquiv (consTensSingletonIso x l).hom) (Ψ _ _ ((I₀ _ _).castAdd _)) = I₀ _ _ := by
+    (toEquiv (consTensSingletonIso x l).hom) (Ψ _ _ (.inl <| Φ _ _ <| .inl ())) =
+    (Φ _ _ <| .inl ()) := by
   simp [consTensSingletonIso]
 
 @[simp]
 public lemma toEquiv_consTensSingletonIso_inv_right (x : C) (l : SList C) (t : Fin l.length) :
-    (toEquiv (consTensSingletonIso x l).inv) (I _ _ (t.natAdd 1)) = Ψ _ _ (t.natAdd _) := by
+    (toEquiv (consTensSingletonIso x l).inv) (Φ _ _ (.inr t)) = Ψ _ _ (.inr t) := by
   simp [consTensSingletonIso]
 
 @[simp]
 public lemma toEquiv_consTensSingletonIso_inv_left (x : C) (l : SList C) :
-    (toEquiv (consTensSingletonIso x l).inv) (I₀ _ _) = Ψ _ _ ((I₀ _ _).castAdd _) := by
+    (toEquiv (consTensSingletonIso x l).inv) (Φ _ _ <| .inl ()) =
+    Ψ _ _ (.inl <| Φ _ _ <| .inl ()) := by
   simp [consTensSingletonIso]
 
 @[simp]
 lemma Q_hom_app_left (x : C) (l₂ : SList C) (l : SList C) (i : Fin l.length) :
-    toEquiv ((Q x l₂).hom.app l) (Ψ _ _ (i.castAdd _)) =
-    Ψ _ _ ((I _ _ (i.natAdd 1)).castAdd _) := by
+    toEquiv ((Q x l₂).hom.app l) (Ψ _ _ <| .inl i) =
+    Ψ _ _ (.inl <| Φ _ _ (.inr i)) := by
   induction l using SList.cons_induction with
   | nil =>
     simp only [length_nil] at i
     exact Fin.elim0 i
   | cons c l ih =>
+    obtain ⟨i, rfl⟩ := (Φ _ _).surjective i
     cases i with
-    | right i =>
-      simp [Q_hom_app_cons]
+    | inr i =>
       have := ih i
       simp only [Functor.comp_obj, Functor.flip_obj_obj, curriedTensor_obj_obj] at this
-      simp [this]
-    | zero =>
+      simp [Q_hom_app_cons, this]
+    | inl i =>
+      obtain rfl : i = () := rfl
       letI U :=(Q x l₂).hom.app l
       dsimp at U
       simp [Q_hom_app_cons]
 
-@[simp]
-lemma Q_hom_app_right_I₀ (x : C) (l₂ : SList C) (l : SList C) :
-    toEquiv ((Q x l₂).hom.app l) (Ψ _ _ ((I₀ _ _).natAdd _)) =
-    Ψ _ _ ((I₀ _ _).castAdd _) := by
+@[simp, grind =]
+lemma Q_hom_app_right_Φ_inl (x : C) (l₂ : SList C) (l : SList C) :
+    toEquiv ((Q x l₂).hom.app l) (Ψ _ _ (.inr <| Φ _ _ <| .inl ())) =
+    Ψ _ _ (.inl <| Φ _ _ <| .inl ()) := by
   induction l using SList.cons_induction with
   | nil => simp [Q_hom_app_nil]
   | cons c l ih =>
     dsimp at ih
     simp [Q_hom_app_cons, ih]
 
-@[simp]
+@[simp, grind =]
 lemma Q_hom_app_right_right (x : C) (l₂ : SList C) (l : SList C) (i : Fin l₂.length) :
-    toEquiv ((Q x l₂).hom.app l) (Ψ _ _ ((I _ _ (i.natAdd 1)).natAdd _)) =
-    Ψ _ _ (i.natAdd _) := by
+    toEquiv ((Q x l₂).hom.app l) (Ψ _ _ <| .inr <| Φ _ _ <| .inr i) =
+    Ψ _ _ (.inr i) := by
   induction l using SList.cons_induction with
   | nil => simp [Q_hom_app_nil]
   | cons c l ih =>
@@ -956,47 +887,46 @@ lemma Q_hom_app_right_right (x : C) (l₂ : SList C) (l : SList C) (i : Fin l₂
 ```. -/
 public theorem toEquiv_braidNatIso (l₁ l₂ : SList C) :
     toEquiv (braidNatIso l₁|>.hom.app l₂) =
-    ((Ψ l₁ l₂).symm.trans (finAddFlip (n := l₂.length) (m := l₁.length))).trans (Ψ l₂ l₁) := by
+    ((Ψ l₁ l₂).symm.trans (Equiv.sumComm _ _)).trans (Ψ l₂ l₁) := by
   ext i : 1
-  change Fin (l₁ ⊗ l₂).length at i
+  obtain ⟨i, rfl⟩ := (Ψ l₁ l₂).surjective i
   induction l₂ using SList.cons_induction generalizing l₁ with
   | nil =>
-    cases i using finTensorObjCases with
-    | left i => simp [braidNatIso_hom_app_nil]
-    | right i =>
+    cases i with
+    | inl i => simp [braidNatIso_hom_app_nil]
+    | inr i =>
       simp only [length_nil] at i
       exact Fin.elim0 i
   | cons t l₂ ih =>
-    -- Inductive step
-    -- simp [braidNatIso_hom_cons]
-    cases i using finTensorObjCases with
-    | left i =>
+    cases i with
+    | inl i =>
       have e₁ := Q_hom_app_left t l₂ l₁ i
-      have e₂ := ih l₁ (Ψ _ _ (i.castAdd _))
+      have e₂ := ih l₁ (.inl i)
       simp only [Functor.comp_obj, Functor.flip_obj_obj, curriedTensor_obj_obj] at e₁ e₂
       simp [braidNatIso_hom_cons, e₁, e₂]
-    | right i =>
+    | inr i =>
+      obtain ⟨i, rfl⟩ := (Φ _ _).surjective i
       cases i with
-      | right i =>
+      | inr i =>
         have e₁ := Q_hom_app_right_right t l₂ l₁ i
-        have e₂ := ih l₁ (Ψ _ _ (i.natAdd _))
+        have e₂ := ih l₁ (.inr i)
         simp only [Functor.comp_obj, Functor.flip_obj_obj, curriedTensor_obj_obj] at e₁ e₂
         simp [braidNatIso_hom_cons, e₁, e₂]
-      | zero =>
-        have e₁ := Q_hom_app_right_I₀ t l₂ l₁
+      | inl =>
+        have e₁ := Q_hom_app_right_Φ_inl t l₂ l₁
         simp only [Functor.comp_obj, Functor.flip_obj_obj, curriedTensor_obj_obj] at e₁
         simp [braidNatIso_hom_cons, e₁]
 
 @[expose] public abbrev braid (l₁ l₂ : SList C) : l₁ ⊗ l₂ ⟶ l₂ ⊗ l₁ := (braidNatIso l₂|>.hom.app l₁)
 
 @[simp, grind =]
-public lemma toEquiv_braid_Ψ_castAdd (l₁ l₂ : SList C) (i : Fin l₂.length) :
-    (toEquiv (braid l₁ l₂)) (Ψ l₂ l₁ <| i.castAdd _) = (Ψ l₁ l₂) (i.natAdd _) := by
+public lemma toEquiv_braid_Ψ_left (l₁ l₂ : SList C) (i : Fin l₂.length) :
+    (toEquiv (braid l₁ l₂)) (Ψ l₂ l₁ <| .inl i) = (Ψ l₁ l₂) (.inr i) := by
   simp [toEquiv_braidNatIso]
 
 @[simp, grind =]
-public lemma toEquiv_braid_Ψ_natAdd (l₁ l₂ : SList C) (i : Fin l₁.length) :
-    (toEquiv (braid l₁ l₂)) (Ψ l₂ l₁ <| i.natAdd _) = (Ψ l₁ l₂) (i.castAdd _) := by
+public lemma toEquiv_braid_Ψ_right (l₁ l₂ : SList C) (i : Fin l₁.length) :
+    (toEquiv (braid l₁ l₂)) (Ψ l₂ l₁ <| .inr i) = (Ψ l₁ l₂) (.inl i) := by
   simp [toEquiv_braidNatIso]
 
 end
@@ -1005,6 +935,7 @@ end
 lemma braid_braid (x y : SList C) : braid x y ≫ braid y x = 𝟙 _ := by
   rw [hom_eq_iff_toEquiv_eq]
   ext i : 1
+  obtain ⟨i, rfl⟩ := (Ψ _ _).surjective i
   cases i with simp
 
 @[simps!, expose]
@@ -1015,33 +946,35 @@ public def braidIso (x y : SList C) :
 
 lemma braid_hexagon_forward (x y z : SList C) :
     (α_ x y z).hom ≫ braid x (y ⊗ z) ≫ (α_ y z x).hom =
-    ((braid x y) ▷ z) ≫ (α_ y x z).hom ≫ (y ◁ braid x z) := by
+    braid x y ▷ z ≫ (α_ y x z).hom ≫ y ◁ braid x z := by
   rw [hom_eq_iff_toEquiv_eq]
-  ext j
-  cases j with
-  | left j => simp
-  | right j => cases j with
-    | left i => simp
-    | right i => simp
+  ext j : 1
+  cases j using fin_tensor_obj_case with
+  | inl j => simp
+  | inr j => grind [(Ψ z x).surjective j]
 
 lemma braid_hexagon_reverse (x y z : SList C) :
     (α_ x y z).inv ≫ braid (x ⊗ y) z ≫ (α_ z x y).inv =
     (x ◁ braid y z) ≫ (α_ x z y).inv ≫ (braid x z) ▷ y := by
   rw [hom_eq_iff_toEquiv_eq]
   ext i
-  cases i with
-  | left i => cases i with
-    | right i => simp
-    | left i => simp
-  | right i => simp
+  cases i using fin_tensor_obj_case with
+  | inl i => grind [(Ψ z x).surjective i]
+  | inr i => simp
 
 lemma braid_naturality_left {x y z : SList C} (f : x ⟶ y) :
     (f ▷ z) ≫ braid y z = braid x z ≫ (z ◁ f) := by
-  rw [hom_eq_iff_toEquiv_eq]; ext i; cases i with simp
+  rw [hom_eq_iff_toEquiv_eq]
+  ext i
+  obtain ⟨i, rfl⟩ := (Ψ _ _).surjective i
+  cases i with simp
 
 lemma braid_naturality_right {x y z : SList C} (g : y ⟶ z) :
     (x ◁ g) ≫ braid x z = braid x y ≫ (g ▷ x) := by
-  rw [hom_eq_iff_toEquiv_eq]; ext i; cases i with simp
+  rw [hom_eq_iff_toEquiv_eq]
+  ext i
+  obtain ⟨i, rfl⟩ := (Ψ _ _).surjective i
+  cases i with simp
 
 public instance : SymmetricCategory (SList C) where
   braiding x y := braidIso x y
@@ -1051,8 +984,7 @@ public instance : SymmetricCategory (SList C) where
   hexagon_reverse x y z := by simpa using braid_hexagon_reverse x y z
 
 public lemma braiding_hom_app_nil (l₁ : SList C) :
-    (β_ l₁ []~).hom =
-      (_ ◁ unitIsoNil.inv ≫ (ρ_ _).hom ≫ (λ_ _).inv ≫ unitIsoNil.hom ▷ _) := by
+    (β_ l₁ []~).hom = (_ ◁ unitIsoNil.inv ≫ (ρ_ _).hom ≫ (λ_ _).inv ≫ unitIsoNil.hom ▷ _) := by
   rw [← IsIso.inv_eq_inv, IsIso.Iso.inv_hom]
   simp only [BraidedCategory.braiding, braidIso_inv, braid, IsIso.inv_comp, inv_whiskerRight,
     IsIso.Iso.inv_hom, IsIso.Iso.inv_inv, Category.assoc, inv_whiskerLeft]
@@ -1060,8 +992,7 @@ public lemma braiding_hom_app_nil (l₁ : SList C) :
   simp [braidNatIso_hom_app_nil]
 
 public lemma braiding_inv_app_nil (l₁ : SList C) :
-    (β_ l₁ []~).inv =
-      unitIsoNil.inv ▷ _ ≫ (λ_ _).hom ≫ (ρ_ _).inv ≫ _ ◁ unitIsoNil.hom := by
+    (β_ l₁ []~).inv = unitIsoNil.inv ▷ _ ≫ (λ_ _).hom ≫ (ρ_ _).inv ≫ _ ◁ unitIsoNil.hom := by
   simp [BraidedCategory.braiding, braidNatIso_hom_app_nil]
 
 public lemma braiding_hom_cons_right (x : C) (l₁ l₂ : SList C) :
@@ -1090,14 +1021,13 @@ public lemma braiding_hom_cons_left (x : C) (l₁ l₂ : SList C) :
     simp [SymmetricCategory.braiding_swap_eq_inv_braiding]
 
 @[simp, grind =]
-public lemma toEquiv_braiding_hom_Ψ_castAdd (l₁ l₂ : SList C) (i : Fin l₂.length) :
-    (toEquiv (β_ l₁ l₂).hom) (Ψ l₂ l₁ <| i.castAdd _) = (Ψ l₁ l₂) (i.natAdd _) := by
+public lemma toEquiv_braiding_hom_Ψ_left (l₁ l₂ : SList C) (i : Fin l₂.length) :
+    toEquiv (β_ l₁ l₂).hom (Ψ l₂ l₁ <| .inl i) = Ψ l₁ l₂ (.inr i) := by
   simp [toEquiv_braidNatIso, BraidedCategory.braiding]
 
 @[simp, grind =]
-public lemma toEquiv_braiding_hom_Ψ_natAdd (l₁ l₂ : SList C) (i : Fin l₁.length) :
-    (toEquiv (β_ l₁ l₂).hom) (Ψ l₂ l₁ <| i.natAdd _) = (Ψ l₁ l₂) (i.castAdd _) := by
+public lemma toEquiv_braiding_hom_Ψ_right (l₁ l₂ : SList C) (i : Fin l₁.length) :
+    toEquiv (β_ l₁ l₂).hom (Ψ l₂ l₁ <| .inr i) = Ψ l₁ l₂ (.inl i) := by
   simp [toEquiv_braidNatIso, BraidedCategory.braiding]
-
 
 end CategoryTheory.SList

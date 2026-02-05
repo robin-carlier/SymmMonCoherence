@@ -91,14 +91,13 @@ lemma fiber_card (k : K) (L : SList K) :
       · rw [Fintype.card_eq]
         exact ⟨{
           toFun x := ⟨⟨x.val - 1, by grind⟩, by obtain ⟨_, h⟩ := x.property; simpa using h⟩
-          invFun x := ⟨(I _ _) (x.val.natAdd 1), by simp⟩
+          invFun x := ⟨Φ _ _ <| .inr x.val, by simp⟩
           left_inv t := by
             ext
-            simp only [Fin.natAdd_mk, I_apply_val]
             grind
           right_inv t := by
             ext
-            simp }⟩
+            grind }⟩
       · split_ifs with h
         · subst h
           rw [Fintype.card_of_subtype (s := {⟨0, by simp⟩})] <;> grind
@@ -142,15 +141,15 @@ lemma totEquivOfHom_comp_apply {X Y Z : K → SList J} (f : X ⟶ Y) (g : Y ⟶ 
 
 def totTensEquiv (X Y : K → SList J) :
     (Tot X) ⊕ (Tot Y) ≃ Tot (X ⊗ Y) :=
-  (Equiv.sigmaSumDistrib _ _).symm.trans (Equiv.sigmaCongrRight <| fun _ ↦ finSumTensEquiv ..)
+  (Equiv.sigmaSumDistrib _ _).symm.trans (Equiv.sigmaCongrRight <| fun _ ↦ Ψ ..)
 
 @[simp, grind =]
 lemma totTensEquiv_inl (X Y : K → SList J) (j : Tot X) :
-  (totTensEquiv X Y (.inl j)) = ⟨j.fst, Ψ _ _ (j.snd.castAdd _)⟩ := rfl
+  (totTensEquiv X Y (.inl j)) = ⟨j.fst, Ψ _ _ (.inl j.snd)⟩ := rfl
 
 @[simp, grind =]
 lemma totTensEquiv_inr (X Y : K → SList J) (j : Tot Y) :
-  (totTensEquiv X Y (.inr j)) = ⟨j.fst, Ψ _ _ (j.snd.natAdd _)⟩ := rfl
+  (totTensEquiv X Y (.inr j)) = ⟨j.fst, Ψ _ _ (.inr j.snd)⟩ := rfl
 
 lemma totTensEquiv_natural_right (X : K → SList J) {Y Y' : K → SList J} (f : Y ⟶ Y')
     (i : Tot X ⊕ Tot Y') :
@@ -232,31 +231,31 @@ def tot'EquivOfHom {L L' : SList K} (f : L ⟶ L') : Tot' L' ≃ Tot' L :=
 /- The equivalence `Tot' L ⊕ Tot' L' ≃ Tot' (L ⊗ L')` deduced from the equivalence
 `Tot' _ ≃ Fin _.length` and the equivalence `finSumTensEquiv` -/
 def tot'TensEquiv (L L' : SList K) : Tot' L ⊕ Tot' L' ≃ Tot' (L ⊗ L') :=
-  ((Equiv.sumCongr (tot'Equiv L) (tot'Equiv L')).trans (finSumTensEquiv ..)).trans
+  ((Equiv.sumCongr (tot'Equiv L) (tot'Equiv L')).trans (Ψ ..)).trans
     (tot'Equiv _).symm
 
 @[simp, grind =]
 lemma tot'TensEquiv_apply_inl (L L' : SList K) (j : Tot' L) :
-    (tot'TensEquiv L L' (.inl j)) = ⟨j.fst, ⟨Ψ _ _ (j.snd.val.castAdd _), (by simp)⟩⟩ := by
+    (tot'TensEquiv L L' (.inl j)) = ⟨j.fst, ⟨Ψ _ _ (.inl j.snd.val), (by simp)⟩⟩ := by
   simp only [tot'TensEquiv, tot'Equiv, Fin.getElem_fin, Equiv.trans_apply, Equiv.sumCongr_apply]
   ext : 1 <;> simp [Equiv.sigmaFiberEquiv]
 
 @[simp, grind =]
 lemma tot'TensEquiv_apply_inr (L L' : SList K) (j : Tot' L') :
-  (tot'TensEquiv L L' (.inr j)) = ⟨j.fst, ⟨Ψ _ _ (j.snd.val.natAdd _), (by simp)⟩⟩ := by
+  (tot'TensEquiv L L' (.inr j)) = ⟨j.fst, ⟨Ψ _ _ (.inr j.snd.val), (by simp)⟩⟩ := by
   simp only [tot'TensEquiv, tot'Equiv, Fin.getElem_fin, Equiv.trans_apply, Equiv.sumCongr_apply]
   ext : 1 <;> simp [Equiv.sigmaFiberEquiv]
 
 lemma tot'TensEquiv_symm_apply_inl (L L' : SList K) (k : K) (i : Fin L.length)
     (hk : L.toList[i] = k) :
-    (tot'TensEquiv L L').symm ⟨k, ⟨Ψ _ _ (i.castAdd _), (by simpa using hk)⟩⟩ =
+    (tot'TensEquiv L L').symm ⟨k, ⟨Ψ _ _ (.inl i), (by simpa using hk)⟩⟩ =
       .inl ⟨k, ⟨i, hk⟩⟩ := by
   rw [Equiv.symm_apply_eq]
   simp
 
 lemma tot'TensEquiv_symm_apply_inr (L L' : SList K) (k : K) (i : Fin L'.length)
     (hk : L'.toList[i] = k) :
-    (tot'TensEquiv L L').symm ⟨k, ⟨Ψ _ _ (i.natAdd _), (by simpa using hk)⟩⟩ =
+    (tot'TensEquiv L L').symm ⟨k, ⟨Ψ _ _ (.inr i), (by simpa using hk)⟩⟩ =
       .inr ⟨k, ⟨i, hk⟩⟩ := by
   rw [Equiv.symm_apply_eq]
   simp
@@ -325,26 +324,26 @@ public def fiberTensEquiv (k : K) (L L' : SList K) : L.fiber k ⊕ L'.fiber k �
 
 @[simp, grind =]
 public lemma fiberTensEquiv_apply_inl (k : K) (L L' : SList K) (x : L.fiber k) :
-    (fiberTensEquiv k L L') (.inl x) = ⟨Ψ _ _ (x.val.castAdd _), (by simp)⟩ := by
+    (fiberTensEquiv k L L') (.inl x) = ⟨Ψ _ _ (.inl x.val), (by simp)⟩ := by
   simp [fiberTensEquiv]
 
 @[simp, grind =]
 public lemma fiberTensEquiv_apply_inr (k : K) (L L' : SList K) (x : L'.fiber k) :
-    (fiberTensEquiv k L L') (.inr x) = ⟨Ψ _ _ (x.val.natAdd _), (by simp)⟩ := by
+    (fiberTensEquiv k L L') (.inr x) = ⟨Ψ _ _ (.inr x.val), (by simp)⟩ := by
   simp [fiberTensEquiv]
 
 -- leanving `h` as a hole so that it is exactly the right type. -/
 @[simp, grind =]
 public lemma fiberTensEquiv_symm_apply_inl
       (k : K) (L L' : SList K) (x : Fin L.length) (h' : L.toList[x] = k) :
-    (fiberTensEquiv k L L').symm ⟨Ψ _ _ (x.castAdd _), (by simpa using h')⟩ = .inl ⟨x, h'⟩ := by
+    (fiberTensEquiv k L L').symm ⟨Ψ _ _ (.inl x), (by simpa using h')⟩ = .inl ⟨x, h'⟩ := by
   rw [Equiv.symm_apply_eq]
   simp
 
 @[simp, grind =]
 public lemma fiberTensEquiv_symm_apply_inr
       (k : K) (L L' : SList K) (x : Fin L'.length) (h' : L'.toList[x] = k) :
-    (fiberTensEquiv k L L').symm ⟨Ψ _ _ (x.natAdd _), (by simpa using h')⟩ = .inr ⟨x, h'⟩ := by
+    (fiberTensEquiv k L L').symm ⟨Ψ _ _ (.inr x), (by simpa using h')⟩ = .inr ⟨x, h'⟩ := by
   rw [Equiv.symm_apply_eq]
   simp
 
@@ -480,49 +479,49 @@ lemma eval₀_μIso_def (k : K) (X Y : SList K) :
 @[simp, grind =]
 lemma eval₀_μ_hom_left (k : K) (L L' : SList K) (t : L.fiber k) :
     (Functor.LaxMonoidal.μ (eval₀ k) L L').iso.hom (FintypeGrpd.inl _ _ (eval₀.ι t)) =
-    eval₀.ι ⟨Ψ _ _ (t.val.castAdd _), (by simp)⟩ := by
+    eval₀.ι ⟨Ψ _ _ (.inl t.val), (by simp)⟩ := by
   simp [← Functor.Monoidal.μIso_hom, eval₀_μIso_def]
 
 @[simp, grind =]
 lemma eval₀_μ_hom_right (k : K) (L L' : SList K) (t : L'.fiber k) :
     (Functor.LaxMonoidal.μ (eval₀ k) L L').iso.hom (FintypeGrpd.inr _ _ (eval₀.ι t)) =
-    eval₀.ι ⟨Ψ _ _ (t.val.natAdd _), (by simp)⟩ := by
+    eval₀.ι ⟨Ψ _ _ (.inr t.val), (by simp)⟩ := by
   simp [← Functor.Monoidal.μIso_hom, eval₀_μIso_def]
 
 @[simp, grind =]
 lemma eval₀_δ_hom_left (k : K) (L L' : SList K) (t : L.fiber k) :
     (Functor.OplaxMonoidal.δ (eval₀ k) L L').iso.hom
-      (eval₀.ι ⟨Ψ _ _ (t.val.castAdd _), (by simp)⟩) = (FintypeGrpd.inl _ _ (eval₀.ι t)) := by
+      (eval₀.ι ⟨Ψ _ _ (.inl t.val), (by simp)⟩) = (FintypeGrpd.inl _ _ (eval₀.ι t)) := by
   simp [← Functor.Monoidal.μIso_inv, eval₀_μIso_def]
 
 @[simp, grind =]
 lemma eval₀_δ_hom_right (k : K) (L L' : SList K) (t : L'.fiber k) :
     (Functor.OplaxMonoidal.δ (eval₀ k) L L').iso.hom
-      (eval₀.ι ⟨Ψ _ _ (t.val.natAdd _), (by simp)⟩) = (FintypeGrpd.inr _ _ (eval₀.ι t)) := by
+      (eval₀.ι ⟨Ψ _ _ (.inr t.val), (by simp)⟩) = (FintypeGrpd.inr _ _ (eval₀.ι t)) := by
   simp [← Functor.Monoidal.μIso_inv, eval₀_μIso_def]
 
 @[simp, grind =]
 lemma eval₀_μ_inv_left (k : K) (L L' : SList K) (t : L.fiber k) :
     (Functor.OplaxMonoidal.δ (eval₀ k) L L').iso.inv (FintypeGrpd.inl _ _ (eval₀.ι t)) =
-    eval₀.ι ⟨Ψ _ _ (t.val.castAdd _), (by simp)⟩ := by
+    eval₀.ι ⟨Ψ _ _ (.inl t.val), (by simp)⟩ := by
   simp [← Functor.Monoidal.μIso_inv, eval₀_μIso_def]
 
 @[simp, grind =]
 lemma eval₀_μ_inv_right (k : K) (L L' : SList K) (t : L'.fiber k) :
     (Functor.OplaxMonoidal.δ (eval₀ k) L L').iso.inv (FintypeGrpd.inr _ _ (eval₀.ι t)) =
-    eval₀.ι ⟨Ψ _ _ (t.val.natAdd _), (by simp)⟩ := by
+    eval₀.ι ⟨Ψ _ _ (.inr t.val), (by simp)⟩ := by
   simp [← Functor.Monoidal.μIso_inv, eval₀_μIso_def]
 
 @[simp, grind =]
 lemma eval₀_δ_inv_left (k : K) (L L' : SList K) (t : L.fiber k) :
     (Functor.LaxMonoidal.μ (eval₀ k) L L').iso.inv
-      (eval₀.ι ⟨Ψ _ _ (t.val.castAdd _), (by simp)⟩) = (FintypeGrpd.inl _ _ (eval₀.ι t)) := by
+      (eval₀.ι ⟨Ψ _ _ (.inl t.val), (by simp)⟩) = (FintypeGrpd.inl _ _ (eval₀.ι t)) := by
   simp [← Functor.Monoidal.μIso_hom, eval₀_μIso_def]
 
 @[simp, grind =]
 lemma eval₀_δ_inv_right (k : K) (L L' : SList K) (t : L'.fiber k) :
     (Functor.LaxMonoidal.μ (eval₀ k) L L').iso.inv
-      (eval₀.ι ⟨Ψ _ _ (t.val.natAdd _), (by simp)⟩) = (FintypeGrpd.inr _ _ (eval₀.ι t)) := by
+      (eval₀.ι ⟨Ψ _ _ (.inr t.val), (by simp)⟩) = (FintypeGrpd.inr _ _ (eval₀.ι t)) := by
   simp [← Functor.Monoidal.μIso_hom, eval₀_μIso_def]
 
 instance (k : K) : (eval₀ k).Braided where
