@@ -20,7 +20,7 @@ universe u
 
 @[expose] public section
 
-namespace CategoryTheory.SList.Burnside
+namespace CategoryTheory.SList.EffBurnside
 
 /-- An auxiliary construction for computing the monoidal pushforwards.
 given `f : J → K`, this is the family `K → SList J` that sends `k` to a
@@ -83,7 +83,7 @@ lemma linearOfIsPullback {X Y Z T : FintypeCat} {u : X ⟶ Y} {v : X ⟶ Z} {f :
     ↓reduceIte, ite_eq_left_iff, zero_ne_one, imp_false, Decidable.not_not]
   grind
 
-noncomputable def pseudoFunctorCore : Burnside.PseudoFunctorCore FintypeCat.{0} Kleisli.{0} where
+noncomputable def pseudoFunctorCore : EffBurnside.PseudoFunctorCore FintypeCat.{0} Kleisli.{0} where
   obj J := .mk J
   l {X Y} f := .mk <| pushforwardAux f
   r {X Y} f := .mk <| RelativePseudomonad.ι _ ∘ f
@@ -183,10 +183,10 @@ noncomputable def pseudoFunctorCore : Burnside.PseudoFunctorCore FintypeCat.{0} 
 open Bicategory
 universe v' u' in
 /-- The main result: a symmetric monoidal category can be interpreted as a pseudofunctor from
-BurnsideFintypeCat to Cat. -/
+EffBurnsideFintypeCat to Cat. -/
 noncomputable def pseudoOfSymmMonCat
     (C : Type u') [Category.{v'} C] [MonoidalCategory C] [SymmetricCategory C] :
-    BurnsideFintype.{0} ⥤ᵖ Cat.{v', u'} :=
+    EffBurnsideFintype.{0} ⥤ᵖ Cat.{v', u'} :=
   pseudoFunctorCore.toPseudofunctor.comp (Kleisli.pseudoOfSymmMonCat C)
 
-end CategoryTheory.SList.Burnside
+end CategoryTheory.SList.EffBurnside

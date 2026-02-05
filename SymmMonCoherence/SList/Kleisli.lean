@@ -5,7 +5,7 @@ Authors: Robin Carlier
 -/
 module
 
-public import SymmMonCoherence.SList.Burnside
+public import SymmMonCoherence.SList.EffBurnside
 public import SymmMonCoherence.SList.Substitution
 public import SymmMonCoherence.SList.Pseudofunctor
 public import SymmMonCoherence.SList.Duality

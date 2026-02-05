@@ -210,66 +210,66 @@ variable {C : Type*} [Category* C]
     [Wₗ.IsStableUnderComposition] [Wᵣ.IsStableUnderComposition] in
 #synth Bicategory (Spans C Wₗ Wᵣ)
 
-/-! The "Burnside (2,1)-category" of a category with pullback is defined to be
+/-! The "effective Burnside (2,1)-category" of a category with pullback is defined to be
 `Pith (Spans C ⊤ ⊤)`. -/
 
 /--
-info: @[reducible] def CategoryTheory.Burnside.{v_1, u_1} : (C : Type u_1) →
+info: @[reducible] def CategoryTheory.EffBurnside.{v_1, u_1} : (C : Type u_1) →
   [inst : Category.{v_1, u_1} C] → [Limits.HasPullbacks C] → Type u_1 :=
 fun C [Category.{v_1, u_1} C] [Limits.HasPullbacks C] ↦ Bicategory.Pith (Spans C ⊤ ⊤)
 -/
 #guard_msgs in
-#print Burnside
+#print EffBurnside
 
 /--
-info: @[reducible] def CategoryTheory.BurnsideFintype.{u} : Type (u + 1) :=
-Burnside FintypeCat
+info: @[reducible] def CategoryTheory.EffBurnsideFintype.{u} : Type (u + 1) :=
+EffBurnside FintypeCat
 -/
 #guard_msgs in
-#print BurnsideFintype
+#print EffBurnsideFintype
 
 /-! The data of a pseudofunctor out of a Burnside bicategory corresponds to
 a pair of pseudofunctors, along with base change isomorphisms. This is a rather
 technical result involving heavy bicategory computations. -/
 
 /--
-info: CategoryTheory.Burnside.PseudoFunctorCore.{w₁, v₁, v₂, u₁, u₂} (C : Type u₁) [Category.{v₁, u₁} C] (B : Type u₂)
+info: CategoryTheory.EffBurnside.PseudoFunctorCore.{w₁, v₁, v₂, u₁, u₂} (C : Type u₁) [Category.{v₁, u₁} C] (B : Type u₂)
   [Bicategory B] : Type (max (max (max (max u₁ u₂) v₁) v₂) w₁)
 -/
 #guard_msgs in
-#check Burnside.PseudoFunctorCore
+#check EffBurnside.PseudoFunctorCore
 
 /--
-info: CategoryTheory.Burnside.PseudoFunctorCore.l.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {B : Type u₂}
-  [Bicategory B] (self : Burnside.PseudoFunctorCore C B) {x y : C} : (x ⟶ y) → (self.obj x ⟶ self.obj y)
+info: CategoryTheory.EffBurnside.PseudoFunctorCore.l.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {B : Type u₂}
+  [Bicategory B] (self : EffBurnside.PseudoFunctorCore C B) {x y : C} : (x ⟶ y) → (self.obj x ⟶ self.obj y)
 -/
 #guard_msgs in
-#check Burnside.PseudoFunctorCore.l
+#check EffBurnside.PseudoFunctorCore.l
 
 /--
-info: CategoryTheory.Burnside.PseudoFunctorCore.r.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {B : Type u₂}
-  [Bicategory B] (self : Burnside.PseudoFunctorCore C B) {x y : C} : (x ⟶ y) → (self.obj y ⟶ self.obj x)
+info: CategoryTheory.EffBurnside.PseudoFunctorCore.r.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {B : Type u₂}
+  [Bicategory B] (self : EffBurnside.PseudoFunctorCore C B) {x y : C} : (x ⟶ y) → (self.obj y ⟶ self.obj x)
 -/
 #guard_msgs in
-#check Burnside.PseudoFunctorCore.r
+#check EffBurnside.PseudoFunctorCore.r
 
 /--
-info: CategoryTheory.Burnside.PseudoFunctorCore.baseChangeIso.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C]
-  {B : Type u₂} [Bicategory B] (self : Burnside.PseudoFunctorCore C B) {x y z t : C} (u : x ⟶ y) (v : x ⟶ z) (f : y ⟶ t)
-  (g : z ⟶ t) (S : IsPullback u v f g) : self.l f ≫ self.r g ≅ self.r u ≫ self.l v
+info: CategoryTheory.EffBurnside.PseudoFunctorCore.baseChangeIso.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C]
+  {B : Type u₂} [Bicategory B] (self : EffBurnside.PseudoFunctorCore C B) {x y z t : C} (u : x ⟶ y) (v : x ⟶ z)
+  (f : y ⟶ t) (g : z ⟶ t) (S : IsPullback u v f g) : self.l f ≫ self.r g ≅ self.r u ≫ self.l v
 -/
 #guard_msgs in
-#check Burnside.PseudoFunctorCore.baseChangeIso
+#check EffBurnside.PseudoFunctorCore.baseChangeIso
 
 /--
-info: CategoryTheory.Burnside.PseudoFunctorCore.toPseudofunctor.{w₁, v₁, v₂, u₁, u₂} {C : Type v₁} [Category.{u₁, v₁} C]
-  {B : Type u₂} [Bicategory B] (P : Burnside.PseudoFunctorCore C B) [Limits.HasPullbacks C] :
-  Pseudofunctor (Burnside C) B
+info: CategoryTheory.EffBurnside.PseudoFunctorCore.toPseudofunctor.{w₁, v₁, v₂, u₁, u₂} {C : Type v₁} [Category.{u₁, v₁} C]
+  {B : Type u₂} [Bicategory B] (P : EffBurnside.PseudoFunctorCore C B) [Limits.HasPullbacks C] :
+  Pseudofunctor (EffBurnside C) B
 -/
 #guard_msgs in
-#check Burnside.PseudoFunctorCore.toPseudofunctor
+#check EffBurnside.PseudoFunctorCore.toPseudofunctor
 
-/-! To bundle a symmetric monoidal category as a pseudofunctor out of `BurnsideFintypecat`,
+/-! To bundle a symmetric monoidal category as a pseudofunctor out of `EffBurnsideFintypecat`,
 it is good to make the distinction of the computations that happen "formally" and
 their realisations in actual monoidal categories. This distinction is encoded by the
 Kleisli bicategory for the relative pseudomonad defined by `SList`. -/
@@ -313,27 +313,27 @@ info: CategoryTheory.SList.Kleisli.pseudoOfSymmMonCat.{v', u'} (C : Type u') [Ca
 
 example (J : Type) : (SList.Kleisli.pseudoOfSymmMonCat C).obj (.mk <| J) ≌ (J → C) := .refl
 
-/-! Finally, we build a pseudofunctor from BurnsideFintype to `Kleisli` using the previous
+/-! Finally, we build a pseudofunctor from EffBurnsideFintype to `Kleisli` using the previous
 constructor. -/
 
 /--
-info: CategoryTheory.SList.Burnside.pseudoFunctorCore : Burnside.PseudoFunctorCore FintypeCat SList.Kleisli.{0}
+info: CategoryTheory.SList.EffBurnside.pseudoFunctorCore : EffBurnside.PseudoFunctorCore FintypeCat SList.Kleisli.{0}
 -/
 #guard_msgs in
-#check SList.Burnside.pseudoFunctorCore
+#check SList.EffBurnside.pseudoFunctorCore
 
 open Bicategory in
 /--
-info: def CategoryTheory.SList.Burnside.pseudoOfSymmMonCat.{v', u'} : (C : Type u') →
-  [inst : Category.{v', u'} C] → [inst_1 : MonoidalCategory C] → [SymmetricCategory C] → BurnsideFintype ⥤ᵖ Cat :=
+info: def CategoryTheory.SList.EffBurnside.pseudoOfSymmMonCat.{v', u'} : (C : Type u') →
+  [inst : Category.{v', u'} C] → [inst_1 : MonoidalCategory C] → [SymmetricCategory C] → EffBurnsideFintype ⥤ᵖ Cat :=
 fun C [Category.{v', u'} C] [MonoidalCategory C] [SymmetricCategory C] ↦
-  SList.Burnside.pseudoFunctorCore.toPseudofunctor.comp (SList.Kleisli.pseudoOfSymmMonCat C)
+  SList.EffBurnside.pseudoFunctorCore.toPseudofunctor.comp (SList.Kleisli.pseudoOfSymmMonCat C)
 -/
 #guard_msgs in
-#print SList.Burnside.pseudoOfSymmMonCat
+#print SList.EffBurnside.pseudoOfSymmMonCat
 
 /--
-info: 'CategoryTheory.SList.Burnside.pseudoOfSymmMonCat' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: 'CategoryTheory.SList.EffBurnside.pseudoOfSymmMonCat' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
 #guard_msgs in
-#print axioms SList.Burnside.pseudoOfSymmMonCat
+#print axioms SList.EffBurnside.pseudoOfSymmMonCat

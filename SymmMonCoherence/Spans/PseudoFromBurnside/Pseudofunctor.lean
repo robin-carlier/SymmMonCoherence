@@ -11,7 +11,7 @@ public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-! # Pseudofunctors from the Burnside (2,1)-category . -/
 
-namespace CategoryTheory.Burnside.PseudoFunctorCore
+namespace CategoryTheory.EffBurnside.PseudoFunctorCore
 
 open CategoryTheory Bicategory
 
@@ -28,7 +28,7 @@ open Spans
 
 section whiskerLeft
 
-lemma 𝔯_whiskerLeft₁ {a b c : Burnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
+lemma 𝔯_whiskerLeft₁ {a b c : EffBurnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
     (P.𝔯 f g).inv ≫ (P.rComp' (f.of ◁ η.iso.hom).hom (f.of ≫ h.of).l (f.of ≫ g.of).l).hom =
     P.r f.of.l ◁ (P.rComp' (f.of ◁ η.iso.hom).hom (πₗ f.of h.of) (πₗ f.of g.of)).hom ≫
     (α_ (P.r f.of.l) (P.r (πₗ f.of h.of)) (P.r (f.of ◁ η.iso.hom).hom)).inv ≫
@@ -39,7 +39,7 @@ lemma 𝔯_whiskerLeft₁ {a b c : Burnside C} (f : a ⟶ b) {g h : b ⟶ c} (η
       (f₀₂ := πₗ f.of g.of) (f₁₃ := (f.of ≫ h.of).l) (f := (f.of ≫ g.of).l)
       (by simp) (by simp) (by simp))
 
-lemma 𝔩_whiskerLeft₁ {a b c : Burnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
+lemma 𝔩_whiskerLeft₁ {a b c : EffBurnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
     (P.lComp' (f.of ◁ η.iso.hom).hom (f.of ≫ h.of).r (f.of ≫ g.of).r).hom ≫
       P.l (f.of ◁ η.iso.hom).hom ◁ (P.𝔩 f h).hom =
     (P.lComp' (πᵣ f.of g.of ≫ η.iso.hom.hom) h.of.r (f.of ≫ g.of).r).hom ≫
@@ -52,7 +52,7 @@ lemma 𝔩_whiskerLeft₁ {a b c : Burnside C} (f : a ⟶ b) {g h : b ⟶ c} (η
     (by simp) (by simp) (by simp))
 
 private lemma isPullback_πₗ_πᵣ_comp_iso_hom
-    {a b c : Burnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
+    {a b c : EffBurnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
     IsPullback (πₗ f.of g.of) (πᵣ f.of g.of ≫ η.iso.hom.hom) f.of.r h.of.l := by
   have := (IsPullback.of_isLimit <| Spans.isLimitCompPullbackCone f.of h.of)
   simp only [compPullbackCone_pt, compPullbackCone_fst, compPullbackCone_snd] at this
@@ -64,7 +64,7 @@ private lemma isPullback_πₗ_πᵣ_comp_iso_hom
   exact this
 
 private lemma isPullback_πₗ_comp_iso_hom_πᵣ
-    {a b c : Burnside C} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) :
+    {a b c : EffBurnside C} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) :
     IsPullback (πₗ f.of h.of ≫ η.iso.hom.hom) (πᵣ f.of h.of) g.of.r h.of.l := by
   have := (IsPullback.of_isLimit <| Spans.isLimitCompPullbackCone f.of h.of)
   simp only [compPullbackCone_pt, compPullbackCone_fst, compPullbackCone_snd] at this
@@ -75,7 +75,7 @@ private lemma isPullback_πₗ_comp_iso_hom_πᵣ
       (by simp) (by simp) (by simp) (by simp)
   exact this
 
-lemma map₂_whisker_left_aux₁ {a b c : Burnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
+lemma map₂_whisker_left_aux₁ {a b c : EffBurnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
     (ρ_ (P.l f.of.r ≫ P.r h.of.l)).inv ≫
     (α_ (P.l f.of.r) (P.r h.of.l) (𝟙 (P.obj h.of.apex))).hom ≫
     (P.l f.of.r ◁ P.r h.of.l ◁ (P.ε η).inv) ≫
@@ -158,7 +158,7 @@ lemma map₂_whisker_left_aux₁ {a b c : Burnside C} (f : a ⟶ b) {g h : b ⟶
   simpa using this
 
 set_option maxHeartbeats 300000 in -- rotate_isos is slow...
-lemma map₂_whisker_left {a b c : Burnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
+lemma map₂_whisker_left {a b c : EffBurnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
     P.map₂ (f ◁ η) = (P.mapComp f g).hom ≫ (P.map f ◁ P.map₂ η) ≫ (P.mapComp f h).inv := by
   dsimp [map₂, mapComp, bicategoricalIsoComp, bicategoricalComp]
   simp_rw [← P.ε_hom_def]
@@ -216,7 +216,7 @@ end whiskerLeft
 section whiskerRight
 
 set_option maxHeartbeats 300000 in -- rotate_isos is slow...
-lemma map₂_whisker_right_aux {a b c : Burnside C} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) :
+lemma map₂_whisker_right_aux {a b c : EffBurnside C} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) :
     (P.Γ g h).inv =
     (P.r (πₗ g.of h.of) ◁ (λ_ (P.l (πᵣ g.of h.of))).inv) ≫
       (P.r (πₗ g.of h.of) ◁ (P.ε (η ▷ h)).inv ▷ P.l (πᵣ g.of h.of)) ≫
@@ -300,7 +300,7 @@ lemma map₂_whisker_right_aux {a b c : Burnside C} {f g : a ⟶ b} (η : f ⟶ 
   exact this
 
 set_option maxHeartbeats 300000 in -- rotate_isos is slow...
-lemma map₂_whisker_right {a b c : Burnside C} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) :
+lemma map₂_whisker_right {a b c : EffBurnside C} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) :
     P.map₂ (η ▷ h) = (P.mapComp f h).hom ≫ (P.map₂ η ▷ P.map h) ≫ (P.mapComp g h).inv := by
   dsimp [map₂, mapComp, bicategoricalIsoComp, mapId, map]
   simp_rw [← P.ε_hom_def, ← dsimp% P.ε_hom_def (η := η ▷ h)]
@@ -371,7 +371,7 @@ end whiskerRight
 
 section left_unitor
 
-lemma map₂_left_unitor {a b : Burnside C} (f : a ⟶ b) :
+lemma map₂_left_unitor {a b : EffBurnside C} (f : a ⟶ b) :
     P.map₂ (λ_ f).hom =
     (P.mapComp (𝟙 a) f).hom ≫ ((P.mapId a).hom ▷ P.map f) ≫ (λ_ (P.map f)).hom := by
   dsimp [map₂, mapComp, bicategoricalIsoComp, mapId, map]
@@ -445,7 +445,7 @@ end left_unitor
 
 section right_unitor
 
-lemma map₂_right_unitor {a b : Burnside C} (f : a ⟶ b) :
+lemma map₂_right_unitor {a b : EffBurnside C} (f : a ⟶ b) :
   P.map₂ (ρ_ f).hom =
   (P.mapComp f (𝟙 b)).hom ≫ (P.map f ◁ (P.mapId b).hom) ≫ (ρ_ (P.map f)).hom := by
   dsimp [map₂, mapComp, bicategoricalIsoComp, mapId, map, Γ]
@@ -511,10 +511,10 @@ lemma map₂_right_unitor {a b : Burnside C} (f : a ⟶ b) :
 
 end right_unitor
 
-/-- Assembling the data in a `PseudoFunctorCore C B` into a pseudofunctor `Burnside C ⥤ᵖ B`. -/
+/-- Assembling the data in a `PseudoFunctorCore C B` into a pseudofunctor `EffBurnside C ⥤ᵖ B`. -/
 @[expose, simps]
 public noncomputable def toPseudofunctor :
-    Burnside C ⥤ᵖ B where
+    EffBurnside C ⥤ᵖ B where
   obj x := P.obj' x
   map {x y} S := P.map S
   map₂ {x y} {S S'} η := P.map₂ η
@@ -544,4 +544,4 @@ end toPseudoFunctor
 
 end PseudoFunctorCore
 
-end CategoryTheory.Burnside
+end CategoryTheory.EffBurnside

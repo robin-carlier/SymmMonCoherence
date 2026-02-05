@@ -5,7 +5,7 @@ Authors: Robin Carlier
 -/
 module
 
-public import SymmMonCoherence.Spans.Burnside
+public import SymmMonCoherence.Spans.EffBurnside
 public import SymmMonCoherence.Spans.Inclusions
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
@@ -16,18 +16,18 @@ public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.InvElaborator
 public import SymmMonCoherence.ForMathlib.CategoryTheory.Bicategory.Adjunction.Mates
 public import Mathlib.Tactic.DepRewrite
 
-/-! # Pseudofunctors from the Burnside (2,1)-category . -/
+/-! # Pseudofunctors from the effective Burnside (2,1)-category . -/
 
 @[expose] public section
 
-namespace CategoryTheory.Burnside
+namespace CategoryTheory.EffBurnside
 
 open Bicategory
 universe w₁ v₁ v₂ u₁ u₂
 variable (C : Type u₁) [Category.{v₁} C]
 
-/-- A helper structure to construct pseudofunctors out of the Burnside
-category of a category. This is essentially the data of two pseudofunctors
+/-- A helper structure to construct pseudofunctors out of the effective Burnside
+(2,1)-category of a category. This is essentially the data of two pseudofunctors
 `l : LocallyDiscrete C ⥤ᵖ B` and `r : (LocallyDiscrete C)ᵒᵖ ⥤ᵖ B` that
  (definitionally) share the same action on objects, with the extra data of a natural
 isomorphism `l e.hom ≅ r e.inv` when `e` is an isomorphism in `C` (which gives
@@ -1194,11 +1194,11 @@ noncomputable section toPseudoFunctor
 
 variable [Limits.HasPullbacks C]
 
-abbrev obj' (x : Burnside C) : B := P.obj x.as.of
+abbrev obj' (x : EffBurnside C) : B := P.obj x.as.of
 
-abbrev map {x y : Burnside C} (S : x ⟶ y) : P.obj' x ⟶ P.obj' y := P.r S.of.l ≫ P.l S.of.r
+abbrev map {x y : EffBurnside C} (S : x ⟶ y) : P.obj' x ⟶ P.obj' y := P.r S.of.l ≫ P.l S.of.r
 
-abbrev map₂ {x y : Burnside C} {S S' : x ⟶ y}
+abbrev map₂ {x y : EffBurnside C} {S S' : x ⟶ y}
     (η : S ⟶ S') : P.map S ⟶ P.map S' :=
   letI e_iso : S.of.apex ≅ S'.of.apex := Spans.apexIso η.iso
   (P.rComp' e_iso.hom S'.of.l _).hom ▷ (P.l S.of.r) ≫
@@ -1208,65 +1208,65 @@ abbrev map₂ {x y : Burnside C} {S S' : x ⟶ y}
   (P.r S'.of.l) ◁ (P.baseChangeEquivalenceOfIso e_iso).counit.hom ▷ (P.l S'.of.r) ≫
   (P.r S'.of.l) ◁ (λ_ (P.l S'.of.r)).hom
 
-noncomputable abbrev mapId (x : Burnside C) : P.map (𝟙 x) ≅ 𝟙 (P.obj' x) :=
+noncomputable abbrev mapId (x : EffBurnside C) : P.map (𝟙 x) ≅ 𝟙 (P.obj' x) :=
     (P.baseChangeEquivalenceOfIso (Iso.refl _)).counit
 
 /-- A shorthand for a kind of isomorphism that will show up a few time. -/
 @[reducible]
-def 𝔯 {x y z : Burnside C} (f : x ⟶ y) (g : y ⟶ z) :=
+def 𝔯 {x y z : EffBurnside C} (f : x ⟶ y) (g : y ⟶ z) :=
     P.rComp' (Spans.πₗ f.of g.of) f.of.l (f.of ≫ g.of).l
 
 @[reducible]
-def 𝔩 {x y z : Burnside C} (f : x ⟶ y) (g : y ⟶ z) :=
+def 𝔩 {x y z : EffBurnside C} (f : x ⟶ y) (g : y ⟶ z) :=
     P.lComp' (Spans.πᵣ f.of g.of) g.of.r (f.of ≫ g.of).r
 
 /-- A shorthand for a morphism that we will be seeing a lot. -/
 @[reducible]
-def μ {x y z : Burnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
+def μ {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
     P.map (S₁ ≫ S₂) ≅
     (P.r S₁.of.l ≫ P.r (Spans.πₗ S₁.of S₂.of)) ≫ P.l (Spans.πᵣ S₁.of S₂.of) ≫ P.l S₂.of.r :=
   whiskerRightIso (P.𝔯 S₁ S₂) _ ≪≫ whiskerLeftIso _ (P.𝔩 S₁ S₂)
 
-lemma μ_hom {x y z : Burnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
+lemma μ_hom {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
     (P.μ S₁ S₂).hom = (P.𝔯 S₁ S₂).hom ▷ _ ≫ _ ◁ (P.𝔩 S₁ S₂).hom :=
   rfl
 
-lemma μ_inv {x y z : Burnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
+lemma μ_inv {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
     (P.μ S₁ S₂).inv = _ ◁ (P.𝔩 S₁ S₂).inv ≫ (P.𝔯 S₁ S₂).inv ▷ _ :=
   rfl
 
-lemma μ_hom' {x y z : Burnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
+lemma μ_hom' {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
     (P.μ S₁ S₂).hom = _ ◁ (P.𝔩 S₁ S₂).hom ≫ (P.𝔯 S₁ S₂).hom ▷ _ := by
   rw [whisker_exchange]
   exact P.μ_hom _ _
 
-lemma μ_inv' {x y z : Burnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
+lemma μ_inv' {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
     (P.μ S₁ S₂).inv = (P.𝔯 S₁ S₂).inv ▷ _ ≫ _ ◁ (P.𝔩 S₁ S₂).inv := by
   rw [← whisker_exchange]
   exact P.μ_inv _ _
 
 /-- Again a shorthand for a morphism that we will be seeing a lot. -/
-abbrev Γ {x y z : Burnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :=
+abbrev Γ {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :=
   P.baseChangeIso (Spans.πₗ S₁.of S₂.of) (Spans.πᵣ S₁.of S₂.of) S₁.of.r S₂.of.l
     (IsPullback.of_isLimit (Spans.isLimitCompPullbackCone S₁.of S₂.of))
 
-noncomputable abbrev mapComp {x y z : Burnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
+noncomputable abbrev mapComp {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
     P.map (S₁ ≫ S₂) ≅ P.map S₁ ≫ P.map S₂ :=
   (P.μ S₁ S₂) ≪⊗≫
     (whiskerLeftIso (P.r S₁.of.l) (whiskerRightIso (P.Γ S₁ S₂).symm (P.l S₂.of.r))) ≪⊗≫ .refl _
 
-lemma mapComp_hom {x y z : Burnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
+lemma mapComp_hom {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
     (P.mapComp S₁ S₂).hom =
     (P.μ S₁ S₂).hom ⊗≫ (P.r S₁.of.l) ◁ (P.Γ S₁ S₂).inv ▷ (P.l S₂.of.r) ⊗≫ 𝟙 _ :=
   rfl
 
-lemma mapComp_inv {x y z : Burnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
+lemma mapComp_inv {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
     (P.mapComp S₁ S₂).inv =
     𝟙 _ ⊗≫ (P.r S₁.of.l) ◁ (P.Γ S₁ S₂).hom ▷ (P.l S₂.of.r) ⊗≫ (P.μ S₁ S₂).inv := by
   dsimp [bicategoricalIso, mapComp, bicategoricalIsoComp]
   bicategory
 
-lemma map₂_id {a b : Burnside C} (f : a ⟶ b) : P.map₂ (𝟙 f) = 𝟙 (P.map f) := by
+lemma map₂_id {a b : EffBurnside C} (f : a ⟶ b) : P.map₂ (𝟙 f) = 𝟙 (P.map f) := by
     dsimp [map₂]
     rw [inv% P.baseChange_id_eq]
     simp only [cat_nf, cancelIso, Iso.trans_hom, Iso.symm_hom, whiskerLeftIso_hom,
@@ -1278,22 +1278,22 @@ lemma map₂_id {a b : Burnside C} (f : a ⟶ b) : P.map₂ (𝟙 f) = 𝟙 (P.m
     bicategory
 
 /-- A shorthand for the counit of the base change adjunction deduced by a 2-morphism in
-`Burnside C`: having it prevents some unfoldings. -/
-private def ε {c c' : Burnside C} {f g : c ⟶ c'} (η : f ⟶ g) :
+`EffBurnside C`: having it prevents some unfoldings. -/
+private def ε {c c' : EffBurnside C} {f g : c ⟶ c'} (η : f ⟶ g) :
     P.r (η.iso.hom.hom) ≫ P.l (η.iso.hom.hom) ≅ 𝟙 (P.obj g.of.apex) :=
   (P.baseChangeEquivalenceOfIso (Spans.apexIso η.iso)).counit
 
-private lemma ε_hom_def {c c' : Burnside C} {f g : c ⟶ c'} (η : f ⟶ g) :
+private lemma ε_hom_def {c c' : EffBurnside C} {f g : c ⟶ c'} (η : f ⟶ g) :
    (P.ε η).hom =
      (P.baseChangeIso η.iso.hom.hom η.iso.hom.hom (𝟙 _) (𝟙 _)
        (IsPullback.of_horiz_isIso .mk)).inv ≫ (P.Ψ _).inv := rfl
 
-private lemma ε_inv_def {c c' : Burnside C} {f g : c ⟶ c'} (η : f ⟶ g) :
+private lemma ε_inv_def {c c' : EffBurnside C} {f g : c ⟶ c'} (η : f ⟶ g) :
    (P.ε η).inv =
      (P.Ψ _).hom ≫ (P.baseChangeIso η.iso.hom.hom η.iso.hom.hom (𝟙 _) (𝟙 _)
        (IsPullback.of_horiz_isIso .mk)).hom := rfl
 
-lemma map₂_comp {c c' : Burnside C} {f g h : c ⟶ c'} (η : f ⟶ g) (θ : g ⟶ h) :
+lemma map₂_comp {c c' : EffBurnside C} {f g h : c ⟶ c'} (η : f ⟶ g) (θ : g ⟶ h) :
     P.map₂ (η ≫ θ) = P.map₂ η ≫ P.map₂ θ := by
   dsimp [map₂]
   simp_rw [dsimp% P.baseChangeEquivalenceOfIso_counit_hom_comp
@@ -1353,4 +1353,4 @@ end toPseudoFunctor
 
 end PseudoFunctorCore
 
-end CategoryTheory.Burnside
+end CategoryTheory.EffBurnside

@@ -5,7 +5,7 @@ Authors: Robin Carlier
 -/
 module
 
-public import SymmMonCoherence.SList.Burnside
+public import SymmMonCoherence.SList.EffBurnside
 public import SymmMonCoherence.ForMathlib.CategoryTheory.Pi.CompMonoidal
 public import SymmMonCoherence.ForMathlib.CategoryTheory.Pi.FlipMonoidal
 public import SymmMonCoherence.SList.Additive

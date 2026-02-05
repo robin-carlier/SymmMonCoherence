@@ -6,25 +6,25 @@ Authors: Robin Carlier
 module
 
 public import SymmMonCoherence.SList.EquivFintypeGrpd
-public import SymmMonCoherence.Spans.Burnside
+public import SymmMonCoherence.Spans.EffBurnside
 public import SymmMonCoherence.Spans.Terminal
 public import Mathlib.CategoryTheory.Limits.FintypeCat
 public import Mathlib.CategoryTheory.Pi.Monoidal
 public import Mathlib.Tactic.DepRewrite
 
-/-! # The Burnside (2,1)-category of finite types. -/
+/-! # The effective Burnside (2,1)-category of finite types. -/
 
 universe u
 
 namespace CategoryTheory
 
-/-- The burnside category of the category of finite type. -/
-@[expose] public abbrev BurnsideFintype := Burnside FintypeCat.{u}
+/-- The effective Burnside (2,1)-category of the category of finite type. -/
+@[expose] public abbrev EffBurnsideFintype := EffBurnside FintypeCat.{u}
 
-namespace BurnsideFintype
+namespace EffBurnsideFintype
 
 /-- The unit object -/
-@[expose] public abbrev unit : Burnside (FintypeCat.{u}) := .mk <| .mk <| .of PUnit.{u + 1}
+@[expose] public abbrev unit : EffBurnsideFintype.{u} := .mk <| .mk <| .of PUnit.{u + 1}
 
 /-- The equivalence between endomorphisms of the terminal object and the groupoid
 of finite types and permutations. -/
@@ -53,7 +53,7 @@ public lemma equivalenceFintypeGrpd_map_iso_inv {S S' : unit.{u} ⟶ unit} (f : 
 
 section monoidal
 
-/-! In this section, we construct a monoidal structure on homCategories in BurnsideFintype.
+/-! In this section, we construct a monoidal structure on homCategories in EffBurnsideFintype.
 These are inherited from the cocartesian monoidal structure on categories of finite types, but we
 construct them by hand here.
 
@@ -61,9 +61,9 @@ This monoidal structure allows for a slightly less painful definition of a funct
 `(J.of → SList K.of) ⥤ (J ⟶ K)`, as well as a monoidal structure on said functor.
 -/
 
-/-- The tensor unit in each hom-groupoid in the Burnside (2,1)-category is the empty type,
+/-- The tensor unit in each hom-groupoid in the effective Burnside (2,1)-category is the empty type,
 with the two unique maps to the legs. -/
-def tensorUnit (J K : BurnsideFintype.{u}) : J ⟶ K :=
+def tensorUnit (J K : EffBurnsideFintype.{u}) : J ⟶ K :=
   .mk <|
     { apex := .of PEmpty.{u + 1}
       l := FintypeCat.homMk PEmpty.elim.{u + 1}
@@ -71,16 +71,17 @@ def tensorUnit (J K : BurnsideFintype.{u}) : J ⟶ K :=
       wl := by tauto
       wr := by tauto }
 
-instance (J K : BurnsideFintype.{u}) : IsEmpty (tensorUnit J K).of.apex := by
+instance (J K : EffBurnsideFintype.{u}) : IsEmpty (tensorUnit J K).of.apex := by
   dsimp [tensorUnit]
   infer_instance
 
-variable {J K : BurnsideFintype.{u}}
+variable {J K : EffBurnsideFintype.{u}}
 
 section structureDefinition
 
-/-- The tensor unit in each hom-groupoid in the Burnside (2,1)-category is the empty type,
-with the two unique maps to the legs. -/
+/-- The tensor product in each hom-groupoid in the effective Burnside (2,1)-category is the
+coproduct (i.e sum) of types, with the maps to the legs induced by the universal property of the
+coproduct. -/
 def tensorObj (X Y : J ⟶ K) : J ⟶ K :=
   .mk <|
     { apex := .of <| X.of.apex ⊕ Y.of.apex
@@ -417,7 +418,7 @@ end structureAPI
 section Symmetric
 
 /-- The braid isomorphism for the symmetric monoidal structure on homCategories in
-`BurnsideFintype`. -/
+`EffBurnsideFintype`. -/
 noncomputable def braid (x y : J ⟶ K) : x ⊗ y ≅ y ⊗ x :=
   Core.isoMk <| Spans.mkIso₂ (FintypeCat.equivEquivIso <| Equiv.sumComm _ _)
     (by
@@ -501,32 +502,33 @@ end Symmetric
 end monoidal
 
 /-- Interpret the constant function ((j : J) ↦ k) as a morphism `J ⟶ K` in the
-bursnide category. -/
-public noncomputable def const (J : BurnsideFintype.{u}) {K : BurnsideFintype.{u}} (k : K.as.of) :
-      J ⟶ K :=
-  (Burnside.inr FintypeCat).map (FintypeCat.homMk fun (_ : J.as.of) ↦ k).toLoc
+effective Bursnide (2,1)-category. -/
+public noncomputable def const (J : EffBurnsideFintype.{u}) {K : EffBurnsideFintype.{u}}
+    (k : K.as.of) :
+    J ⟶ K :=
+  (EffBurnside.inr FintypeCat).map (FintypeCat.homMk fun (_ : J.as.of) ↦ k).toLoc
 
-public lemma const_apex (J : BurnsideFintype.{u}) {K : BurnsideFintype.{u}} (k : K.as.of) :
+public lemma const_apex (J : EffBurnsideFintype.{u}) {K : EffBurnsideFintype.{u}} (k : K.as.of) :
     (const J k).of.apex = J.as.of := (rfl)
 
 /-- The equivalence `(const J k).of.apex ≃ J.as.of`. This needs to be inserted to ease type
 checking. -/
-public def constApexEquiv (J : BurnsideFintype.{u}) {K : BurnsideFintype.{u}} (k : K.as.of) :
+public def constApexEquiv (J : EffBurnsideFintype.{u}) {K : EffBurnsideFintype.{u}} (k : K.as.of) :
     (const J k).of.apex ≃ J.as.of :=
   .refl _
 
 @[simp]
-public lemma const_r_apply (J : BurnsideFintype.{u}) {K : BurnsideFintype.{u}}
+public lemma const_r_apply (J : EffBurnsideFintype.{u}) {K : EffBurnsideFintype.{u}}
     (k : K.as.of) (j : (const J k).of.apex) :
     (const J k).of.r j = k :=
   (rfl)
 
 @[simp]
-public lemma const_l_apply (J : BurnsideFintype.{u}) {K : BurnsideFintype.{u}}
+public lemma const_l_apply (J : EffBurnsideFintype.{u}) {K : EffBurnsideFintype.{u}}
     (k : K.as.of) (j : (const J k).of.apex) :
     (const J k).of.l j = (constApexEquiv ..) j :=
   (rfl)
 
-end BurnsideFintype
+end EffBurnsideFintype
 
 end CategoryTheory

@@ -24,26 +24,26 @@ variable (C : Type u') [Category.{v'} C] [MonoidalCategory C] [SymmetricCategory
 section
 open Bicategory
 
-instance (J : BurnsideFintype.{0}) :
+instance (J : EffBurnsideFintype.{0}) :
     MonoidalCategory ((Burnside.pseudoOfSymmMonCat C).obj J) :=
   inferInstanceAs <| MonoidalCategory (J.as.of → C)
 
-instance (J : BurnsideFintype.{0}) :
+instance (J : EffBurnsideFintype.{0}) :
     SymmetricCategory ((Burnside.pseudoOfSymmMonCat C).obj J) :=
   inferInstanceAs <| SymmetricCategory (J.as.of → C)
 
-noncomputable instance {J K : BurnsideFintype.{0}} (f : J ⟶ K) :
+noncomputable instance {J K : EffBurnsideFintype.{0}} (f : J ⟶ K) :
     Functor.Braided ((Burnside.pseudoOfSymmMonCat C).map f).toFunctor := by
   dsimp [Burnside.pseudoOfSymmMonCat, Kleisli.pseudoOfSymmMonCat]
   infer_instance
 
-instance {J K : BurnsideFintype.{0}} {f g : J ⟶ K} (η : f ⟶ g) :
+instance {J K : EffBurnsideFintype.{0}} {f g : J ⟶ K} (η : f ⟶ g) :
     NatTrans.IsMonoidal ((Burnside.pseudoOfSymmMonCat C).map₂ η).toNatTrans := by
   dsimp [Burnside.pseudoOfSymmMonCat, Kleisli.pseudoOfSymmMonCat]
   infer_instance
 
 noncomputable def pseudoOfSymmMonCat.unitEquivalence :
-    (BurnsideFintype.unit.as.of → C) ≌ C where
+    (EffBurnsideFintype.unit.as.of → C) ≌ C where
   functor := Pi.eval _ ()
   inverse := Functor.pi' (fun _ ↦ 𝟭 C)
   -- Slight defeq abuse of Functor.pi' (fun _ ↦ X) ⋙ eval i = X i
@@ -60,7 +60,7 @@ instance : (pseudoOfSymmMonCat.unitEquivalence C).unitIso.hom.IsMonoidal := by
   unfold pseudoOfSymmMonCat.unitEquivalence
   dsimp only [Iso.refl_hom]
   convert NatTrans.IsMonoidal.id
-    (F₁ := 𝟭 (((Burnside.pseudoOfSymmMonCat C).obj BurnsideFintype.unit)))
+    (F₁ := 𝟭 (((Burnside.pseudoOfSymmMonCat C).obj EffBurnsideFintype.unit)))
   ext
   · simp only [Functor.comp_obj, Pi.eval_obj, Functor.LaxMonoidal.ε,
       Functor.map_id, Category.comp_id]
@@ -78,13 +78,13 @@ instance : (pseudoOfSymmMonCat.unitEquivalence C).counitIso.hom.IsMonoidal := by
   · simp [Functor.LaxMonoidal.ε]
   · simp [Functor.LaxMonoidal.μ]
 
-noncomputable def pseudoOfSymmMonCat.objEquivalence (J : BurnsideFintype.{0}) :
+noncomputable def pseudoOfSymmMonCat.objEquivalence (J : EffBurnsideFintype.{0}) :
     ((Burnside.pseudoOfSymmMonCat C).obj J) ≌ (J.as.of → C) :=
   Equivalence.refl
 
 section
 
-variable (J : BurnsideFintype.{0})
+variable (J : EffBurnsideFintype.{0})
 
 noncomputable instance : (pseudoOfSymmMonCat.objEquivalence C J).functor.Braided :=
   inferInstanceAs (Functor.Braided <| 𝟭 _)
@@ -110,8 +110,9 @@ section
 -- identifying the action of the pseudofunctor with the tensor product
 
 noncomputable abbrev univFin₂Span :
-    (.mk <| .mk <| .of (Fin 2)) ⟶ (BurnsideFintype.unit) := (Burnside.inr (FintypeCat.{0})).map <|
-  (FintypeCat.homMk <| (fun _ ↦ .unit) : (FintypeCat.of <| Fin 2) ⟶ (FintypeCat.of Unit)).toLoc
+    (.mk <| .mk <| .of (Fin 2)) ⟶ (EffBurnsideFintype.unit) :=
+  (EffBurnside.inr (FintypeCat.{0})).map <|
+    (FintypeCat.homMk <| (fun _ ↦ .unit) : (FintypeCat.of <| Fin 2) ⟶ (FintypeCat.of Unit)).toLoc
 end
 
 -- Note that because of linearity, the isomorphism is necessarily unique
@@ -127,7 +128,7 @@ noncomputable def univFin₂SpanPushforwardIso :
 
 /- Via a symmetric monoidal equivalence (Fin 2 → C) ≌ C × C, we could make the following assignment
 natural, monoidal etc. Really, the thing should be broken down into the part relevant from Kleisli,
-and the part coming from BurnsideFintype. -/
+and the part coming from EffBurnsideFintype. -/
 noncomputable example (X : Fin 2 → C) : ((pseudoOfSymmMonCat.objEquivalence ..).inverse ⋙
     ((Burnside.pseudoOfSymmMonCat C).map univFin₂Span).toFunctor ⋙
     (pseudoOfSymmMonCat.objEquivalence ..).functor ⋙

@@ -7,7 +7,7 @@ module
 
 public import SymmMonCoherence.SList.Equivalence
 public import SymmMonCoherence.SList.Multiset
-public import SymmMonCoherence.SList.Burnside
+public import SymmMonCoherence.SList.EffBurnside
 public import Mathlib.Tactic.DepRewrite
 public import Mathlib.Data.FinEnum
 public import Mathlib.CategoryTheory.Pi.Monoidal

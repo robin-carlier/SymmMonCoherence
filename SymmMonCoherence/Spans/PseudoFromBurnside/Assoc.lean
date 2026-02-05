@@ -13,7 +13,7 @@ public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 -- @[expose] public section
 
-namespace CategoryTheory.Burnside.PseudoFunctorCore
+namespace CategoryTheory.EffBurnside.PseudoFunctorCore
 
 open CategoryTheory Bicategory
 
@@ -40,7 +40,7 @@ can actually be proved about `bicategoricalComp`. -/
 
 section
 
-variable {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
+variable {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
 
 abbrev lα₁ :=
   P.lComp'
@@ -156,7 +156,7 @@ end
 --   | _ => throw ()
 -- #check bicategoricalComp
 
-lemma assoc₀ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+lemma assoc₀ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (P.rα₃ f g h).hom ≫ (P.𝔯 f g).hom ▷
       P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ⊗≫
        (P.r f.of.l ◁ (P.rα₂ f g h).inv ≫ (P.𝔯 f (g ≫ h)).inv) = 𝟙 _ := by
@@ -170,7 +170,7 @@ lemma assoc₀ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) 
     (f := (f.of ≫ g.of ≫ h.of).l)
     (by simp) (by simp) (by simp)]
 
-lemma assoc₁ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+lemma assoc₁ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
   (P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₃ f g h).hom) ⊗≫
     (P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₂' f g h).hom ▷ P.l h.of.r) ⊗≫
     (P.r (f.of ≫ g.of ≫ h.of).l ◁ P.l (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv) ⊗≫
@@ -186,7 +186,7 @@ lemma assoc₁ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) 
     (by simp) (by simp) (by simp)
   simp [this]
 
-lemma assoc₂ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+lemma assoc₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (P.𝔯 (f ≫ g) h).hom ⊗≫ P.r (f.of ≫ g.of).l ◁ (P.rα₄ f g h).hom ⊗≫
       (P.rα₃ f g h).inv ▷ P.r (α_ f.of g.of h.of).hom.hom = (P.rα₁ f g h).hom := by
   dsimp [rα₃, bicategoricalComp, 𝔯, rα₄, rα₁]
@@ -201,7 +201,7 @@ lemma assoc₂ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) 
 
 -- #exit
 set_option maxHeartbeats 500000 in -- Calc + bicategory is so slow
-lemma aux₀ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+lemma aux₀ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     P.r (f.of ≫ g.of).l ◁
       P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
         P.η f g h ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r =
@@ -283,7 +283,7 @@ lemma aux₀ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
       bicategory
 
 /- Auxiliary computation for map₂_assoc -/
-lemma cocycle₁ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+lemma cocycle₁ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     P.r (f.of ≫ g.of).l ◁ P.l (πᵣ f.of g.of) ◁ (P.Γ g h).inv ⊗≫
       (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ▷ P.l g.of.r ▷ P.r h.of.l ⊗≫
       P.r f.of.l ◁ (P.Γ f g).inv ▷ P.l g.of.r ▷ P.r h.of.l ⊗≫
@@ -312,7 +312,7 @@ lemma cocycle₁ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
       bicategory
 
 set_option maxHeartbeats 400000 in -- bicategory computations are slow
-lemma comp₁ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+lemma comp₁ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (P.μ (f ≫ g) h).hom ⊗≫
       P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
       P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₄ f g h).hom ▷
@@ -416,7 +416,7 @@ lemma comp₁ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     Category.assoc, whisker_exchange_assoc, cancel_epi]
   bicategory
 
-lemma comp₂ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+lemma comp₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₃ f g h).hom ⊗≫
         P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₂' f g h).hom ▷ P.l h.of.r ⊗≫
         (P.rα₃ f g h).hom ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
@@ -467,7 +467,7 @@ lemma comp₂ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
 /- Auxiliary computation for map₂_assoc -/
 
 set_option maxHeartbeats 2000000 in -- Bicategory computations are slow.
-lemma cocycle₂ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+lemma cocycle₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (P.μ (f ≫ g) h).hom ⊗≫
       P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
       P.r (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
@@ -599,7 +599,7 @@ lemma cocycle₂ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
   rw [P.comp₁ f g h, P.comp₂ f g h]
   bicategory
 
-lemma aux₂ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+lemma aux₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     P.r f.of.l ◁ (P.Γ f g).inv ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
       P.r f.of.l ◁ P.l f.of.r ◁ (P.μ g h).inv ⊗≫
       P.r f.of.l ◁ P.l f.of.r ◁ (P.𝔯 g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
@@ -638,7 +638,7 @@ lemma aux₂ {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
 set_option maxHeartbeats 800000 in -- calc + bicat is very slow
 /-- Associativity is by far the most technical point -/
 public lemma map₂_assoc
-    {a b c d : Burnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     P.map₂ (α_ f g h).hom =
     (P.mapComp (f ≫ g) h).hom ≫
       ((P.mapComp f g).hom ▷ P.map h) ≫
@@ -776,4 +776,4 @@ end toPseudoFunctor
 
 end PseudoFunctorCore
 
-end CategoryTheory.Burnside
+end CategoryTheory.EffBurnside
