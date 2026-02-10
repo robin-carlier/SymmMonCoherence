@@ -9,7 +9,7 @@ import all SymmMonCoherence.Spans.PseudoFromBurnside.Assoc
 public import SymmMonCoherence.Spans.PseudoFromBurnside.Assoc
 public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
-/-! # Pseudofunctors from the Burnside (2,1)-category . -/
+/-! # Pseudofunctors from the effective Burnside (2,1)-category . -/
 
 namespace CategoryTheory.EffBurnside.PseudoFunctorCore
 
@@ -29,24 +29,24 @@ open Spans
 section whiskerLeft
 
 lemma 𝔯_whiskerLeft₁ {a b c : EffBurnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
-    (P.𝔯 f g).inv ≫ (P.rComp' (f.of ◁ η.iso.hom).hom (f.of ≫ h.of).l (f.of ≫ g.of).l).hom =
-    P.r f.of.l ◁ (P.rComp' (f.of ◁ η.iso.hom).hom (πₗ f.of h.of) (πₗ f.of g.of)).hom ≫
-    (α_ (P.r f.of.l) (P.r (πₗ f.of h.of)) (P.r (f.of ◁ η.iso.hom).hom)).inv ≫
-      (P.𝔯 f h).inv ▷ P.r (f.of ◁ η.iso.hom).hom :=
+    (P.𝔯 f g).inv ≫ (P.vComp' (f.of ◁ η.iso.hom).hom (f.of ≫ h.of).l (f.of ≫ g.of).l).hom =
+    P.v f.of.l ◁ (P.vComp' (f.of ◁ η.iso.hom).hom (πₗ f.of h.of) (πₗ f.of g.of)).hom ≫
+    (α_ (P.v f.of.l) (P.v (πₗ f.of h.of)) (P.v (f.of ◁ η.iso.hom).hom)).inv ≫
+      (P.𝔯 f h).inv ▷ P.v (f.of ◁ η.iso.hom).hom :=
   rotate_isos% 0 1
-    (inv% P.rComp'₀₂₃_hom
+    (inv% P.vComp'₀₂₃_hom
       (f₀₁ := (f.of ◁ η.iso.hom).hom) (f₁₂ := πₗ f.of h.of) (f₂₃ := f.of.l)
       (f₀₂ := πₗ f.of g.of) (f₁₃ := (f.of ≫ h.of).l) (f := (f.of ≫ g.of).l)
       (by simp) (by simp) (by simp))
 
 lemma 𝔩_whiskerLeft₁ {a b c : EffBurnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
-    (P.lComp' (f.of ◁ η.iso.hom).hom (f.of ≫ h.of).r (f.of ≫ g.of).r).hom ≫
-      P.l (f.of ◁ η.iso.hom).hom ◁ (P.𝔩 f h).hom =
-    (P.lComp' (πᵣ f.of g.of ≫ η.iso.hom.hom) h.of.r (f.of ≫ g.of).r).hom ≫
-      (P.lComp' (f.of ◁ η.iso.hom).hom (πᵣ f.of h.of) (πᵣ f.of g.of ≫ η.iso.hom.hom)).hom ▷
-        P.l h.of.r ≫
-      (α_ (P.l (f.of ◁ η.iso.hom).hom) (P.l (πᵣ f.of h.of)) (P.l h.of.r)).hom :=
-  rotate_isos% 0 1 (P.lComp'₀₁₃_hom
+    (P.uComp' (f.of ◁ η.iso.hom).hom (f.of ≫ h.of).r (f.of ≫ g.of).r).hom ≫
+      P.u (f.of ◁ η.iso.hom).hom ◁ (P.𝔩 f h).hom =
+    (P.uComp' (πᵣ f.of g.of ≫ η.iso.hom.hom) h.of.r (f.of ≫ g.of).r).hom ≫
+      (P.uComp' (f.of ◁ η.iso.hom).hom (πᵣ f.of h.of) (πᵣ f.of g.of ≫ η.iso.hom.hom)).hom ▷
+        P.u h.of.r ≫
+      (α_ (P.u (f.of ◁ η.iso.hom).hom) (P.u (πᵣ f.of h.of)) (P.u h.of.r)).hom :=
+  rotate_isos% 0 1 (P.uComp'₀₁₃_hom
     (f₀₁ := (f.of ◁ η.iso.hom).hom) (f₁₂ := πᵣ f.of h.of) (f₂₃ := h.of.r)
     (f₀₂ := πᵣ f.of g.of ≫ η.iso.hom.hom) (f₁₃ := (f.of ≫ h.of).r) (f := (f.of ≫ g.of).r)
     (by simp) (by simp) (by simp))
@@ -76,27 +76,27 @@ private lemma isPullback_πₗ_comp_iso_hom_πᵣ
   exact this
 
 lemma map₂_whisker_left_aux₁ {a b c : EffBurnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
-    (ρ_ (P.l f.of.r ≫ P.r h.of.l)).inv ≫
-    (α_ (P.l f.of.r) (P.r h.of.l) (𝟙 (P.obj h.of.apex))).hom ≫
-    (P.l f.of.r ◁ P.r h.of.l ◁ (P.ε η).inv) ≫
-    (P.l f.of.r ◁ (α_ (P.r h.of.l) (P.r η.iso.hom.hom) (P.l η.iso.hom.hom)).inv) ≫
-    (P.l f.of.r ◁ (P.rComp' η.iso.hom.hom h.of.l g.of.l).inv ▷ P.l η.iso.hom.hom) ≫
-    (α_ (P.l f.of.r) (P.r g.of.l) (P.l η.iso.hom.hom)).inv ≫
-    ((P.Γ f g).hom ▷ P.l η.iso.hom.hom) ≫
-    (α_ (P.r (πₗ f.of g.of)) (P.l (πᵣ f.of g.of)) (P.l η.iso.hom.hom)).hom ≫
-      P.r (πₗ f.of g.of) ◁
-        (P.lComp' (πᵣ f.of g.of) η.iso.hom.hom (πᵣ f.of g.of ≫ η.iso.hom.hom)).inv =
+    (ρ_ (P.u f.of.r ≫ P.v h.of.l)).inv ≫
+    (α_ (P.u f.of.r) (P.v h.of.l) (𝟙 (P.obj h.of.apex))).hom ≫
+    (P.u f.of.r ◁ P.v h.of.l ◁ (P.ε η).inv) ≫
+    (P.u f.of.r ◁ (α_ (P.v h.of.l) (P.v η.iso.hom.hom) (P.u η.iso.hom.hom)).inv) ≫
+    (P.u f.of.r ◁ (P.vComp' η.iso.hom.hom h.of.l g.of.l).inv ▷ P.u η.iso.hom.hom) ≫
+    (α_ (P.u f.of.r) (P.v g.of.l) (P.u η.iso.hom.hom)).inv ≫
+    ((P.Γ f g).hom ▷ P.u η.iso.hom.hom) ≫
+    (α_ (P.v (πₗ f.of g.of)) (P.u (πᵣ f.of g.of)) (P.u η.iso.hom.hom)).hom ≫
+      P.v (πₗ f.of g.of) ◁
+        (P.uComp' (πᵣ f.of g.of) η.iso.hom.hom (πᵣ f.of g.of ≫ η.iso.hom.hom)).inv =
     (P.Γ f h).hom ≫
-    (P.r (πₗ f.of h.of) ◁ (λ_ (P.l (πᵣ f.of h.of))).inv) ≫
-    (P.r (πₗ f.of h.of) ◁ (P.ε (f ◁ η)).inv ▷ P.l (πᵣ f.of h.of)) ≫
-    (α_ (P.r (πₗ f.of h.of)) (P.r (f.of ◁ η.iso.hom).hom ≫ P.l (f.of ◁ η.iso.hom).hom)
-      (P.l (πᵣ f.of h.of))).inv ≫
-    ((α_ (P.r (πₗ f.of h.of)) (P.r (f.of ◁ η.iso.hom).hom) (P.l (f.of ◁ η.iso.hom).hom)).inv ▷
-      P.l (πᵣ f.of h.of)) ≫
-    ((P.rComp' (f.of ◁ η.iso.hom).hom (πₗ f.of h.of) (πₗ f.of g.of)).inv ▷
-        P.l (f.of ◁ η.iso.hom).hom ▷ P.l (πᵣ f.of h.of)) ≫
-    (α_ (P.r (πₗ f.of g.of)) (P.l (f.of ◁ η.iso.hom).hom) (P.l (πᵣ f.of h.of))).hom ≫
-    P.r (πₗ f.of g.of) ◁ (P.lComp' (f.of ◁ η.iso.hom).hom (πᵣ f.of h.of)
+    (P.v (πₗ f.of h.of) ◁ (λ_ (P.u (πᵣ f.of h.of))).inv) ≫
+    (P.v (πₗ f.of h.of) ◁ (P.ε (f ◁ η)).inv ▷ P.u (πᵣ f.of h.of)) ≫
+    (α_ (P.v (πₗ f.of h.of)) (P.v (f.of ◁ η.iso.hom).hom ≫ P.u (f.of ◁ η.iso.hom).hom)
+      (P.u (πᵣ f.of h.of))).inv ≫
+    ((α_ (P.v (πₗ f.of h.of)) (P.v (f.of ◁ η.iso.hom).hom) (P.u (f.of ◁ η.iso.hom).hom)).inv ▷
+      P.u (πᵣ f.of h.of)) ≫
+    ((P.vComp' (f.of ◁ η.iso.hom).hom (πₗ f.of h.of) (πₗ f.of g.of)).inv ▷
+        P.u (f.of ◁ η.iso.hom).hom ▷ P.u (πᵣ f.of h.of)) ≫
+    (α_ (P.v (πₗ f.of g.of)) (P.u (f.of ◁ η.iso.hom).hom) (P.u (πᵣ f.of h.of))).hom ≫
+    P.v (πₗ f.of g.of) ◁ (P.uComp' (f.of ◁ η.iso.hom).hom (πᵣ f.of h.of)
       (πᵣ f.of g.of ≫ η.iso.hom.hom)).inv := by
   have :=
     P.baseChange_change_pullback
@@ -146,12 +146,12 @@ lemma map₂_whisker_left_aux₁ {a b c : EffBurnside C} (f : a ⟶ b) {g h : b 
   dsimp [bicategoricalComp] at this
   simp only [Category.id_comp, whiskerRight_comp, id_whiskerRight, Iso.inv_hom_id, Category.comp_id,
     Category.assoc, pentagon_hom_inv_inv_inv_inv, whiskerLeft_comp] at this
-  simp only [P.lComp'_id_l, Iso.trans_hom, Iso.symm_hom, whiskerLeftIso_hom, comp_whiskerRight,
+  simp only [P.uComp'_id_l, Iso.trans_hom, Iso.symm_hom, whiskerLeftIso_hom, comp_whiskerRight,
     whisker_assoc, triangle_assoc_comp_right_inv_assoc, P.baseChange_unit_left, whiskerLeft_comp,
     whiskerLeft_rightUnitor_inv, Category.assoc, Iso.trans_inv, whiskerLeftIso_inv, Iso.symm_inv,
     whiskerLeft_rightUnitor, Iso.inv_hom_id_assoc, whiskerLeft_inv_hom_whiskerRight_assoc,
     whiskerLeft_inv_hom_assoc] at this
-  simp_rw [← whiskerLeft_comp_assoc (f := P.l f.of.r), ← associator_naturality_right_assoc,
+  simp_rw [← whiskerLeft_comp_assoc (f := P.u f.of.r), ← associator_naturality_right_assoc,
     ← whisker_exchange_assoc, associator_inv_naturality_middle_assoc,
     ← whisker_exchange_assoc, ← associator_inv_naturality_right_assoc,
     ← reassoc_of% wl% leftUnitor_inv_naturality, whiskerLeft_inv_hom_assoc] at this
@@ -171,7 +171,7 @@ lemma map₂_whisker_left {a b c : EffBurnside C} (f : a ⟶ b) {g h : b ⟶ c} 
     ← reassoc_of% wl% wr% dsimp% P.ε_hom_def (η := (f ◁ η))]
   clear this
   simp only [cat_nf]
-  simp_rw [associator_naturality_left_assoc, ← whiskerLeft_comp_assoc (f := P.r (f.of ≫ h.of).l),
+  simp_rw [associator_naturality_left_assoc, ← whiskerLeft_comp_assoc (f := P.v (f.of ≫ h.of).l),
     whisker_exchange_assoc, cancelIso, whiskerLeft_comp_assoc, ← associator_naturality_right,
     ← whiskerLeft_comp_assoc, ← leftUnitor_naturality, ← whisker_exchange_assoc,
     ← associator_inv_naturality_right_assoc, inv_hom_whiskerRight_assoc, cancelIso,
@@ -181,7 +181,7 @@ lemma map₂_whisker_left {a b c : EffBurnside C} (f : a ⟶ b) {g h : b ⟶ c} 
     pentagon_inv_hom_hom_hom_hom_assoc, leftUnitor_whiskerRight, pentagon_assoc,
     triangle_assoc_comp_right_inv_assoc, whiskerLeft_whiskerLeft_hom_inv_assoc, cancelIso,
     whiskerLeft_whiskerLeft_inv_hom]
-  simp_rw [← whiskerLeft_comp (f := P.r f.of.l), reassoc_of% wl% pentagon_inv,
+  simp_rw [← whiskerLeft_comp (f := P.v f.of.l), reassoc_of% wl% pentagon_inv,
     ← reassoc_of% wl% associator_inv_naturality_left,
     reassoc_of% wl% associator_inv_naturality_right,
     reassoc_of% wl% whisker_exchange, cancelIso,
@@ -199,7 +199,7 @@ lemma map₂_whisker_left {a b c : EffBurnside C} (f : a ⟶ b) {g h : b ⟶ c} 
     ← Category.assoc, cancel_mono, Category.assoc, cancel_epi,
     ← whiskerLeft_comp_assoc, 𝔩_whiskerLeft₁]
   have :=
-    P.lComp'₀₂₃_hom
+    P.uComp'₀₂₃_hom
       (f₀₁ := πᵣ f.of g.of) (f₁₂ := η.iso.hom.hom) (f₂₃ := h.of.r)
       (f₀₂ := πᵣ f.of g.of ≫ η.iso.hom.hom) (f₁₃ := g.of.r) (f := (f.of ≫ g.of).r)
       (by simp) (by simp) (by simp)
@@ -218,29 +218,29 @@ section whiskerRight
 set_option maxHeartbeats 300000 in -- rotate_isos is slow...
 lemma map₂_whisker_right_aux {a b c : EffBurnside C} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) :
     (P.Γ g h).inv =
-    (P.r (πₗ g.of h.of) ◁ (λ_ (P.l (πᵣ g.of h.of))).inv) ≫
-      (P.r (πₗ g.of h.of) ◁ (P.ε (η ▷ h)).inv ▷ P.l (πᵣ g.of h.of)) ≫
-      (α_ (P.r (πₗ g.of h.of))
-          (P.r (η.iso.hom ▷ h.of).hom ≫ P.l (η.iso.hom ▷ h.of).hom) (P.l (πᵣ g.of h.of))).inv ≫
-      ((α_ (P.r (πₗ g.of h.of)) (P.r (η.iso.hom ▷ h.of).hom) (P.l (η.iso.hom ▷ h.of).hom)).inv ▷
-        P.l (πᵣ g.of h.of)) ≫
-      ((P.rComp' (η.iso.hom ▷ h.of).hom (πₗ g.of h.of) (πₗ f.of h.of ≫ η.iso.hom.hom)).inv ▷
-          P.l (η.iso.hom ▷ h.of).hom ▷
-            P.l (πᵣ g.of h.of)) ≫
-      (α_ (P.r (πₗ f.of h.of ≫ η.iso.hom.hom))
-        (P.l (η.iso.hom ▷ h.of).hom) (P.l (πᵣ g.of h.of))).hom ≫
-      (P.r (πₗ f.of h.of ≫ η.iso.hom.hom) ◁
-        (P.lComp' (η.iso.hom ▷ h.of).hom (πᵣ g.of h.of) (πᵣ f.of h.of)).inv) ≫
-      ((P.rComp' (πₗ f.of h.of) η.iso.hom.hom (πₗ f.of h.of ≫ η.iso.hom.hom)).hom ▷
-        P.l (πᵣ f.of h.of)) ≫
-      (α_ (P.r η.iso.hom.hom) (P.r (πₗ f.of h.of)) (P.l (πᵣ f.of h.of))).hom ≫
-      (P.r η.iso.hom.hom ◁ (P.Γ f h).inv) ≫
-      (P.r η.iso.hom.hom ◁ (P.lComp' η.iso.hom.hom g.of.r f.of.r).hom ▷ P.r h.of.l) ≫
-      (α_ (P.r η.iso.hom.hom) (P.l η.iso.hom.hom ≫ P.l g.of.r) (P.r h.of.l)).inv ≫
-      ((α_ (P.r η.iso.hom.hom) (P.l η.iso.hom.hom) (P.l g.of.r)).inv ▷ P.r h.of.l) ≫
-      ((P.ε η).hom ▷ P.l g.of.r ▷ P.r h.of.l) ≫
-      (α_ (𝟙 (P.obj g.of.apex)) (P.l g.of.r) (P.r h.of.l)).hom ≫
-      (λ_ (P.l g.of.r ≫ P.r h.of.l)).hom := by
+    (P.v (πₗ g.of h.of) ◁ (λ_ (P.u (πᵣ g.of h.of))).inv) ≫
+      (P.v (πₗ g.of h.of) ◁ (P.ε (η ▷ h)).inv ▷ P.u (πᵣ g.of h.of)) ≫
+      (α_ (P.v (πₗ g.of h.of))
+          (P.v (η.iso.hom ▷ h.of).hom ≫ P.u (η.iso.hom ▷ h.of).hom) (P.u (πᵣ g.of h.of))).inv ≫
+      ((α_ (P.v (πₗ g.of h.of)) (P.v (η.iso.hom ▷ h.of).hom) (P.u (η.iso.hom ▷ h.of).hom)).inv ▷
+        P.u (πᵣ g.of h.of)) ≫
+      ((P.vComp' (η.iso.hom ▷ h.of).hom (πₗ g.of h.of) (πₗ f.of h.of ≫ η.iso.hom.hom)).inv ▷
+          P.u (η.iso.hom ▷ h.of).hom ▷
+            P.u (πᵣ g.of h.of)) ≫
+      (α_ (P.v (πₗ f.of h.of ≫ η.iso.hom.hom))
+        (P.u (η.iso.hom ▷ h.of).hom) (P.u (πᵣ g.of h.of))).hom ≫
+      (P.v (πₗ f.of h.of ≫ η.iso.hom.hom) ◁
+        (P.uComp' (η.iso.hom ▷ h.of).hom (πᵣ g.of h.of) (πᵣ f.of h.of)).inv) ≫
+      ((P.vComp' (πₗ f.of h.of) η.iso.hom.hom (πₗ f.of h.of ≫ η.iso.hom.hom)).hom ▷
+        P.u (πᵣ f.of h.of)) ≫
+      (α_ (P.v η.iso.hom.hom) (P.v (πₗ f.of h.of)) (P.u (πᵣ f.of h.of))).hom ≫
+      (P.v η.iso.hom.hom ◁ (P.Γ f h).inv) ≫
+      (P.v η.iso.hom.hom ◁ (P.uComp' η.iso.hom.hom g.of.r f.of.r).hom ▷ P.v h.of.l) ≫
+      (α_ (P.v η.iso.hom.hom) (P.u η.iso.hom.hom ≫ P.u g.of.r) (P.v h.of.l)).inv ≫
+      ((α_ (P.v η.iso.hom.hom) (P.u η.iso.hom.hom) (P.u g.of.r)).inv ▷ P.v h.of.l) ≫
+      ((P.ε η).hom ▷ P.u g.of.r ▷ P.v h.of.l) ≫
+      (α_ (𝟙 (P.obj g.of.apex)) (P.u g.of.r) (P.v h.of.l)).hom ≫
+      (λ_ (P.u g.of.r ≫ P.v h.of.l)).hom := by
   have :=
     P.baseChange_change_pullback
       (t := πₗ g.of h.of)
@@ -278,7 +278,7 @@ lemma map₂_whisker_right_aux {a b c : EffBurnside C} {f g : a ⟶ b} (η : f �
   rw [γ₂] at γ₁
   rw [γ₁] at this
   dsimp [bicategoricalComp] at this
-  simp only [P.rComp'_id_l, Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, whiskerLeft_comp,
+  simp only [P.vComp'_id_l, Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, whiskerLeft_comp,
     P.baseChange_unit_right, Category.id_comp, whiskerRight_comp, id_whiskerRight, Iso.inv_hom_id,
     Category.comp_id, Category.assoc, pentagon_hom_inv_inv_inv_inv, Iso.trans_inv,
     whiskerRightIso_inv, Iso.symm_inv, comp_whiskerRight, leftUnitor_whiskerRight, whisker_assoc,
@@ -320,7 +320,7 @@ lemma map₂_whisker_right {a b c : EffBurnside C} {f g : a ⟶ b} (η : f ⟶ g
     leftUnitor_whiskerRight, Iso.inv_hom_id_assoc, pentagon_hom_inv_inv_inv_inv_assoc,
     pentagon_inv_assoc, whiskerLeft_hom_inv_assoc, whiskerLeft_hom_inv_whiskerRight_assoc,
     cancelIso, whiskerLeft_inv_hom_whiskerRight_assoc]
-  have Δ₁ := P.rComp'₀₂₃_hom
+  have Δ₁ := P.vComp'₀₂₃_hom
     (f₀₁ := (η.iso.hom ▷ h.of).hom)
     (f₁₂ := πₗ g.of h.of)
     (f₀₂ := πₗ f.of h.of ≫ η.iso.hom.hom)
@@ -328,7 +328,7 @@ lemma map₂_whisker_right {a b c : EffBurnside C} {f g : a ⟶ b} (η : f ⟶ g
     (f₁₃ := (g.of ≫ h.of).l)
     (f := (f.of ≫ h.of).l)
     (by simp) (by simp) (by simp)
-  have Δ₂ := P.rComp'₀₁₃_hom
+  have Δ₂ := P.vComp'₀₁₃_hom
     (f₀₁ := πₗ f.of h.of) (f₁₂ := η.iso.hom.hom) (f₀₂ := πₗ f.of h.of ≫ η.iso.hom.hom)
     (f₂₃ := g.of.l) (f₁₃ := f.of.l) (f := (f.of ≫ h.of).l)
     (by simp) (by simp) (by simp)
@@ -353,14 +353,14 @@ lemma map₂_whisker_right {a b c : EffBurnside C} {f g : a ⟶ b} (η : f ⟶ g
   simp only [pentagon_inv_hom_hom_hom_hom_assoc, Iso.inv_hom_id_assoc, ← whiskerLeft_comp,
     cancelIso]
   congr 1
-  simp_rw [← whiskerLeft_comp_assoc (f := P.r η.iso.hom.hom),
-    ← whiskerLeft_comp (f := P.r (πₗ f.of h.of)),
+  simp_rw [← whiskerLeft_comp_assoc (f := P.v η.iso.hom.hom),
+    ← whiskerLeft_comp (f := P.v (πₗ f.of h.of)),
     associator_inv_naturality_right_assoc, ← reassoc_of% wr% associator_inv_naturality_left,
     ← associator_inv_naturality_left_assoc, whisker_exchange_assoc]
   -- simp? [cancel_epi]
   simp only [comp_whiskerLeft, Category.assoc, Iso.inv_hom_id_assoc, whiskerLeft_comp,
     Iso.hom_inv_id_assoc, cancel_epi]
-  have Δ₁ := P.lComp'₀₂₃_hom
+  have Δ₁ := P.uComp'₀₂₃_hom
     (f₀₁ := (η.iso.hom ▷ h.of).hom) (f₁₂ := πᵣ g.of h.of) (f₀₂ := πᵣ f.of h.of)
     (f₂₃ := h.of.r) (f := (f.of ≫ h.of).r) (f₁₃ := (g.of ≫ h.of).r)
     (by simp) (by simp) (by simp)
@@ -403,7 +403,7 @@ lemma map₂_left_unitor {a b : EffBurnside C} (f : a ⟶ b) :
     Iso.inv_hom_id_assoc, leftUnitor_whiskerRight, inv_hom_whiskerRight_assoc, cancelIso,
     whiskerLeft_inv_hom_assoc]
   simp only [𝔯, Pith.id_of, id_apex, id_l]
-  have := P.rComp'₀₁₃_hom
+  have := P.vComp'₀₁₃_hom
     (f₀₁ := πᵣ (𝟙 a.as) f.of)
     (f₁₂ := f.of.l)
     (f₂₃ := 𝟙 _)
@@ -418,7 +418,7 @@ lemma map₂_left_unitor {a b : EffBurnside C} (f : a ⟶ b) :
     ← reassoc_of% wr% associator_inv_naturality_left, ← associator_inv_naturality_left_assoc,
     whisker_exchange_assoc, whiskerLeft_comp_assoc, cancel_epi]
   rotate_isos 3 0
-  simp only [P.rComp'_id_l, Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, comp_whiskerRight,
+  simp only [P.vComp'_id_l, Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, comp_whiskerRight,
     leftUnitor_inv_whiskerRight, Category.assoc, comp_whiskerLeft, whiskerLeft_comp,
     whiskerRight_comp, Iso.hom_inv_id_assoc, hom_inv_whiskerRight_assoc, whiskerLeft_inv_hom_assoc,
     pentagon_assoc]
@@ -433,7 +433,7 @@ lemma map₂_left_unitor {a b : EffBurnside C} (f : a ⟶ b) :
     ← comp_whiskerRight, ← leftUnitor_naturality, ← whisker_exchange_assoc, cat_nf, unitors_equal,
     cancelIso, ← Category.assoc, cancel_mono, Category.assoc, ← whiskerLeft_comp_assoc,
     ← whiskerLeft_comp, 𝔩]
-  simp only [whiskerLeft_comp, Pith.id_of, P.lComp'_id_l, Iso.trans_hom, Iso.symm_hom,
+  simp only [whiskerLeft_comp, Pith.id_of, P.uComp'_id_l, Iso.trans_hom, Iso.symm_hom,
     whiskerLeftIso_hom, comp_whiskerRight, whisker_assoc, triangle_assoc_comp_right_inv_assoc,
     Category.assoc, pentagon_inv, pentagon_assoc, triangle_assoc_comp_right, comp_whiskerLeft,
     Iso.inv_hom_id_assoc, cancel_epi]
@@ -483,19 +483,19 @@ lemma map₂_right_unitor {a b : EffBurnside C} (f : a ⟶ b) :
   simp_rw [leftUnitor_comp, whiskerLeft_comp, comp_whiskerRight, whiskerLeft_comp,
     Category.assoc, cancelIso, ← whiskerLeft_comp_assoc, ← pentagon_hom_inv_inv_inv_inv_assoc,
     ← associator_inv_naturality_left_assoc, whisker_exchange_assoc, whiskerLeft_comp_assoc,
-    ← associator_naturality_middle_assoc, ← comp_whiskerRight_assoc, 𝔯, P.rComp'_id_l]
+    ← associator_naturality_middle_assoc, ← comp_whiskerRight_assoc, 𝔯, P.vComp'_id_l]
   dsimp
   simp_rw [whiskerLeft_comp_assoc, cancelIso, Category.comp_id, cancel_epi,
     ← whiskerLeft_comp_assoc,]
   dsimp [𝔩]
-  have := P.lComp'₀₂₃_hom
+  have := P.uComp'₀₂₃_hom
     (f₀₁ := πₗ f.of (𝟙 b.as)) (f₁₂ := f.of.r) (f₂₃ := 𝟙 b.as.of) (f₀₂ := πᵣ f.of (𝟙 b.as))
     (f := (f.of ≫ 𝟙 _).r) (f₁₃ := f.of.r)
     (by simp)
     (by simp)
     (by simp)
-  -- simp? [this, cancel_epi, P.lComp'_id_l]
-  simp only [whiskerLeft_comp, Category.assoc, this, P.lComp'_id_l, Iso.trans_hom, Iso.symm_hom,
+  -- simp? [this, cancel_epi, P.uComp'_id_l]
+  simp only [whiskerLeft_comp, Category.assoc, this, P.uComp'_id_l, Iso.trans_hom, Iso.symm_hom,
     whiskerLeftIso_hom, whiskerLeft_rightUnitor_inv, inv_hom_whiskerRight_assoc,
     Iso.inv_hom_id_assoc, whiskerLeft_whiskerLeft_inv_hom_assoc, whiskerRight_comp,
     leftUnitor_whiskerRight, cancel_epi]

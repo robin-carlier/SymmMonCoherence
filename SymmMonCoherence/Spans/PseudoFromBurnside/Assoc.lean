@@ -42,61 +42,61 @@ section
 
 variable {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
 
-abbrev lα₁ :=
-  P.lComp'
+abbrev uα₁ :=
+  P.uComp'
     (α_ f.of g.of h.of).hom.hom
     (f.of ≫ g.of ≫ h.of).r
     ((f.of ≫ g.of) ≫ h.of).r
 
-abbrev rα₁ := P.rComp'
+abbrev vα₁ := P.vComp'
     (α_ f.of g.of h.of).hom.hom
     (f.of ≫ g.of ≫ h.of).l
     ((f.of ≫ g.of) ≫ h.of).l
 
-abbrev lα₂ :=
-  P.lComp'
+abbrev uα₂ :=
+  P.uComp'
     ((α_ f.of g.of h.of).hom.hom ≫ πᵣ f.of (g.of ≫ h.of))
     (πᵣ g.of h.of)
     (πᵣ (f.of ≫ g.of) h.of)
 
-abbrev rα₂ :=
-  P.rComp'
+abbrev vα₂ :=
+  P.vComp'
     ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of)
     (πₗ f.of g.of)
     (πₗ f.of (g.of ≫ h.of))
 
-abbrev rα₃ :=
-  (P.rComp'
+abbrev vα₃ :=
+  (P.vComp'
     ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of)
     (f.of ≫ g.of).l
     (f.of ≫ g.of ≫ h.of).l)
 
-abbrev lα₂' :=
-  P.lComp'
+abbrev uα₂' :=
+  P.uComp'
     (πᵣ f.of (g.of ≫ h.of))
     (πᵣ g.of h.of)
     ((α_ f.of g.of h.of).inv.hom ≫ πᵣ (f.of ≫ g.of) h.of)
 
-abbrev rα₁' :=
-  (P.rComp'
+abbrev vα₁' :=
+  (P.vComp'
     ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of)
     (f.of ≫ g.of).l
     (f.of ≫ g.of ≫ h.of).l)
 
-abbrev lα₃ :=
-  P.lComp'
+abbrev uα₃ :=
+  P.uComp'
     ((α_ f.of g.of h.of).inv.hom ≫ πᵣ (f.of ≫ g.of) h.of)
     h.of.r
     (f.of ≫ g.of ≫ h.of).r
 
-abbrev lα₄ :=
-  P.lComp'
+abbrev uα₄ :=
+  P.uComp'
     (α_ f.of g.of h.of).hom.hom
     (πᵣ f.of (g.of ≫ h.of))
     ((α_ f.of g.of h.of).hom.hom ≫ πᵣ f.of (g.of ≫ h.of))
 
-abbrev rα₄ :=
-  P.rComp'
+abbrev vα₄ :=
+  P.vComp'
     (α_ f.of g.of h.of).hom.hom
     ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of)
     (πₗ (f.of ≫ g.of) h.of)
@@ -157,11 +157,11 @@ end
 -- #check bicategoricalComp
 
 lemma assoc₀ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-    (P.rα₃ f g h).hom ≫ (P.𝔯 f g).hom ▷
-      P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ⊗≫
-       (P.r f.of.l ◁ (P.rα₂ f g h).inv ≫ (P.𝔯 f (g ≫ h)).inv) = 𝟙 _ := by
-  dsimp [rα₃, bicategoricalComp, 𝔯, rα₂]
-  simp [P.rComp'₀₁₃_hom
+    (P.vα₃ f g h).hom ≫ (P.𝔯 f g).hom ▷
+      P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ⊗≫
+       (P.v f.of.l ◁ (P.vα₂ f g h).inv ≫ (P.𝔯 f (g ≫ h)).inv) = 𝟙 _ := by
+  dsimp [vα₃, bicategoricalComp, 𝔯, vα₂]
+  simp [P.vComp'₀₁₃_hom
     (f₀₁ := ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of))
     (f₁₂ := πₗ f.of g.of)
     (f₂₃ := f.of.l)
@@ -171,12 +171,12 @@ lemma assoc₀ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ 
     (by simp) (by simp) (by simp)]
 
 lemma assoc₁ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-  (P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₃ f g h).hom) ⊗≫
-    (P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₂' f g h).hom ▷ P.l h.of.r) ⊗≫
-    (P.r (f.of ≫ g.of ≫ h.of).l ◁ P.l (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv) ⊗≫
-    P.r (f.of ≫ (g ≫ h).of).l ◁ (P.𝔩 f (g ≫ h)).inv = 𝟙 _ := by
-  dsimp [lα₃, lα₂', 𝔩, bicategoricalComp]
-  have := P.lComp'₀₂₃_hom
+  (P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₃ f g h).hom) ⊗≫
+    (P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₂' f g h).hom ▷ P.u h.of.r) ⊗≫
+    (P.v (f.of ≫ g.of ≫ h.of).l ◁ P.u (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv) ⊗≫
+    P.v (f.of ≫ (g ≫ h).of).l ◁ (P.𝔩 f (g ≫ h)).inv = 𝟙 _ := by
+  dsimp [uα₃, uα₂', 𝔩, bicategoricalComp]
+  have := P.uComp'₀₂₃_hom
     (f₀₁ := πᵣ f.of (g.of ≫ h.of))
     (f₁₂ := πᵣ g.of h.of)
     (f₂₃ := h.of.r)
@@ -187,10 +187,10 @@ lemma assoc₁ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ 
   simp [this]
 
 lemma assoc₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-    (P.𝔯 (f ≫ g) h).hom ⊗≫ P.r (f.of ≫ g.of).l ◁ (P.rα₄ f g h).hom ⊗≫
-      (P.rα₃ f g h).inv ▷ P.r (α_ f.of g.of h.of).hom.hom = (P.rα₁ f g h).hom := by
-  dsimp [rα₃, bicategoricalComp, 𝔯, rα₄, rα₁]
-  simp [P.rComp'₀₁₃_hom
+    (P.𝔯 (f ≫ g) h).hom ⊗≫ P.v (f.of ≫ g.of).l ◁ (P.vα₄ f g h).hom ⊗≫
+      (P.vα₃ f g h).inv ▷ P.v (α_ f.of g.of h.of).hom.hom = (P.vα₁ f g h).hom := by
+  dsimp [vα₃, bicategoricalComp, 𝔯, vα₄, vα₁]
+  simp [P.vComp'₀₁₃_hom
     (f₀₁ := (α_ f.of g.of h.of).hom.hom)
     (f₁₂ := (α_ f.of g.of h.of).inv.hom ≫ (πₗ (f.of ≫ g.of) h.of))
     (f₂₃ := (f.of ≫ g.of).l)
@@ -202,178 +202,178 @@ lemma assoc₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ 
 -- #exit
 set_option maxHeartbeats 500000 in -- Calc + bicategory is so slow
 lemma aux₀ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-    P.r (f.of ≫ g.of).l ◁
-      P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-        P.η f g h ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r =
-    𝟙 _ ⊗≫ P.r (f.of ≫ g.of).l ◁ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-      P.r (α_ f.of g.of h.of).hom.hom ◁
-        P.l (α_ f.of g.of h.of).hom.hom ◁ (P.lα₂' f g h).inv ▷ P.l h.of.r ⊗≫
-    P.r (f.of ≫ g.of).l ◁ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-      P.r (α_ f.of g.of h.of).hom.hom ◁ P.l (α_ f.of g.of h.of).hom.hom ◁ (P.lα₃ f g h).inv ⊗≫
-    (P.rα₃ f g h).inv ▷ P.r (α_ f.of g.of h.of).hom.hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷
-      P.l (f.of ≫ g.of ≫ h.of).r ⊗≫
-    P.r (f.of ≫ g.of ≫ h.of).l ◁ P.η f g h ▷ P.l (f.of ≫ g.of ≫ h.of).r ⊗≫
-    P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₃ f g h).hom ⊗≫
-    P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₂' f g h).hom ▷ P.l h.of.r ⊗≫
-    (P.rα₃ f g h).hom ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫ 𝟙 _ := by
+    P.v (f.of ≫ g.of).l ◁
+      P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+        P.η f g h ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r =
+    𝟙 _ ⊗≫ P.v (f.of ≫ g.of).l ◁ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+      P.v (α_ f.of g.of h.of).hom.hom ◁
+        P.u (α_ f.of g.of h.of).hom.hom ◁ (P.uα₂' f g h).inv ▷ P.u h.of.r ⊗≫
+    P.v (f.of ≫ g.of).l ◁ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+      P.v (α_ f.of g.of h.of).hom.hom ◁ P.u (α_ f.of g.of h.of).hom.hom ◁ (P.uα₃ f g h).inv ⊗≫
+    (P.vα₃ f g h).inv ▷ P.v (α_ f.of g.of h.of).hom.hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷
+      P.u (f.of ≫ g.of ≫ h.of).r ⊗≫
+    P.v (f.of ≫ g.of ≫ h.of).l ◁ P.η f g h ▷ P.u (f.of ≫ g.of ≫ h.of).r ⊗≫
+    P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₃ f g h).hom ⊗≫
+    P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₂' f g h).hom ▷ P.u h.of.r ⊗≫
+    (P.vα₃ f g h).hom ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫ 𝟙 _ := by
   symm
   calc
-    _ = 𝟙 _ ⊗≫ P.r (f.of ≫ g.of).l ◁ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-        P.r (α_ f.of g.of h.of).hom.hom ◁ P.l (α_ f.of g.of h.of).hom.hom ◁
-          (P.lα₂' f g h).inv ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-          P.r (α_ f.of g.of h.of).hom.hom ◁ P.l (α_ f.of g.of h.of).hom.hom ◁ (P.lα₃ f g h).inv ⊗≫
-        (P.rα₃ f g h).inv ▷ P.r (α_ f.of g.of h.of).hom.hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷
-          P.l (f.of ≫ g.of ≫ h.of).r ⊗≫
-        P.r (f.of ≫ g.of ≫ h.of).l ◁ P.η f g h ▷ P.l (f.of ≫ g.of ≫ h.of).r ⊗≫
-        P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₃ f g h).hom ⊗≫
-        P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₂' f g h).hom ▷ P.l h.of.r ⊗≫
-        (P.rα₃ f g h).hom ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷
-          P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫ 𝟙 _ := rfl
+    _ = 𝟙 _ ⊗≫ P.v (f.of ≫ g.of).l ◁ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+        P.v (α_ f.of g.of h.of).hom.hom ◁ P.u (α_ f.of g.of h.of).hom.hom ◁
+          (P.uα₂' f g h).inv ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+          P.v (α_ f.of g.of h.of).hom.hom ◁ P.u (α_ f.of g.of h.of).hom.hom ◁ (P.uα₃ f g h).inv ⊗≫
+        (P.vα₃ f g h).inv ▷ P.v (α_ f.of g.of h.of).hom.hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷
+          P.u (f.of ≫ g.of ≫ h.of).r ⊗≫
+        P.v (f.of ≫ g.of ≫ h.of).l ◁ P.η f g h ▷ P.u (f.of ≫ g.of ≫ h.of).r ⊗≫
+        P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₃ f g h).hom ⊗≫
+        P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₂' f g h).hom ▷ P.u h.of.r ⊗≫
+        (P.vα₃ f g h).hom ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
+          P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫ 𝟙 _ := rfl
     _ = 𝟙 _ ⊗≫
-        (((P.rα₃ f g h).inv ▷ (P.r (α_ f.of g.of h.of).hom.hom ≫ P.l (α_ f.of g.of h.of).hom.hom ≫
-          (P.l (πᵣ f.of (g.of ≫ h.of)) ≫ P.l (πᵣ g.of h.of)) ≫ P.l h.of.r)) ≫
-          P.r (f.of ≫ g.of ≫ h.of).l ◁ P.r (α_ f.of g.of h.of).hom.hom ◁
-            P.l (α_ f.of g.of h.of).hom.hom ◁
-          ((P.lα₂' f g h).inv ▷ P.l h.of.r ≫ (P.lα₃ f g h).inv)) ⊗≫
-          ((P.r (f.of ≫ g.of ≫ h.of).l ≫ P.r (α_ f.of g.of h.of).hom.hom ≫
-              P.l (α_ f.of g.of h.of).hom.hom) ◁
-                ((P.lα₃ f g h).hom ≫ (P.lα₂' f g h).hom ▷ P.l h.of.r) ≫
-          (P.r (f.of ≫ g.of ≫ h.of).l ◁ P.η f g h ≫ (ρ_ _).hom) ▷
-            ((P.l (πᵣ f.of (g.of ≫ h.of)) ≫ P.l (πᵣ g.of h.of)) ≫ P.l h.of.r)) ⊗≫
-          (P.rα₃ f g h).hom ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷
-            P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫ 𝟙 _ := by
+        (((P.vα₃ f g h).inv ▷ (P.v (α_ f.of g.of h.of).hom.hom ≫ P.u (α_ f.of g.of h.of).hom.hom ≫
+          (P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r)) ≫
+          P.v (f.of ≫ g.of ≫ h.of).l ◁ P.v (α_ f.of g.of h.of).hom.hom ◁
+            P.u (α_ f.of g.of h.of).hom.hom ◁
+          ((P.uα₂' f g h).inv ▷ P.u h.of.r ≫ (P.uα₃ f g h).inv)) ⊗≫
+          ((P.v (f.of ≫ g.of ≫ h.of).l ≫ P.v (α_ f.of g.of h.of).hom.hom ≫
+              P.u (α_ f.of g.of h.of).hom.hom) ◁
+                ((P.uα₃ f g h).hom ≫ (P.uα₂' f g h).hom ▷ P.u h.of.r) ≫
+          (P.v (f.of ≫ g.of ≫ h.of).l ◁ P.η f g h ≫ (ρ_ _).hom) ▷
+            ((P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r)) ⊗≫
+          (P.vα₃ f g h).hom ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
+            P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫ 𝟙 _ := by
         rw [← whisker_exchange,
-          whisker_exchange (θ := ((P.lα₃ f g h).hom ≫ (P.lα₂' f g h).hom ▷ P.l h.of.r))]
+          whisker_exchange (θ := ((P.uα₃ f g h).hom ≫ (P.uα₂' f g h).hom ▷ P.u h.of.r))]
         bicategory
     _ = 𝟙 _ ⊗≫
-          ((P.rα₃ f g h).inv ▷ (P.r (α_ f.of g.of h.of).hom.hom ≫ P.l (α_ f.of g.of h.of).hom.hom ≫
-            (P.l (πᵣ f.of (g.of ≫ h.of)) ≫ P.l (πᵣ g.of h.of)) ≫ P.l h.of.r)) ⊗≫
-          P.r (f.of ≫ g.of ≫ h.of).l ◁ P.r (α_ f.of g.of h.of).hom.hom ◁
-            P.l (α_ f.of g.of h.of).hom.hom ◁
-          ((P.lα₂' f g h).inv ▷ P.l h.of.r ≫ (P.lα₃ f g h).inv ≫
-            (P.lα₃ f g h).hom ≫ (P.lα₂' f g h).hom ▷ P.l h.of.r) ⊗≫
-          (P.r (f.of ≫ g.of ≫ h.of).l ◁ P.η f g h) ▷
-            ((P.l (πᵣ f.of (g.of ≫ h.of)) ≫ P.l (πᵣ g.of h.of)) ≫ P.l h.of.r) ⊗≫
-          (P.rα₃ f g h).hom ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷
-            P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫ 𝟙 _ := by
+          ((P.vα₃ f g h).inv ▷ (P.v (α_ f.of g.of h.of).hom.hom ≫ P.u (α_ f.of g.of h.of).hom.hom ≫
+            (P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r)) ⊗≫
+          P.v (f.of ≫ g.of ≫ h.of).l ◁ P.v (α_ f.of g.of h.of).hom.hom ◁
+            P.u (α_ f.of g.of h.of).hom.hom ◁
+          ((P.uα₂' f g h).inv ▷ P.u h.of.r ≫ (P.uα₃ f g h).inv ≫
+            (P.uα₃ f g h).hom ≫ (P.uα₂' f g h).hom ▷ P.u h.of.r) ⊗≫
+          (P.v (f.of ≫ g.of ≫ h.of).l ◁ P.η f g h) ▷
+            ((P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r) ⊗≫
+          (P.vα₃ f g h).hom ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
+            P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫ 𝟙 _ := by
       bicategory
     _ = 𝟙 _ ⊗≫
-        ((P.rα₃ f g h).inv ▷ ((P.r (α_ f.of g.of h.of).hom.hom ≫ P.l (α_ f.of g.of h.of).hom.hom) ≫
-          (P.l (πᵣ f.of (g.of ≫ h.of)) ≫ P.l (πᵣ g.of h.of)) ≫ P.l h.of.r) ≫
-        P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.η f g h ▷
-          ((P.l (πᵣ f.of (g.of ≫ h.of)) ≫ P.l (πᵣ g.of h.of)) ≫ P.l h.of.r))) ⊗≫
-        (P.rα₃ f g h).hom ▷
-          (𝟙 _ ≫ (P.l (πᵣ f.of (g.of ≫ h.of)) ≫ P.l (πᵣ g.of h.of)) ≫ P.l h.of.r) ⊗≫ 𝟙 _ := by
+        ((P.vα₃ f g h).inv ▷ ((P.v (α_ f.of g.of h.of).hom.hom ≫ P.u (α_ f.of g.of h.of).hom.hom) ≫
+          (P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r) ≫
+        P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.η f g h ▷
+          ((P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r))) ⊗≫
+        (P.vα₃ f g h).hom ▷
+          (𝟙 _ ≫ (P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r) ⊗≫ 𝟙 _ := by
       simp only [cancelIso]
       bicategory
-    _ = P.r (f.of ≫ g.of).l ◁
-            P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-              P.η f g h ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        ((P.rα₃ f g h).inv ▷
-          (𝟙 _ ≫ (P.l (πᵣ f.of (g.of ≫ h.of)) ≫ P.l (πᵣ g.of h.of)) ≫ P.l h.of.r) ≫
-        (P.rα₃ f g h).hom ▷
-          (𝟙 _ ≫ (P.l (πᵣ f.of (g.of ≫ h.of)) ≫ P.l (πᵣ g.of h.of)) ≫ P.l h.of.r)) ⊗≫ 𝟙 _ := by
+    _ = P.v (f.of ≫ g.of).l ◁
+            P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+              P.η f g h ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        ((P.vα₃ f g h).inv ▷
+          (𝟙 _ ≫ (P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r) ≫
+        (P.vα₃ f g h).hom ▷
+          (𝟙 _ ≫ (P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r)) ⊗≫ 𝟙 _ := by
       rw [← whisker_exchange]
       bicategory
-    _ = P.r (f.of ≫ g.of).l ◁
-          P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-            P.η f g h ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r := by
+    _ = P.v (f.of ≫ g.of).l ◁
+          P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+            P.η f g h ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r := by
       simp only [cancelIso]
       bicategory
 
 /- Auxiliary computation for map₂_assoc -/
 lemma cocycle₁ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-    P.r (f.of ≫ g.of).l ◁ P.l (πᵣ f.of g.of) ◁ (P.Γ g h).inv ⊗≫
-      (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ▷ P.l g.of.r ▷ P.r h.of.l ⊗≫
-      P.r f.of.l ◁ (P.Γ f g).inv ▷ P.l g.of.r ▷ P.r h.of.l ⊗≫
-      P.r f.of.l ◁ P.l f.of.r ◁ P.r g.of.l ◁ (P.Γ g h).hom =
-    𝟙 _ ⊗≫ (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of) ⊗≫
-      (P.r f.of.l ◁ (P.Γ f g).inv ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of)) ⊗≫ 𝟙 _ := by
+    P.v (f.of ≫ g.of).l ◁ P.u (πᵣ f.of g.of) ◁ (P.Γ g h).inv ⊗≫
+      (P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ▷ P.u g.of.r ▷ P.v h.of.l ⊗≫
+      P.v f.of.l ◁ (P.Γ f g).inv ▷ P.u g.of.r ▷ P.v h.of.l ⊗≫
+      P.v f.of.l ◁ P.u f.of.r ◁ P.v g.of.l ◁ (P.Γ g h).hom =
+    𝟙 _ ⊗≫ (P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of) ⊗≫
+      (P.v f.of.l ◁ (P.Γ f g).inv ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of)) ⊗≫ 𝟙 _ := by
   calc
-    _ = P.r (f.of ≫ g.of).l ◁ P.l (πᵣ f.of g.of) ◁ (P.Γ g h).inv ⊗≫
-          (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ▷ P.l g.of.r ▷ P.r h.of.l ⊗≫
-          P.r f.of.l ◁ (P.Γ f g).inv ▷ P.l g.of.r ▷ P.r h.of.l ⊗≫
-          P.r f.of.l ◁ P.l f.of.r ◁ P.r g.of.l ◁ (P.Γ g h).hom := rfl
-    _ = 𝟙 _  ⊗≫ ((P.r (f.of ≫ g.of).l ≫ P.l (πᵣ f.of g.of)) ◁ (P.Γ g h).inv ≫
-          ((𝟙 _ ⊗≫ (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ⊗≫ P.r f.of.l ◁ (P.Γ f g).inv) ▷
-          (P.l g.of.r ≫ P.r h.of.l))) ⊗≫
-          P.r f.of.l ◁ P.l f.of.r ◁ P.r g.of.l ◁ (P.Γ g h).hom := by bicategory
+    _ = P.v (f.of ≫ g.of).l ◁ P.u (πᵣ f.of g.of) ◁ (P.Γ g h).inv ⊗≫
+          (P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ▷ P.u g.of.r ▷ P.v h.of.l ⊗≫
+          P.v f.of.l ◁ (P.Γ f g).inv ▷ P.u g.of.r ▷ P.v h.of.l ⊗≫
+          P.v f.of.l ◁ P.u f.of.r ◁ P.v g.of.l ◁ (P.Γ g h).hom := rfl
+    _ = 𝟙 _  ⊗≫ ((P.v (f.of ≫ g.of).l ≫ P.u (πᵣ f.of g.of)) ◁ (P.Γ g h).inv ≫
+          ((𝟙 _ ⊗≫ (P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ⊗≫ P.v f.of.l ◁ (P.Γ f g).inv) ▷
+          (P.u g.of.r ≫ P.v h.of.l))) ⊗≫
+          P.v f.of.l ◁ P.u f.of.r ◁ P.v g.of.l ◁ (P.Γ g h).hom := by bicategory
     _ = 𝟙 _ ⊗≫
-          ((P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ⊗≫
-            P.r f.of.l ◁ (P.Γ f g).inv) ▷ (P.r (πₗ g.of h.of) ≫ P.l (πᵣ g.of h.of)) ⊗≫
-          P.r f.of.l ◁ P.l f.of.r ◁ P.r g.of.l ◁ (P.Γ g h).inv ≫
-          P.r f.of.l ◁ P.l f.of.r ◁ P.r g.of.l ◁ (P.Γ g h).hom := by
+          ((P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ⊗≫
+            P.v f.of.l ◁ (P.Γ f g).inv) ▷ (P.v (πₗ g.of h.of) ≫ P.u (πᵣ g.of h.of)) ⊗≫
+          P.v f.of.l ◁ P.u f.of.r ◁ P.v g.of.l ◁ (P.Γ g h).inv ≫
+          P.v f.of.l ◁ P.u f.of.r ◁ P.v g.of.l ◁ (P.Γ g h).hom := by
       rw [whisker_exchange]
       bicategory
-    _ = 𝟙 _ ⊗≫ (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of) ⊗≫
-          (P.r f.of.l ◁ (P.Γ f g).inv ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of)) ⊗≫ 𝟙 _ := by
+    _ = 𝟙 _ ⊗≫ (P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of) ⊗≫
+          (P.v f.of.l ◁ (P.Γ f g).inv ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of)) ⊗≫ 𝟙 _ := by
       simp only [cancelIso]
       bicategory
 
 set_option maxHeartbeats 400000 in -- bicategory computations are slow
 lemma comp₁ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (P.μ (f ≫ g) h).hom ⊗≫
-      P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-      P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₄ f g h).hom ▷
-        P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-      P.r (f.of ≫ g.of).l ◁ (P.rα₄ f g h).hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷
-        P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-      P.r (f.of ≫ g.of).l ◁ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-      P.r (α_ f.of g.of h.of).hom.hom ◁ P.l (α_ f.of g.of h.of).hom.hom ◁
-        (P.lα₂' f g h).inv ▷ P.l h.of.r ⊗≫
-      P.r (f.of ≫ g.of).l ◁ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-        P.r (α_ f.of g.of h.of).hom.hom ◁ P.l (α_ f.of g.of h.of).hom.hom ◁ (P.lα₃ f g h).inv ⊗≫
-      (P.rα₃ f g h).inv ▷ P.r (α_ f.of g.of h.of).hom.hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷
-        P.l (f.of ≫ g.of ≫ h.of).r =
-    P.r ((f.of ≫ g.of) ≫ h.of).l ◁ (P.lα₁ f g h).hom ⊗≫
-      (P.rα₁ f g h).hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷ P.l (f.of ≫ g.of ≫ h.of).r := by
+      P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+      P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₄ f g h).hom ▷
+        P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+      P.v (f.of ≫ g.of).l ◁ (P.vα₄ f g h).hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷
+        P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+      P.v (f.of ≫ g.of).l ◁ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+      P.v (α_ f.of g.of h.of).hom.hom ◁ P.u (α_ f.of g.of h.of).hom.hom ◁
+        (P.uα₂' f g h).inv ▷ P.u h.of.r ⊗≫
+      P.v (f.of ≫ g.of).l ◁ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+        P.v (α_ f.of g.of h.of).hom.hom ◁ P.u (α_ f.of g.of h.of).hom.hom ◁ (P.uα₃ f g h).inv ⊗≫
+      (P.vα₃ f g h).inv ▷ P.v (α_ f.of g.of h.of).hom.hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷
+        P.u (f.of ≫ g.of ≫ h.of).r =
+    P.v ((f.of ≫ g.of) ≫ h.of).l ◁ (P.uα₁ f g h).hom ⊗≫
+      (P.vα₁ f g h).hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷ P.u (f.of ≫ g.of ≫ h.of).r := by
   rw [P.μ_hom]
   conv_lhs =>
     equals
-      ((P.𝔯 (f ≫ g) h).hom ▷ P.l ((f ≫ g).of ≫ h.of).r ≫
-        (P.r (f ≫ g).of.l ≫ P.r (πₗ (f ≫ g).of h.of)) ◁
-          ((P.𝔩 (f ≫ g) h).hom ≫ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-            (P.lα₄ f g h).hom ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r)) ⊗≫
-        P.r (f.of ≫ g.of).l ◁ (P.rα₄ f g h).hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷
-          P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        ((P.r (f.of ≫ g.of).l ≫ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of)) ◁
-          (P.r (α_ f.of g.of h.of).hom.hom ◁ P.l (α_ f.of g.of h.of).hom.hom ◁
-            (P.lα₂' f g h).inv ▷ P.l h.of.r ⊗≫
-          P.r (α_ f.of g.of h.of).hom.hom ◁ P.l (α_ f.of g.of h.of).hom.hom ◁ (P.lα₃ f g h).inv) ≫
-        (P.rα₃ f g h).inv ▷ _) ⊗≫ 𝟙 _ => bicategory
+      ((P.𝔯 (f ≫ g) h).hom ▷ P.u ((f ≫ g).of ≫ h.of).r ≫
+        (P.v (f ≫ g).of.l ≫ P.v (πₗ (f ≫ g).of h.of)) ◁
+          ((P.𝔩 (f ≫ g) h).hom ≫ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+            (P.uα₄ f g h).hom ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r)) ⊗≫
+        P.v (f.of ≫ g.of).l ◁ (P.vα₄ f g h).hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷
+          P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        ((P.v (f.of ≫ g.of).l ≫ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of)) ◁
+          (P.v (α_ f.of g.of h.of).hom.hom ◁ P.u (α_ f.of g.of h.of).hom.hom ◁
+            (P.uα₂' f g h).inv ▷ P.u h.of.r ⊗≫
+          P.v (α_ f.of g.of h.of).hom.hom ◁ P.u (α_ f.of g.of h.of).hom.hom ◁ (P.uα₃ f g h).inv) ≫
+        (P.vα₃ f g h).inv ▷ _) ⊗≫ 𝟙 _ => bicategory
   rw [← whisker_exchange, whisker_exchange
-    (f := (P.r (f.of ≫ g.of).l ≫ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of)))]
+    (f := (P.v (f.of ≫ g.of).l ≫ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of)))]
   conv_lhs =>
     equals
-      P.r ((f ≫ g).of ≫ h.of).l ◁
-        ((P.𝔩 (f ≫ g) h).hom ≫ ((P.lα₂ f g h).hom ▷ P.l h.of.r) ⊗≫
-          (P.lα₄ f g h).hom ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r) ⊗≫
-        ((P.𝔯 (f ≫ g) h).hom ⊗≫ P.r (f.of ≫ g.of).l ◁ (P.rα₄ f g h).hom ⊗≫
-            (P.rα₃ f g h).inv ▷ P.r (α_ f.of g.of h.of).hom.hom) ▷
-           P.l (α_ f.of g.of h.of).hom.hom ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷
-            P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of ≫ h.of).l ◁
-          ((P.r (α_ f.of g.of h.of).hom.hom ◁ P.l (α_ f.of g.of h.of).hom.hom ◁
-              (P.lα₂' f g h).inv ▷ P.l h.of.r) ⊗≫
-            P.r (α_ f.of g.of h.of).hom.hom ◁
-              P.l (α_ f.of g.of h.of).hom.hom ◁ (P.lα₃ f g h).inv) ⊗≫
+      P.v ((f ≫ g).of ≫ h.of).l ◁
+        ((P.𝔩 (f ≫ g) h).hom ≫ ((P.uα₂ f g h).hom ▷ P.u h.of.r) ⊗≫
+          (P.uα₄ f g h).hom ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r) ⊗≫
+        ((P.𝔯 (f ≫ g) h).hom ⊗≫ P.v (f.of ≫ g.of).l ◁ (P.vα₄ f g h).hom ⊗≫
+            (P.vα₃ f g h).inv ▷ P.v (α_ f.of g.of h.of).hom.hom) ▷
+           P.u (α_ f.of g.of h.of).hom.hom ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
+            P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of ≫ h.of).l ◁
+          ((P.v (α_ f.of g.of h.of).hom.hom ◁ P.u (α_ f.of g.of h.of).hom.hom ◁
+              (P.uα₂' f g h).inv ▷ P.u h.of.r) ⊗≫
+            P.v (α_ f.of g.of h.of).hom.hom ◁
+              P.u (α_ f.of g.of h.of).hom.hom ◁ (P.uα₃ f g h).inv) ⊗≫
         𝟙 _ => bicategory
   conv_lhs =>
     equals
-      (P.r ((f ≫ g).of ≫ h.of).l ◁
-        ((P.𝔩 (f ≫ g) h).hom ≫ ((P.lα₂ f g h).hom ▷ P.l h.of.r) ⊗≫
-          (P.lα₄ f g h).hom ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r) ≫
-        (P.rα₁ f g h).hom ▷ _) ⊗≫
-        P.r (f.of ≫ g.of ≫ h.of).l ◁
-          ((P.r (α_ f.of g.of h.of).hom.hom ◁ P.l (α_ f.of g.of h.of).hom.hom ◁
-              (P.lα₂' f g h).inv ▷ P.l h.of.r) ⊗≫
-            P.r (α_ f.of g.of h.of).hom.hom ◁
-              P.l (α_ f.of g.of h.of).hom.hom ◁ (P.lα₃ f g h).inv) ⊗≫
+      (P.v ((f ≫ g).of ≫ h.of).l ◁
+        ((P.𝔩 (f ≫ g) h).hom ≫ ((P.uα₂ f g h).hom ▷ P.u h.of.r) ⊗≫
+          (P.uα₄ f g h).hom ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r) ≫
+        (P.vα₁ f g h).hom ▷ _) ⊗≫
+        P.v (f.of ≫ g.of ≫ h.of).l ◁
+          ((P.v (α_ f.of g.of h.of).hom.hom ◁ P.u (α_ f.of g.of h.of).hom.hom ◁
+              (P.uα₂' f g h).inv ▷ P.u h.of.r) ⊗≫
+            P.v (α_ f.of g.of h.of).hom.hom ◁
+              P.u (α_ f.of g.of h.of).hom.hom ◁ (P.uα₃ f g h).inv) ⊗≫
         𝟙 _ => rw [assoc₂]; bicategory
   rw [whisker_exchange]
   conv_rhs => equals
-    (((P.rα₁ f g h).hom ▷ P.l ((f ≫ g).of ≫ h.of).r) ≫ _ ◁ (P.lα₁ f g h).hom) ⊗≫ 𝟙 _ =>
+    (((P.vα₁ f g h).hom ▷ P.u ((f ≫ g).of ≫ h.of).r) ≫ _ ◁ (P.uα₁ f g h).hom) ⊗≫ 𝟙 _ =>
     rw [← whisker_exchange]
     bicategory
   simp only [bicategoricalComp, Pith.comp_of, BicategoricalCoherence.assoc_iso,
@@ -385,8 +385,8 @@ lemma comp₁ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
     Iso.trans_assoc, Category.comp_id, Iso.hom_inv_id_assoc, cancel_epi]
   simp_rw [← Category.assoc, cancel_mono, Category.assoc, ← whiskerLeft_comp]
   congr 2
-  dsimp [𝔩, lα₂, lα₄, lα₁, lα₂', lα₃]
-  have := P.lComp'₀₂₃_hom
+  dsimp [𝔩, uα₂, uα₄, uα₁, uα₂', uα₃]
+  have := P.uComp'₀₂₃_hom
     (f₀₁ := πᵣ f.of (g.of ≫ h.of))
     (f₁₂ := πᵣ g.of h.of)
     (f₂₃ := h.of.r)
@@ -395,7 +395,7 @@ lemma comp₁ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
     (f := (f.of ≫ g.of ≫ h.of).r)
     (by simp) (by simp) (by simp)
   simp only [inv%this, inv_hom_whiskerRight_assoc, whiskerLeft_comp, pentagon_assoc]
-  have e₂ := P.lComp'₀₁₃_hom
+  have e₂ := P.uComp'₀₁₃_hom
     (f₀₁ := (α_ f.of g.of h.of).hom.hom )
     (f₁₂ := πᵣ f.of (g.of ≫ h.of))
     (f₂₃ := (g.of ≫ h.of).r)
@@ -403,7 +403,7 @@ lemma comp₁ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
     (f₁₃ := (f.of ≫ g.of ≫ h.of).r)
     (f := ((f.of ≫ g.of) ≫ h.of).r)
     (by simp) (by simp) (by simp)
-  have e₃ := P.lComp'₀₁₃_hom
+  have e₃ := P.uComp'₀₁₃_hom
     (f₀₁ := (α_ f.of g.of h.of).hom.hom ≫ πᵣ f.of (g.of ≫ h.of))
     (f₁₂ := πᵣ g.of h.of)
     (f₂₃ := h.of.r)
@@ -417,47 +417,47 @@ lemma comp₁ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
   bicategory
 
 lemma comp₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-    P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₃ f g h).hom ⊗≫
-        P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₂' f g h).hom ▷ P.l h.of.r ⊗≫
-        (P.rα₃ f g h).hom ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-          ((P.𝔯 f g).hom ▷ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ▷
-          P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁
-          P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-            P.l (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv ⊗≫
-        P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷
-          P.l (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv) = (⊗𝟙).hom := by
+    P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₃ f g h).hom ⊗≫
+        P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₂' f g h).hom ▷ P.u h.of.r ⊗≫
+        (P.vα₃ f g h).hom ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+          ((P.𝔯 f g).hom ▷ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ▷
+          P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁
+          P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+            P.u (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv ⊗≫
+        P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
+          P.u (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv) = (⊗𝟙).hom := by
   rw [P.μ_inv']
   conv_lhs =>
     equals
-      P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₃ f g h).hom ⊗≫
-        P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₂' f g h).hom ▷ P.l h.of.r ⊗≫
-        (((P.rα₃ f g h).hom ≫ (P.𝔯 f g).hom ▷
-          P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of)) ▷
-            (P.l (πᵣ f.of (g.of ≫ h.of)) ≫ P.l (πᵣ g.of h.of) ≫ P.l h.of.r) ≫
-        ((P.r f.of.l ≫ P.r (πₗ f.of g.of)) ≫
-          P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of)) ◁
-            P.l (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv) ⊗≫
-        (P.r f.of.l ◁ (P.rα₂ f g h).inv ≫ (P.𝔯 f (g ≫ h)).inv) ▷
-          (P.l (πᵣ f.of (g.of ≫ h.of)) ≫ P.l (g.of ≫ h.of).r) ⊗≫
-        P.r (f.of ≫ (g ≫ h).of).l ◁ (P.𝔩 f (g ≫ h)).inv => dsimp; bicategory
+      P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₃ f g h).hom ⊗≫
+        P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₂' f g h).hom ▷ P.u h.of.r ⊗≫
+        (((P.vα₃ f g h).hom ≫ (P.𝔯 f g).hom ▷
+          P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of)) ▷
+            (P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of) ≫ P.u h.of.r) ≫
+        ((P.v f.of.l ≫ P.v (πₗ f.of g.of)) ≫
+          P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of)) ◁
+            P.u (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv) ⊗≫
+        (P.v f.of.l ◁ (P.vα₂ f g h).inv ≫ (P.𝔯 f (g ≫ h)).inv) ▷
+          (P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (g.of ≫ h.of).r) ⊗≫
+        P.v (f.of ≫ (g ≫ h).of).l ◁ (P.𝔩 f (g ≫ h)).inv => dsimp; bicategory
   rw [← whisker_exchange]
   conv_lhs =>
     equals
-      (P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₃ f g h).hom)
-        ⊗≫ (P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₂' f g h).hom ▷ P.l h.of.r)
-        ⊗≫ P.r (f.of ≫ g.of ≫ h.of).l ◁ P.l (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv
-        ⊗≫ ((P.rα₃ f g h).hom ≫ (P.𝔯 f g).hom ▷
-              P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ⊗≫
-               (P.r f.of.l ◁ (P.rα₂ f g h).inv ≫ (P.𝔯 f (g ≫ h)).inv)) ▷
-            (P.l (πᵣ f.of (g.of ≫ h.of)) ≫ P.l (g.of ≫ h.of).r)
-        ⊗≫ P.r (f.of ≫ (g ≫ h).of).l ◁ (P.𝔩 f (g ≫ h)).inv => bicategory
+      (P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₃ f g h).hom)
+        ⊗≫ (P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₂' f g h).hom ▷ P.u h.of.r)
+        ⊗≫ P.v (f.of ≫ g.of ≫ h.of).l ◁ P.u (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv
+        ⊗≫ ((P.vα₃ f g h).hom ≫ (P.𝔯 f g).hom ▷
+              P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ⊗≫
+               (P.v f.of.l ◁ (P.vα₂ f g h).inv ≫ (P.𝔯 f (g ≫ h)).inv)) ▷
+            (P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (g.of ≫ h.of).r)
+        ⊗≫ P.v (f.of ≫ (g ≫ h).of).l ◁ (P.𝔩 f (g ≫ h)).inv => bicategory
   conv_lhs =>
     equals
-      (P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₃ f g h).hom) ⊗≫
-        (P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₂' f g h).hom ▷ P.l h.of.r) ⊗≫
-        (P.r (f.of ≫ g.of ≫ h.of).l ◁ P.l (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv) ⊗≫
-        P.r (f.of ≫ (g ≫ h).of).l ◁ (P.𝔩 f (g ≫ h)).inv =>
+      (P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₃ f g h).hom) ⊗≫
+        (P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₂' f g h).hom ▷ P.u h.of.r) ⊗≫
+        (P.v (f.of ≫ g.of ≫ h.of).l ◁ P.u (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv) ⊗≫
+        P.v (f.of ≫ (g ≫ h).of).l ◁ (P.𝔩 f (g ≫ h)).inv =>
     rw [assoc₀, id_whiskerRight]
     bicategory
   rw [assoc₁]
@@ -469,41 +469,41 @@ lemma comp₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
 set_option maxHeartbeats 2000000 in -- Bicategory computations are slow.
 lemma cocycle₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (P.μ (f ≫ g) h).hom ⊗≫
-      P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-      P.r (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-      (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of) ▷
-        P.l h.of.r ⊗≫
-      P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ P.l (πᵣ f.of g.of) ◁ P.r (πₗ g.of h.of) ◁ (P.𝔩 g h).inv ⊗≫
-      P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-      P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (g.of ≫ h.of).r ⊗≫
+      P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+      P.v (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+      (P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of) ▷
+        P.u h.of.r ⊗≫
+      P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ P.u (πᵣ f.of g.of) ◁ P.v (πₗ g.of h.of) ◁ (P.𝔩 g h).inv ⊗≫
+      P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+      P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (g.of ≫ h.of).r ⊗≫
       (P.μ f (g ≫ h)).inv =
-    (P.r ((f.of ≫ g.of) ≫ h.of).l ◁ (P.lα₁ f g h).hom) ⊗≫
-      (P.rα₁ f g h).hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷ P.l (f.of ≫ g.of ≫ h.of).r ⊗≫
-      (P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.η f g h) ▷ P.l (f.of ≫ g.of ≫ h.of).r) ⊗≫ 𝟙 _ := by
+    (P.v ((f.of ≫ g.of) ≫ h.of).l ◁ (P.uα₁ f g h).hom) ⊗≫
+      (P.vα₁ f g h).hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷ P.u (f.of ≫ g.of ≫ h.of).r ⊗≫
+      (P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.η f g h) ▷ P.u (f.of ≫ g.of ≫ h.of).r) ⊗≫ 𝟙 _ := by
   conv_lhs =>
     equals
       (P.μ (f ≫ g) h).hom ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₄ f g h).hom ▷
-          P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ (P.rα₄ f g h).hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷
-          P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-          (P.η f g h) ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ (P.Θ₁ f g h).inv ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ P.l (πᵣ f.of g.of) ◁ P.r (πₗ g.of h.of) ◁ (P.𝔩 g h).inv ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-        P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷
-          P.l (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv =>
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₄ f g h).hom ▷
+          P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ (P.vα₄ f g h).hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷
+          P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+          (P.η f g h) ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ (P.Θ₁ f g h).inv ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        (P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ P.u (πᵣ f.of g.of) ◁ P.v (πₗ g.of h.of) ◁ (P.𝔩 g h).inv ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+        P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
+          P.u (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv =>
     have :
         (P.Θ₂ f g h).inv =
         𝟙 _ ⊗≫
-          P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₄ f g h).hom ⊗≫ (P.rComp' (α_ f.of g.of h.of).hom.hom
+          P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₄ f g h).hom ⊗≫ (P.vComp' (α_ f.of g.of h.of).hom.hom
               ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) (πₗ (f.of ≫ g.of) h.of)).hom ▷
-            P.l (α_ f.of g.of h.of).hom.hom ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ⊗≫
-          P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-            (P.η f g h) ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ⊗≫ (P.Θ₁ f g h).inv := by
+            P.u (α_ f.of g.of h.of).hom.hom ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ⊗≫
+          P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+            (P.η f g h) ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ⊗≫ (P.Θ₁ f g h).inv := by
       have := P.baseChange_change_pullback
           ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) (πᵣ f.of (g.of ≫ h.of))
           (πᵣ f.of g.of) (πₗ g.of h.of)
@@ -520,117 +520,117 @@ lemma cocycle₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c �
   conv_lhs =>
     equals
       (P.μ (f ≫ g) h).hom ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁
-          (P.lα₄ f g h).hom ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ (P.rα₄ f g h).hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷
-          P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-          (P.η f g h) ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        ((P.𝔯 f g).hom ▷ _ ≫ _ ◁ (P.Θ₁ f g h).inv) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ ((P.Θ₁ f g h).hom ▷ _ ≫ _ ◁ (P.𝔩 g h).inv) ⊗≫
-        P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷
-          P.l (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv =>
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁
+          (P.uα₄ f g h).hom ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ (P.vα₄ f g h).hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷
+          P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+          (P.η f g h) ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        ((P.𝔯 f g).hom ▷ _ ≫ _ ◁ (P.Θ₁ f g h).inv) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ ((P.Θ₁ f g h).hom ▷ _ ≫ _ ◁ (P.𝔩 g h).inv) ⊗≫
+        P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
+          P.u (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv =>
     rw [← whisker_exchange (η := (P.𝔯 f g).hom) (θ := (P.Θ₁ f g h).inv),
         ← whisker_exchange (η := (P.Θ₁ f g h).hom) (θ := (P.𝔩 g h).inv)]
     dsimp; bicategory
   conv_lhs =>
     equals
       (P.μ (f ≫ g) h).hom ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₄ f g h).hom ▷
-          P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ (P.rα₄ f g h).hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷
-          P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-          (P.η f g h) ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        (P.𝔯 f g).hom ▷ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ▷
-          P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ ((P.Θ₁ f g h).inv ≫ (P.Θ₁ f g h).hom) ▷
-          P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁
-          P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-            P.l (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv ⊗≫
-        P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷
-          P.l (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv => dsimp; bicategory
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₄ f g h).hom ▷
+          P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ (P.vα₄ f g h).hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷
+          P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+          (P.η f g h) ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        (P.𝔯 f g).hom ▷ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ▷
+          P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ ((P.Θ₁ f g h).inv ≫ (P.Θ₁ f g h).hom) ▷
+          P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁
+          P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+            P.u (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv ⊗≫
+        P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
+          P.u (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv => dsimp; bicategory
   conv_lhs =>
     equals
       ((P.μ (f ≫ g) h).hom ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₄ f g h).hom ▷
-          P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ (P.rα₄ f g h).hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷
-          P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r) ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-          P.η f g h ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        ((P.𝔯 f g).hom ▷ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ▷
-          P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁
-          P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-            P.l (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv ⊗≫
-        P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷
-          P.l (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv) => rw [Iso.inv_hom_id]; dsimp; bicategory
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₄ f g h).hom ▷
+          P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ (P.vα₄ f g h).hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷
+          P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r) ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+          P.η f g h ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        ((P.𝔯 f g).hom ▷ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ▷
+          P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁
+          P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+            P.u (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv ⊗≫
+        P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
+          P.u (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv) => rw [Iso.inv_hom_id]; dsimp; bicategory
   conv_lhs =>
     equals
       ((P.μ (f ≫ g) h).hom ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₄ f g h).hom ▷
-          P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ (P.rα₄ f g h).hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷
-          P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-        P.r (α_ f.of g.of h.of).hom.hom ◁ P.l (α_ f.of g.of h.of).hom.hom ◁
-          (P.lα₂' f g h).inv ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-          P.r (α_ f.of g.of h.of).hom.hom ◁ P.l (α_ f.of g.of h.of).hom.hom ◁ (P.lα₃ f g h).inv ⊗≫
-        (P.rα₃ f g h).inv ▷ P.r (α_ f.of g.of h.of).hom.hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷
-          P.l (f.of ≫ g.of ≫ h.of).r) ⊗≫
-        P.r (f.of ≫ g.of ≫ h.of).l ◁ P.η f g h ▷ P.l (f.of ≫ g.of ≫ h.of).r ⊗≫
-        (P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₃ f g h).hom ⊗≫
-        P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.lα₂' f g h).hom ▷ P.l h.of.r ⊗≫
-        (P.rα₃ f g h).hom ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-          ((P.𝔯 f g).hom ▷ P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ▷
-          P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁
-          P.r ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-            P.l (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv ⊗≫
-        P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷
-          P.l (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv)) => rw [aux₀]; dsimp; bicategory
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₄ f g h).hom ▷
+          P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ (P.vα₄ f g h).hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷
+          P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+        P.v (α_ f.of g.of h.of).hom.hom ◁ P.u (α_ f.of g.of h.of).hom.hom ◁
+          (P.uα₂' f g h).inv ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+          P.v (α_ f.of g.of h.of).hom.hom ◁ P.u (α_ f.of g.of h.of).hom.hom ◁ (P.uα₃ f g h).inv ⊗≫
+        (P.vα₃ f g h).inv ▷ P.v (α_ f.of g.of h.of).hom.hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷
+          P.u (f.of ≫ g.of ≫ h.of).r) ⊗≫
+        P.v (f.of ≫ g.of ≫ h.of).l ◁ P.η f g h ▷ P.u (f.of ≫ g.of ≫ h.of).r ⊗≫
+        (P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₃ f g h).hom ⊗≫
+        P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₂' f g h).hom ▷ P.u h.of.r ⊗≫
+        (P.vα₃ f g h).hom ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+          ((P.𝔯 f g).hom ▷ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ▷
+          P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁
+          P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+            P.u (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv ⊗≫
+        P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
+          P.u (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv)) => rw [aux₀]; dsimp; bicategory
   rw [P.comp₁ f g h, P.comp₂ f g h]
   bicategory
 
 lemma aux₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-    P.r f.of.l ◁ (P.Γ f g).inv ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-      P.r f.of.l ◁ P.l f.of.r ◁ (P.μ g h).inv ⊗≫
-      P.r f.of.l ◁ P.l f.of.r ◁ (P.𝔯 g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-      P.r f.of.l ◁ (P.Γ f g).hom ▷ P.r (πₗ g.of h.of) ▷ P.l (g.of ≫ h.of).r =
-    𝟙 _ ⊗≫ (P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁
-      P.l (πᵣ f.of g.of) ◁ P.r (πₗ g.of h.of) ◁ (P.𝔩 g h).inv) ⊗≫ 𝟙 _ := by
+    P.v f.of.l ◁ (P.Γ f g).inv ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+      P.v f.of.l ◁ P.u f.of.r ◁ (P.μ g h).inv ⊗≫
+      P.v f.of.l ◁ P.u f.of.r ◁ (P.𝔯 g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+      P.v f.of.l ◁ (P.Γ f g).hom ▷ P.v (πₗ g.of h.of) ▷ P.u (g.of ≫ h.of).r =
+    𝟙 _ ⊗≫ (P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁
+      P.u (πᵣ f.of g.of) ◁ P.v (πₗ g.of h.of) ◁ (P.𝔩 g h).inv) ⊗≫ 𝟙 _ := by
   conv_lhs =>
     equals
-      P.r f.of.l ◁ (P.Γ f g).inv ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        (P.r f.of.l ◁ P.l f.of.r ◁ ((P.μ g h).inv ≫ (P.𝔯 g h).hom ▷ P.l (g.of ≫ h.of).r)) ⊗≫
-        P.r f.of.l ◁ (P.Γ f g).hom ▷ P.r (πₗ g.of h.of) ▷ P.l (g.of ≫ h.of).r => dsimp; bicategory
-  have : (P.μ g h).inv ≫ (P.𝔯 g h).hom ▷ P.l (g.of ≫ h.of).r = _ ◁ (P.𝔩 g h).inv := by
+      P.v f.of.l ◁ (P.Γ f g).inv ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        (P.v f.of.l ◁ P.u f.of.r ◁ ((P.μ g h).inv ≫ (P.𝔯 g h).hom ▷ P.u (g.of ≫ h.of).r)) ⊗≫
+        P.v f.of.l ◁ (P.Γ f g).hom ▷ P.v (πₗ g.of h.of) ▷ P.u (g.of ≫ h.of).r => dsimp; bicategory
+  have : (P.μ g h).inv ≫ (P.𝔯 g h).hom ▷ P.u (g.of ≫ h.of).r = _ ◁ (P.𝔩 g h).inv := by
     simp
   rw [this]
   conv_lhs =>
     equals
-      P.r f.of.l ◁ (P.Γ f g).inv ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.l f.of.r ◁ P.r g.of.l ◁ P.r (πₗ g.of h.of) ◁ (P.𝔩 g h).inv ⊗≫
-        P.r f.of.l ◁ (P.Γ f g).hom ▷ P.r (πₗ g.of h.of) ▷ P.l (g.of ≫ h.of).r => bicategory
+      P.v f.of.l ◁ (P.Γ f g).inv ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.u f.of.r ◁ P.v g.of.l ◁ P.v (πₗ g.of h.of) ◁ (P.𝔩 g h).inv ⊗≫
+        P.v f.of.l ◁ (P.Γ f g).hom ▷ P.v (πₗ g.of h.of) ▷ P.u (g.of ≫ h.of).r => bicategory
   conv_lhs =>
     equals
-      𝟙 _ ⊗≫ ((P.r f.of.l ◁ (P.Γ f g).inv ▷ P.r (πₗ g.of h.of)) ▷ _ ≫
+      𝟙 _ ⊗≫ ((P.v f.of.l ◁ (P.Γ f g).inv ▷ P.v (πₗ g.of h.of)) ▷ _ ≫
         _ ◁ (P.𝔩 g h).inv) ⊗≫
-        P.r f.of.l ◁ (P.Γ f g).hom ▷ P.r (πₗ g.of h.of) ▷ P.l (g.of ≫ h.of).r => bicategory
+        P.v f.of.l ◁ (P.Γ f g).hom ▷ P.v (πₗ g.of h.of) ▷ P.u (g.of ≫ h.of).r => bicategory
   rw [← whisker_exchange]
   conv_lhs =>
     equals
     𝟙 _ ⊗≫
-      P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ P.l (πᵣ f.of g.of) ◁ P.r (πₗ g.of h.of) ◁ (P.𝔩 g h).inv ⊗≫
-      (P.r f.of.l ◁ (P.Γ f g).inv ▷ P.r (πₗ g.of h.of) ▷ P.l (g.of ≫ h.of).r ≫
-        P.r f.of.l ◁ (P.Γ f g).hom ▷ P.r (πₗ g.of h.of) ▷ P.l (g.of ≫ h.of).r) ⊗≫ 𝟙 _ => bicategory
+      P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ P.u (πᵣ f.of g.of) ◁ P.v (πₗ g.of h.of) ◁ (P.𝔩 g h).inv ⊗≫
+      (P.v f.of.l ◁ (P.Γ f g).inv ▷ P.v (πₗ g.of h.of) ▷ P.u (g.of ≫ h.of).r ≫
+        P.v f.of.l ◁ (P.Γ f g).hom ▷ P.v (πₗ g.of h.of) ▷ P.u (g.of ≫ h.of).r) ⊗≫ 𝟙 _ => bicategory
   simp only [cancelIso]
   bicategory
 
@@ -675,99 +675,99 @@ public lemma map₂_assoc
   rw [← Γ] at vcomp₁ hcomp₂
   simp_rw [hcomp₂, inv% vcomp₁, cat_nf, whisker_assoc, cat_nf, cancelIso]
   suffices H :
-    (P.r ((f.of ≫ g.of) ≫ h.of).l ◁ (P.lα₁ f g h).hom) ⊗≫
-      (P.rα₁ f g h).hom ▷ P.l (α_ f.of g.of h.of).hom.hom ▷ P.l (f.of ≫ g.of ≫ h.of).r ⊗≫
-      P.r (f.of ≫ g.of ≫ h.of).l ◁ (P.η f g h) ▷ P.l (f.of ≫ g.of ≫ h.of).r ⊗≫ 𝟙 _ =
+    (P.v ((f.of ≫ g.of) ≫ h.of).l ◁ (P.uα₁ f g h).hom) ⊗≫
+      (P.vα₁ f g h).hom ▷ P.u (α_ f.of g.of h.of).hom.hom ▷ P.u (f.of ≫ g.of ≫ h.of).r ⊗≫
+      P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.η f g h) ▷ P.u (f.of ≫ g.of ≫ h.of).r ⊗≫ 𝟙 _ =
     (P.μ (f ≫ g) h).hom ⊗≫
-      P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-      P.r (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-      P.r (f.of ≫ g.of).l ◁ P.l (πᵣ f.of g.of) ◁ (P.Γ g h).inv ▷ P.l h.of.r ⊗≫
-      P.r (f.of ≫ g.of).l ◁ (P.𝔩 f g).inv ▷ P.r h.of.l ▷ P.l h.of.r ⊗≫
-      (P.μ f g).hom ▷ P.r h.of.l ▷ P.l h.of.r ⊗≫
-      P.r f.of.l ◁ (P.Γ f g).inv ▷ P.l g.of.r ▷ P.r h.of.l ▷ P.l h.of.r ⊗≫
-      P.r f.of.l ◁ P.l f.of.r ◁ P.r g.of.l ◁ (P.Γ g h).hom ▷ P.l h.of.r ⊗≫
-      P.r f.of.l ◁ P.l f.of.r ◁ (P.μ g h).inv ⊗≫
-      P.r f.of.l ◁ P.l f.of.r ◁ (P.𝔯 g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-      P.r f.of.l ◁ (P.Γ f g).hom ▷ P.r (πₗ g.of h.of) ▷ P.l (g.of ≫ h.of).r ⊗≫
-      P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-      P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (g.of ≫ h.of).r ⊗≫
+      P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+      P.v (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+      P.v (f.of ≫ g.of).l ◁ P.u (πᵣ f.of g.of) ◁ (P.Γ g h).inv ▷ P.u h.of.r ⊗≫
+      P.v (f.of ≫ g.of).l ◁ (P.𝔩 f g).inv ▷ P.v h.of.l ▷ P.u h.of.r ⊗≫
+      (P.μ f g).hom ▷ P.v h.of.l ▷ P.u h.of.r ⊗≫
+      P.v f.of.l ◁ (P.Γ f g).inv ▷ P.u g.of.r ▷ P.v h.of.l ▷ P.u h.of.r ⊗≫
+      P.v f.of.l ◁ P.u f.of.r ◁ P.v g.of.l ◁ (P.Γ g h).hom ▷ P.u h.of.r ⊗≫
+      P.v f.of.l ◁ P.u f.of.r ◁ (P.μ g h).inv ⊗≫
+      P.v f.of.l ◁ P.u f.of.r ◁ (P.𝔯 g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+      P.v f.of.l ◁ (P.Γ f g).hom ▷ P.v (πₗ g.of h.of) ▷ P.u (g.of ≫ h.of).r ⊗≫
+      P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+      P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (g.of ≫ h.of).r ⊗≫
       (P.μ f (g ≫ h)).inv by
     convert H <;> (dsimp; bicategory)
   symm
   conv_lhs =>
     equals
       (P.μ (f ≫ g) h).hom ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.l (πᵣ f.of g.of) ◁ (P.Γ g h).inv ▷ P.l h.of.r ⊗≫
-        (P.r (f.of ≫ g.of).l ◁ (P.𝔩 f g).inv ⊗≫ (P.μ f g).hom) ▷ P.r h.of.l ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ (P.Γ f g).inv ▷ P.l g.of.r ▷ P.r h.of.l ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.l f.of.r ◁ P.r g.of.l ◁ (P.Γ g h).hom ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.l f.of.r ◁ (P.μ g h).inv ⊗≫
-        P.r f.of.l ◁ P.l f.of.r ◁ (P.𝔯 g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-        P.r f.of.l ◁ (P.Γ f g).hom ▷ P.r (πₗ g.of h.of) ▷ P.l (g.of ≫ h.of).r ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-        P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (g.of ≫ h.of).r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.u (πᵣ f.of g.of) ◁ (P.Γ g h).inv ▷ P.u h.of.r ⊗≫
+        (P.v (f.of ≫ g.of).l ◁ (P.𝔩 f g).inv ⊗≫ (P.μ f g).hom) ▷ P.v h.of.l ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ (P.Γ f g).inv ▷ P.u g.of.r ▷ P.v h.of.l ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.u f.of.r ◁ P.v g.of.l ◁ (P.Γ g h).hom ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.u f.of.r ◁ (P.μ g h).inv ⊗≫
+        P.v f.of.l ◁ P.u f.of.r ◁ (P.𝔯 g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+        P.v f.of.l ◁ (P.Γ f g).hom ▷ P.v (πₗ g.of h.of) ▷ P.u (g.of ≫ h.of).r ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+        P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (g.of ≫ h.of).r ⊗≫
         (P.μ f (g ≫ h)).inv => dsimp; bicategory
   conv_lhs =>
     equals
       (P.μ (f ≫ g) h).hom ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.l (πᵣ f.of g.of) ◁ (P.Γ g h).inv ▷ P.l h.of.r ⊗≫
-        (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ▷ P.l g.of.r ▷ P.r h.of.l ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ (P.Γ f g).inv ▷ P.l g.of.r ▷ P.r h.of.l ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.l f.of.r ◁ P.r g.of.l ◁ (P.Γ g h).hom ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.l f.of.r ◁ (P.μ g h).inv ⊗≫
-        P.r f.of.l ◁ P.l f.of.r ◁ (P.𝔯 g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-        P.r f.of.l ◁ (P.Γ f g).hom ▷ P.r (πₗ g.of h.of) ▷ P.l (g.of ≫ h.of).r ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-        P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (g.of ≫ h.of).r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.u (πᵣ f.of g.of) ◁ (P.Γ g h).inv ▷ P.u h.of.r ⊗≫
+        (P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ▷ P.u g.of.r ▷ P.v h.of.l ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ (P.Γ f g).inv ▷ P.u g.of.r ▷ P.v h.of.l ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.u f.of.r ◁ P.v g.of.l ◁ (P.Γ g h).hom ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.u f.of.r ◁ (P.μ g h).inv ⊗≫
+        P.v f.of.l ◁ P.u f.of.r ◁ (P.𝔯 g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+        P.v f.of.l ◁ (P.Γ f g).hom ▷ P.v (πₗ g.of h.of) ▷ P.u (g.of ≫ h.of).r ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+        P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (g.of ≫ h.of).r ⊗≫
         (P.μ f (g ≫ h)).inv =>
-    suffices H : 𝟙 _ ⊗≫ (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ▷ P.l g.of.r ⊗≫ 𝟙 _ =
-      (P.r (f.of ≫ g.of).l ◁ (P.𝔩 f g).inv ⊗≫ (P.μ f g).hom) by rw [← H]; dsimp; bicategory
+    suffices H : 𝟙 _ ⊗≫ (P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ▷ P.u g.of.r ⊗≫ 𝟙 _ =
+      (P.v (f.of ≫ g.of).l ◁ (P.𝔩 f g).inv ⊗≫ (P.μ f g).hom) by rw [← H]; dsimp; bicategory
     dsimp [bicategoricalComp, μ]
     simp only [cat_nf, cancelIso, whisker_exchange_assoc]
   conv_lhs =>
     equals
       (P.μ (f ≫ g) h).hom ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        (𝟙 (P.r (f.of ≫ g.of).l ≫ P.l (πᵣ f.of g.of) ≫ P.r (πₗ g.of h.of) ≫ P.l (πᵣ g.of h.of)) ⊗≫
-          (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of) ⊗≫
-          (P.r f.of.l ◁ (P.Γ f g).inv ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of)) ⊗≫
-          𝟙 (P.r f.of.l ≫ P.l f.of.r ≫ P.r g.of.l ≫ P.r (πₗ g.of h.of) ≫ P.l (πᵣ g.of h.of))) ▷
-            P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.l f.of.r ◁ (P.μ g h).inv ⊗≫
-        P.r f.of.l ◁ P.l f.of.r ◁ (P.𝔯 g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-        P.r f.of.l ◁ (P.Γ f g).hom ▷ P.r (πₗ g.of h.of) ▷ P.l (g.of ≫ h.of).r ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-        P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (g.of ≫ h.of).r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        (𝟙 (P.v (f.of ≫ g.of).l ≫ P.u (πᵣ f.of g.of) ≫ P.v (πₗ g.of h.of) ≫ P.u (πᵣ g.of h.of)) ⊗≫
+          (P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of) ⊗≫
+          (P.v f.of.l ◁ (P.Γ f g).inv ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of)) ⊗≫
+          𝟙 (P.v f.of.l ≫ P.u f.of.r ≫ P.v g.of.l ≫ P.v (πₗ g.of h.of) ≫ P.u (πᵣ g.of h.of))) ▷
+            P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.u f.of.r ◁ (P.μ g h).inv ⊗≫
+        P.v f.of.l ◁ P.u f.of.r ◁ (P.𝔯 g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+        P.v f.of.l ◁ (P.Γ f g).hom ▷ P.v (πₗ g.of h.of) ▷ P.u (g.of ≫ h.of).r ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+        P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (g.of ≫ h.of).r ⊗≫
         (P.μ f (g ≫ h)).inv =>
     rw [← cocycle₁]; dsimp; bicategory
   conv_lhs =>
     equals
       (P.μ (f ≫ g) h).hom ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of) ▷
-          P.l h.of.r ⊗≫
-        (P.r f.of.l ◁ (P.Γ f g).inv ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-          P.r f.of.l ◁ P.l f.of.r ◁ (P.μ g h).inv ⊗≫
-          P.r f.of.l ◁ P.l f.of.r ◁ (P.𝔯 g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-          P.r f.of.l ◁ (P.Γ f g).hom ▷ P.r (πₗ g.of h.of) ▷ P.l (g.of ≫ h.of).r) ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-        P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (g.of ≫ h.of).r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        (P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of) ▷
+          P.u h.of.r ⊗≫
+        (P.v f.of.l ◁ (P.Γ f g).inv ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+          P.v f.of.l ◁ P.u f.of.r ◁ (P.μ g h).inv ⊗≫
+          P.v f.of.l ◁ P.u f.of.r ◁ (P.𝔯 g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+          P.v f.of.l ◁ (P.Γ f g).hom ▷ P.v (πₗ g.of h.of) ▷ P.u (g.of ≫ h.of).r) ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+        P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (g.of ≫ h.of).r ⊗≫
         (P.μ f (g ≫ h)).inv => dsimp; bicategory
   conv_lhs =>
     equals
       (P.μ (f ≫ g) h).hom ⊗≫
-        P.r (f.of ≫ g.of).l ◁ P.r (πₗ (f.of ≫ g.of) h.of) ◁ (P.lα₂ f g h).hom ▷ P.l h.of.r ⊗≫
-        P.r (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        (P.𝔯 f g).hom ▷ P.l (πᵣ f.of g.of) ▷ P.r (πₗ g.of h.of) ▷ P.l (πᵣ g.of h.of) ▷ P.l h.of.r ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ P.l (πᵣ f.of g.of) ◁ P.r (πₗ g.of h.of) ◁ (P.𝔩 g h).inv ⊗≫
-        P.r f.of.l ◁ P.r (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.l (g.of ≫ h.of).r ⊗≫
-        P.r f.of.l ◁ (P.rα₂ f g h).inv ▷ P.l (πᵣ f.of (g.of ≫ h.of)) ▷ P.l (g.of ≫ h.of).r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ P.v (πₗ (f.of ≫ g.of) h.of) ◁ (P.uα₂ f g h).hom ▷ P.u h.of.r ⊗≫
+        P.v (f.of ≫ g.of).l ◁ (P.Θ₂ f g h).inv ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        (P.𝔯 f g).hom ▷ P.u (πᵣ f.of g.of) ▷ P.v (πₗ g.of h.of) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ P.u (πᵣ f.of g.of) ◁ P.v (πₗ g.of h.of) ◁ (P.𝔩 g h).inv ⊗≫
+        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁ (P.Θ₁ f g h).hom ▷ P.u (g.of ≫ h.of).r ⊗≫
+        P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (g.of ≫ h.of).r ⊗≫
         (P.μ f (g ≫ h)).inv => rw [aux₂]; dsimp; bicategory
   rw [P.cocycle₂ f g h]
 

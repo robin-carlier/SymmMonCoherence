@@ -228,7 +228,7 @@ EffBurnside FintypeCat
 #guard_msgs in
 #print EffBurnsideFintype
 
-/-! The data of a pseudofunctor out of a Burnside bicategory corresponds to
+/-! The data of a pseudofunctor out of an effective Burnside bicategory corresponds to
 a pair of pseudofunctors, along with base change isomorphisms. This is a rather
 technical result involving heavy bicategory computations. -/
 
@@ -240,23 +240,23 @@ info: CategoryTheory.EffBurnside.PseudoFunctorCore.{w₁, v₁, v₂, u₁, u₂
 #check EffBurnside.PseudoFunctorCore
 
 /--
-info: CategoryTheory.EffBurnside.PseudoFunctorCore.l.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {B : Type u₂}
+info: CategoryTheory.EffBurnside.PseudoFunctorCore.u.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {B : Type u₂}
   [Bicategory B] (self : EffBurnside.PseudoFunctorCore C B) {x y : C} : (x ⟶ y) → (self.obj x ⟶ self.obj y)
 -/
 #guard_msgs in
-#check EffBurnside.PseudoFunctorCore.l
+#check EffBurnside.PseudoFunctorCore.u
 
 /--
-info: CategoryTheory.EffBurnside.PseudoFunctorCore.r.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {B : Type u₂}
+info: CategoryTheory.EffBurnside.PseudoFunctorCore.v.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {B : Type u₂}
   [Bicategory B] (self : EffBurnside.PseudoFunctorCore C B) {x y : C} : (x ⟶ y) → (self.obj y ⟶ self.obj x)
 -/
 #guard_msgs in
-#check EffBurnside.PseudoFunctorCore.r
+#check EffBurnside.PseudoFunctorCore.v
 
 /--
 info: CategoryTheory.EffBurnside.PseudoFunctorCore.baseChangeIso.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C]
-  {B : Type u₂} [Bicategory B] (self : EffBurnside.PseudoFunctorCore C B) {x y z t : C} (u : x ⟶ y) (v : x ⟶ z)
-  (f : y ⟶ t) (g : z ⟶ t) (S : IsPullback u v f g) : self.l f ≫ self.r g ≅ self.r u ≫ self.l v
+  {B : Type u₂} [Bicategory B] (self : EffBurnside.PseudoFunctorCore C B) {x y z t : C} (a : x ⟶ y) (b : x ⟶ z)
+  (c : y ⟶ t) (d : z ⟶ t) (S : IsPullback a b c d) : self.u c ≫ self.v d ≅ self.v a ≫ self.u b
 -/
 #guard_msgs in
 #check EffBurnside.PseudoFunctorCore.baseChangeIso
@@ -269,7 +269,7 @@ info: CategoryTheory.EffBurnside.PseudoFunctorCore.toPseudofunctor.{w₁, v₁, 
 #guard_msgs in
 #check EffBurnside.PseudoFunctorCore.toPseudofunctor
 
-/-! To bundle a symmetric monoidal category as a pseudofunctor out of `EffBurnsideFintypecat`,
+/-! To bundle a symmetric monoidal category as a pseudofunctor out of `BurnsideFintypecat`,
 it is good to make the distinction of the computations that happen "formally" and
 their realisations in actual monoidal categories. This distinction is encoded by the
 Kleisli bicategory for the relative pseudomonad defined by `SList`. -/
@@ -280,7 +280,7 @@ Kleisli bicategory for the relative pseudomonad defined by `SList`. -/
 
 /-- info: SList.Kleisli.instBicategory -/
 #guard_msgs in
-#synth (Bicategory SList.Kleisli)
+#synth Bicategory SList.Kleisli
 
 /--
 info: structure CategoryTheory.SList.Kleisli.Hom.{u} (X Y : SList.Kleisli.{u}) : Type u
