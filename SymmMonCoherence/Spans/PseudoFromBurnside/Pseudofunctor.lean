@@ -9,16 +9,21 @@ import all SymmMonCoherence.Spans.PseudoFromBurnside.Assoc
 public import SymmMonCoherence.Spans.PseudoFromBurnside.Assoc
 public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
-/-! # Pseudofunctors from the effective Burnside (2,1)-category . -/
+/-! # Pseudofunctors from the effective Burnside (2,1)-category.
 
-namespace CategoryTheory.EffBurnside.PseudoFunctorCore
+This file constructs a pseudofunctor `EffBurnside C ⥤ᵖ B` from a `PseudofunctorCore C B`.
+specifically, the action on spans of the form `Spans.inr` is given by the field `u`
+and the action on spans of the form `Spans.inl` is given by the field `v`.
+-/
+
+namespace CategoryTheory.EffBurnside.PseudofunctorCore
 
 open CategoryTheory Bicategory
 
 universe w₁ v₁ v₂ u₁ u₂
 
 variable {C : Type v₁} [Category.{u₁} C] {B : Type u₂} [Bicategory.{w₁, v₂} B]
-    (P : PseudoFunctorCore C B)
+    (P : PseudofunctorCore C B)
 
 noncomputable section toPseudoFunctor
 
@@ -147,7 +152,7 @@ lemma map₂_whisker_left_aux₁ {a b c : EffBurnside C} (f : a ⟶ b) {g h : b 
   simp only [Category.id_comp, whiskerRight_comp, id_whiskerRight, Iso.inv_hom_id, Category.comp_id,
     Category.assoc, pentagon_hom_inv_inv_inv_inv, whiskerLeft_comp] at this
   simp only [P.uComp'_id_l, Iso.trans_hom, Iso.symm_hom, whiskerLeftIso_hom, comp_whiskerRight,
-    whisker_assoc, triangle_assoc_comp_right_inv_assoc, P.baseChange_unit_left, whiskerLeft_comp,
+    whisker_assoc, triangle_assoc_comp_right_inv_assoc, P.baseChangeIso_unit_vert, whiskerLeft_comp,
     whiskerLeft_rightUnitor_inv, Category.assoc, Iso.trans_inv, whiskerLeftIso_inv, Iso.symm_inv,
     whiskerLeft_rightUnitor, Iso.inv_hom_id_assoc, whiskerLeft_inv_hom_whiskerRight_assoc,
     whiskerLeft_inv_hom_assoc] at this
@@ -279,8 +284,8 @@ lemma map₂_whisker_right_aux {a b c : EffBurnside C} {f g : a ⟶ b} (η : f �
   rw [γ₁] at this
   dsimp [bicategoricalComp] at this
   simp only [P.vComp'_id_l, Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, whiskerLeft_comp,
-    P.baseChange_unit_right, Category.id_comp, whiskerRight_comp, id_whiskerRight, Iso.inv_hom_id,
-    Category.comp_id, Category.assoc, pentagon_hom_inv_inv_inv_inv, Iso.trans_inv,
+    P.baseChangeIso_unit_horiz, Category.id_comp, whiskerRight_comp, id_whiskerRight,
+    Iso.inv_hom_id, Category.comp_id, Category.assoc, pentagon_hom_inv_inv_inv_inv, Iso.trans_inv,
     whiskerRightIso_inv, Iso.symm_inv, comp_whiskerRight, leftUnitor_whiskerRight, whisker_assoc,
     leftUnitor_inv_whiskerRight, Iso.inv_hom_id_assoc, triangle_assoc_comp_right_assoc,
     whiskerLeft_inv_hom_whiskerRight_assoc, whiskerLeft_inv_hom_assoc] at this
@@ -398,7 +403,7 @@ lemma map₂_left_unitor {a b : EffBurnside C} (f : a ⟶ b) :
   rw [← reassoc_of% wl% wr% dsimp% P.ε_hom_def (η := (λ_ f).hom)]
   simp_rw [← whiskerLeft_comp_assoc]
   rw [← reassoc_of% wr% wr% dsimp% P.ε_hom_def (η := (λ_ f).hom)]
-  simp only [whiskerLeft_comp, Category.assoc, inv%P.baseChange_unit_left, comp_whiskerRight,
+  simp only [whiskerLeft_comp, Category.assoc, inv%P.baseChangeIso_unit_vert, comp_whiskerRight,
     whisker_assoc, leftUnitor_inv_whiskerRight, triangle_assoc_comp_right_assoc,
     Iso.inv_hom_id_assoc, leftUnitor_whiskerRight, inv_hom_whiskerRight_assoc, cancelIso,
     whiskerLeft_inv_hom_assoc]
@@ -458,7 +463,7 @@ lemma map₂_right_unitor {a b : EffBurnside C} (f : a ⟶ b) :
     (.of_horiz_isIso .mk)
     (.of_horiz_isIso .mk)
     (by simp) (by simp)
-  simp only [bicategoricalComp, P.baseChange_unit_right, BicategoricalCoherence.whiskerLeft_iso,
+  simp only [bicategoricalComp, P.baseChangeIso_unit_horiz, BicategoricalCoherence.whiskerLeft_iso,
     BicategoricalCoherence.left'_iso, BicategoricalCoherence.refl_iso, Iso.refl_trans,
     whiskerLeftIso_hom, Iso.symm_hom, apexIso_hom, rightUnitor_hom_hom,
     BicategoricalCoherence.assoc'_iso, BicategoricalCoherence.assoc_iso,
@@ -467,7 +472,7 @@ lemma map₂_right_unitor {a b : EffBurnside C} (f : a ⟶ b) :
     Category.comp_id, pentagon_hom_inv_inv_inv_inv, Category.assoc] at this
   simp only [inv%this, comp_whiskerRight, whisker_assoc, leftUnitor_whiskerRight, whiskerLeft_comp,
     Category.assoc, triangle_assoc_comp_right_inv_assoc, Iso.inv_hom_id_assoc,
-    inv%P.baseChange_unit_left, whiskerLeft_rightUnitor, whiskerLeft_inv_hom_assoc]
+    inv%P.baseChangeIso_unit_vert, whiskerLeft_rightUnitor, whiskerLeft_inv_hom_assoc]
   clear this
   rw [← reassoc_of% wl% wr% dsimp% P.ε_hom_def (η := (ρ_ f).hom)]
   simp_rw [← whiskerLeft_comp_assoc,
@@ -511,7 +516,17 @@ lemma map₂_right_unitor {a b : EffBurnside C} (f : a ⟶ b) :
 
 end right_unitor
 
-/-- Assembling the data in a `PseudoFunctorCore C B` into a pseudofunctor `EffBurnside C ⥤ᵖ B`. -/
+/-- Assembling the data in a `PseudofunctorCore C B` into a pseudofunctor `EffBurnside C ⥤ᵖ B`.
+
+The action on objects is given by `P.obj`.
+
+The action on 1-morphisms is given by `P.map`. A span `S`
+```
+      l      r
+  x <--- a ---> y
+```
+is sent to the 1-morphism `P.v l ≫ P.u r` in `B`.
+-/
 @[expose, simps]
 public noncomputable def toPseudofunctor :
     EffBurnside C ⥤ᵖ B where
@@ -542,6 +557,6 @@ public noncomputable def toPseudofunctor :
 
 end toPseudoFunctor
 
-end PseudoFunctorCore
+end PseudofunctorCore
 
 end CategoryTheory.EffBurnside

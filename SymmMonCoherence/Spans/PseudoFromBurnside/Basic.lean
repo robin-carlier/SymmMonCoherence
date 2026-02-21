@@ -26,7 +26,7 @@ open Bicategory
 universe w₁ v₁ v₂ u₁ u₂
 variable (C : Type u₁) [Category.{v₁} C]
 
-/-- A helper structure to construct pseudofunctors out of the Burnside
+/-- A helper structure to construct pseudofunctors out of the effective Burnside
 category of a category. This is essentially the data of two pseudofunctors
 `u : LocallyDiscrete C ⥤ᵖ B` and `v : (LocallyDiscrete C)ᵒᵖ ⥤ᵖ B` that
 (definitionally) share the same action on objects, along with the extra data
@@ -41,8 +41,10 @@ l|       |r
      b
 ```
 is a pullback square in `C`,
-which must furthermore satisfies compatibilities with respect to pasting of squares. -/
-structure PseudoFunctorCore (B : Type u₂) [Bicategory.{w₁, v₂} B] where
+which must furthermore satisfies compatibilities with respect to pasting of squares.
+
+In the paper, these are called "Pith-Beck-Chevalley systems". -/
+structure PseudofunctorCore (B : Type u₂) [Bicategory.{w₁, v₂} B] where
   /-- The action on objects. -/
   obj : C → B
   /-- The left action on morphisms, it corresponds to the action of the pseudofunctor
@@ -94,28 +96,21 @@ structure PseudoFunctorCore (B : Type u₂) [Bicategory.{w₁, v₂} B] where
     cat_disch
   /-- The base change isomorphism on cartesian squares
   ```
-       u
-   x ----> y
-   |       |
-  v|       |f
-   v       v
-   z ----> t
-       g
+       t
+   c₀ ----> c₁
+   |        |
+  l|        |r
+   v        v
+   c₂ ----> c₃
+       b
   ``` -/
-  /- Note that if we were trying to define pseudofunctors out of the full bicategory of spans
-  (rather than its pith), we would need to specify a base-change 2-morphism for every square, and
-  not just pullback squares as the spans (Spans.inl _).map f and (Spans.inr _).map f
-  are always adjoint to each other, but the data of this adjunction only
-  lifts to the pith when `f` is an isomorphism in C (in this case, we will
-  use this base change isomorphism to produce an isomorphism `l e.hom ≅ l e.inv`
-  compatible with compositions and identities, see `isoOfIso` and related declarations below). -/
-  baseChangeIso {x y z t : C} (a : x ⟶ y) (b : x ⟶ z) (c : y ⟶ t) (d : z ⟶ t)
-    (S : IsPullback a b c d) :
-    u c ≫ v d ≅ v a ≫ u b
-  baseChange_unit_left {x y : C} (f : x ⟶ y) :
+  baseChangeIso {c₀ c₁ c₂ c₃ : C} (t : c₀ ⟶ c₁) (l : c₀ ⟶ c₂) (r : c₁ ⟶ c₃) (b : c₂ ⟶ c₃)
+    (S : IsPullback t l r b) :
+    u r ≫ v b ≅ v t ≫ u l
+  baseChangeIso_unit_vert {x y : C} (f : x ⟶ y) :
     (baseChangeIso f (𝟙 x) (𝟙 y) f (IsPullback.of_vert_isIso .mk)).hom =
     (uId' (𝟙 y)).hom ▷ v f ≫ (λ_ _).hom ≫ (ρ_ _).inv ≫ v f ◁ (uId' (𝟙 x)).inv
-  baseChange_unit_right {x y : C} (f : x ⟶ y) :
+  baseChangeIso_unit_horiz {x y : C} (f : x ⟶ y) :
     (baseChangeIso (𝟙 x) f f (𝟙 y) (IsPullback.of_horiz_isIso .mk)).hom =
     u f ◁ (vId' (𝟙 y)).hom ≫ (ρ_ _).hom  ≫ (λ_ _).inv ≫ (vId' (𝟙 x)).inv ▷ u f
   /-- Compatibility of the base change isomorphism with horizontal pasting of squares:
@@ -128,15 +123,15 @@ structure PseudoFunctorCore (B : Type u₂) [Bicategory.{w₁, v₂} B] where
     c₃ ---> c₄ ---> c₅
        f₃₄      f₄₅
   ``` -/
-  baseChange_comp_horiz {c₀ c₁ c₂ c₃ c₄ c₅ : C}
+  baseChangeIso_comp_horiz {c₀ c₁ c₂ c₃ c₄ c₅ : C}
     {f₀₁ : c₀ ⟶ c₁} {f₁₂ : c₁ ⟶ c₂}
-    {v₀ : c₀ ⟶ c₃} {v₁ : c₁ ⟶ c₄} {v₃ : c₂ ⟶ c₅}
+    {v₀ : c₀ ⟶ c₃} {v₁ : c₁ ⟶ c₄} {v₂ : c₂ ⟶ c₅}
     {f₃₄ : c₃ ⟶ c₄} {f₄₅ : c₄ ⟶ c₅}
-    (S₁ : IsPullback f₀₁ v₀ v₁ f₃₄) (S₂ : IsPullback f₁₂ v₁ v₃ f₄₅) :
-    (baseChangeIso (f₀₁ ≫ f₁₂) v₀ v₃ (f₃₄ ≫ f₄₅) (S₁.paste_horiz S₂)).hom =
-      u v₃ ◁ (vComp' f₃₄ f₄₅ (f₃₄ ≫ f₄₅)).hom ≫
-      (α_ (u v₃) (v f₄₅) (v f₃₄)).inv ≫
-      (baseChangeIso f₁₂ v₁ v₃ f₄₅ S₂).hom ▷ v f₃₄ ≫
+    (S₁ : IsPullback f₀₁ v₀ v₁ f₃₄) (S₂ : IsPullback f₁₂ v₁ v₂ f₄₅) :
+    (baseChangeIso (f₀₁ ≫ f₁₂) v₀ v₂ (f₃₄ ≫ f₄₅) (S₁.paste_horiz S₂)).hom =
+      u v₂ ◁ (vComp' f₃₄ f₄₅ (f₃₄ ≫ f₄₅)).hom ≫
+      (α_ (u v₂) (v f₄₅) (v f₃₄)).inv ≫
+      (baseChangeIso f₁₂ v₁ v₂ f₄₅ S₂).hom ▷ v f₃₄ ≫
       (α_ (v f₁₂) (u v₁) (v f₃₄)).hom ≫
       v f₁₂ ◁ (baseChangeIso f₀₁ v₀ v₁ f₃₄ S₁).hom ≫
       (α_ (v f₁₂) (v f₀₁) (u v₀)).inv ≫
@@ -155,7 +150,7 @@ structure PseudoFunctorCore (B : Type u₂) [Bicategory.{w₁, v₂} B] where
    c₄ ----->c₅
         h₂
   ``` -/
-  baseChange_comp_vert {c₀ c₁ c₂ c₃ c₄ c₅ : C}
+  baseChangeIso_comp_vert {c₀ c₁ c₂ c₃ c₄ c₅ : C}
     {h₀ : c₀ ⟶ c₁} {f₀₂ : c₀ ⟶ c₂} {f₁₃ : c₁ ⟶ c₃} {h₁ : c₂ ⟶ c₃}
     {h₂ : c₄ ⟶ c₅} {f₂₄ : c₂ ⟶ c₄} {f₃₅ : c₃ ⟶ c₅}
     (S₁ : IsPullback h₀ f₀₂ f₁₃ h₁) (S₂ : IsPullback h₁ f₂₄ f₃₅ h₂) :
@@ -168,16 +163,16 @@ structure PseudoFunctorCore (B : Type u₂) [Bicategory.{w₁, v₂} B] where
       (α_ (v h₀) (u f₀₂) (u f₂₄)).hom ≫
       v h₀ ◁ (uComp' f₀₂ f₂₄ (f₀₂ ≫ f₂₄)).inv
 
-namespace PseudoFunctorCore
+namespace PseudofunctorCore
 
-variable {C} {B : Type u₂} [Bicategory.{w₁, v₂} B] (P : PseudoFunctorCore C B)
+variable {C} {B : Type u₂} [Bicategory.{w₁, v₂} B] (P : PseudofunctorCore C B)
 
 /- It is useful to bundle `u` and `v` as pseudofunctors now so that we can apply some general
 results about pseudofunctors from a strict bicategory to them within the proofs in
 toPseudofunctor, but we keep most of this private, as they become
 useless once we have.
 Even as abbrev, the definitional equality
-`lPseudofunctor.obj = PseudoFunctorCore.rPseudofunctor.obj` does
+`lPseudofunctor.obj = PseudofunctorCore.rPseudofunctor.obj` does
 not hold at reducible transparency. -/
 
 /-- Bundling the data in `u` and related fields as a pseudofunctor
@@ -381,7 +376,7 @@ private lemma baseChange_id_eq (x : C) :
     (P.baseChangeIso (𝟙 x) (𝟙 x) (𝟙 x) (𝟙 x) (IsPullback.of_horiz_isIso .mk)).hom =
       (P.uId' (𝟙 x)).hom ▷ P.v (𝟙 x) ≫ (λ_ _).hom ≫ (P.vId' (𝟙 x)).hom ≫
       (P.vId' (𝟙 x)).inv ≫ (ρ_ _).inv ≫ P.v (𝟙 x) ◁ (P.uId' (𝟙 x)).inv := by
-  simp [P.baseChange_unit_left (𝟙 x)]
+  simp [P.baseChangeIso_unit_vert (𝟙 x)]
 
 /-- A version of `baseChange_comp` that allows specifying the composites.
 It corresponds to the following diagram:
@@ -413,7 +408,7 @@ private lemma baseChangeIso_comp_horiz'
       (α_ (P.v f₁₂) (P.v f₀₁) (P.u g₀)).inv ≫
       (P.vComp' f₀₁ f₁₂ f₀₂ hf).inv ▷ P.u g₀ := by
   subst_vars
-  apply P.baseChange_comp_horiz
+  apply P.baseChangeIso_comp_horiz
 
 /-- A version of `baseChange_comp_vert` that allows specifying the composites.
 It corresponds to the following diagram:
@@ -450,149 +445,25 @@ private lemma baseChangeIso_comp_vert'
       (α_ (P.v u₀₁) (P.u f₀₂) (P.u f₂₄)).hom ≫
       P.v u₀₁ ◁ (P.uComp' f₀₂ f₂₄ f₀₄ hv).inv := by
   subst_vars
-  apply P.baseChange_comp_vert
-
-/-- The interchange law for pasting of squares.
-Parameters are labelled according to their source/targets.
-There are extra parameters for better control of the type of morphisms that
-appears.
-
-```
-        f₀₁      f₁₂
-    c₀------> c₁ -----> c₂
-    |         |         |
-    | f₀₃     | f₁₄     | f₂₅
-    |         |         |
-    v   f₃₄   v   f₄₅   v
-    c₃------> c₄------> c₅
-    |         |         |
-    | f₃₆     | f₄₇     | f₅₈
-    |         |         |
-    v   f₆₇   v   f₇₈   v
-    c₆------> c₇------> c₈
-
-```
--/
-private lemma baseChangeIso_interchange
-    {c₀ c₁ c₂ c₃ c₄ c₅ c₆ c₇ c₈ : C}
-    -- horizontal morphisms
-    (f₀₁ : c₀ ⟶ c₁) (f₁₂ : c₁ ⟶ c₂) (f₀₂ : c₀ ⟶ c₂)
-    (f₃₄ : c₃ ⟶ c₄) (f₄₅ : c₄ ⟶ c₅) (f₃₅ : c₃ ⟶ c₅)
-    (f₆₇ : c₆ ⟶ c₇) (f₇₈ : c₇ ⟶ c₈) (f₆₈ : c₆ ⟶ c₈)
-    -- verticalrizontal morphisms
-    (f₀₃ : c₀ ⟶ c₃) (f₁₄ : c₁ ⟶ c₄) (f₂₅ : c₂ ⟶ c₅)
-    (f₃₆ : c₃ ⟶ c₆) (f₄₇ : c₄ ⟶ c₇) (f₅₈ : c₅ ⟶ c₈)
-    (f₀₆ : c₀ ⟶ c₆) (f₁₇ : c₁ ⟶ c₇) (f₂₈ : c₂ ⟶ c₈)
-    -- Pullbacks
-    (top_left : IsPullback f₀₁ f₀₃ f₁₄ f₃₄) (top_right : IsPullback f₁₂ f₁₄ f₂₅ f₄₅)
-    (bot_left : IsPullback f₃₄ f₃₆ f₄₇ f₆₇) (bot_right : IsPullback f₄₅ f₄₇ f₅₈ f₇₈)
-    -- horizontal composites
-    (h₀₁₂ : f₀₁ ≫ f₁₂ = f₀₂ := by cat_disch)
-    (h₃₄₅ : f₃₄ ≫ f₄₅ = f₃₅ := by cat_disch)
-    (h₆₇₈ : f₆₇ ≫ f₇₈ = f₆₈ := by cat_disch)
-    -- vertical composites
-    (h₀₃₆ : f₀₃ ≫ f₃₆ = f₀₆ := by cat_disch)
-    (h₁₄₇ : f₁₄ ≫ f₄₇ = f₁₇ := by cat_disch)
-    (h₂₅₈ : f₂₅ ≫ f₅₈ = f₂₈ := by cat_disch) :
-    /- LHS is the simp NF of pasting vertically the horizontal
-    compositions of the two squares. RHS is the result of
-    pasting horizontally the vertical compositions. -/
-  (P.uComp' f₂₅ f₅₈ f₂₈ h₂₅₈).hom ▷ P.v f₆₈ ≫
-    (α_ (P.u f₂₅) (P.u f₅₈) (P.v f₆₈)).hom ≫
-    P.u f₂₅ ◁ P.u f₅₈ ◁ (P.vComp' f₆₇ f₇₈ f₆₈ h₆₇₈).hom ≫
-    P.u f₂₅ ◁ (α_ (P.u f₅₈) (P.v f₇₈) (P.v f₆₇)).inv ≫
-    P.u f₂₅ ◁ (P.baseChangeIso f₄₅ f₄₇ f₅₈ f₇₈ bot_right).hom ▷ P.v f₆₇ ≫
-    P.u f₂₅ ◁ (α_ (P.v f₄₅) (P.u f₄₇) (P.v f₆₇)).hom ≫
-    P.u f₂₅ ◁ P.v f₄₅ ◁ (P.baseChangeIso f₃₄ f₃₆ f₄₇ f₆₇ bot_left).hom ≫
-    (α_ (P.u f₂₅) (P.v f₄₅) (P.v f₃₄ ≫ P.u f₃₆)).inv ≫
-    (α_ (P.u f₂₅ ≫ P.v f₄₅) (P.v f₃₄) (P.u f₃₆)).inv ≫
-    (P.baseChangeIso f₁₂ f₁₄ f₂₅ f₄₅ top_right).hom ▷ P.v f₃₄ ▷ P.u f₃₆ ≫
-    (α_ (P.v f₁₂) (P.u f₁₄) (P.v f₃₄)).hom ▷ P.u f₃₆ ≫
-    (α_ (P.v f₁₂) (P.u f₁₄ ≫ P.v f₃₄) (P.u f₃₆)).hom ≫
-    P.v f₁₂ ◁ (P.baseChangeIso f₀₁ f₀₃ f₁₄ f₃₄ top_left).hom ▷ P.u f₃₆ ≫
-    (α_ (P.v f₁₂) (P.v f₀₁ ≫ P.u f₀₃) (P.u f₃₆)).inv ≫
-    (α_ (P.v f₁₂) (P.v f₀₁) (P.u f₀₃)).inv ▷ P.u f₃₆ ≫
-    (P.vComp' f₀₁ f₁₂ f₀₂ h₀₁₂).inv ▷ P.u f₀₃ ▷ P.u f₃₆ ≫
-    (α_ (P.v f₀₂) (P.u f₀₃) (P.u f₃₆)).hom ≫
-    P.v f₀₂ ◁ (P.uComp' f₀₃ f₃₆ f₀₆ h₀₃₆).inv =
-  P.u f₂₈ ◁ (P.vComp' f₆₇ f₇₈ f₆₈ h₆₇₈).hom ≫
-    (α_ (P.u f₂₈) (P.v f₇₈) (P.v f₆₇)).inv ≫
-    (P.uComp' f₂₅ f₅₈ f₂₈ h₂₅₈).hom ▷ P.v f₇₈ ▷ P.v f₆₇ ≫
-    (α_ (P.u f₂₅) (P.u f₅₈) (P.v f₇₈)).hom ▷ P.v f₆₇ ≫
-    (α_ (P.u f₂₅) (P.u f₅₈ ≫ P.v f₇₈) (P.v f₆₇)).hom ≫
-    P.u f₂₅ ◁ (P.baseChangeIso f₄₅ f₄₇ f₅₈ f₇₈ bot_right).hom ▷ P.v f₆₇ ≫
-    (α_ (P.u f₂₅) (P.v f₄₅ ≫ P.u f₄₇) (P.v f₆₇)).inv ≫
-    (α_ (P.u f₂₅) (P.v f₄₅) (P.u f₄₇)).inv ▷ P.v f₆₇ ≫
-    (P.baseChangeIso f₁₂ f₁₄ f₂₅ f₄₅ top_right).hom ▷ P.u f₄₇ ▷ P.v f₆₇ ≫
-    (α_ (P.v f₁₂ ≫ P.u f₁₄) (P.u f₄₇) (P.v f₆₇)).hom ≫
-    (α_ (P.v f₁₂) (P.u f₁₄) (P.u f₄₇ ≫ P.v f₆₇)).hom ≫
-    P.v f₁₂ ◁ P.u f₁₄ ◁ (P.baseChangeIso f₃₄ f₃₆ f₄₇ f₆₇ bot_left).hom ≫
-    P.v f₁₂ ◁ (α_ (P.u f₁₄) (P.v f₃₄) (P.u f₃₆)).inv ≫
-    P.v f₁₂ ◁ (P.baseChangeIso f₀₁ f₀₃ f₁₄ f₃₄ top_left).hom ▷ P.u f₃₆ ≫
-    P.v f₁₂ ◁ (α_ (P.v f₀₁) (P.u f₀₃) (P.u f₃₆)).hom ≫
-    P.v f₁₂ ◁ P.v f₀₁ ◁ (P.uComp' f₀₃ f₃₆ f₀₆ h₀₃₆).inv ≫
-    (α_ (P.v f₁₂) (P.v f₀₁) (P.u f₀₆)).inv ≫
-    (P.vComp' f₀₁ f₁₂ f₀₂ h₀₁₂).inv ▷ P.u f₀₆ := by
-  have bot : IsPullback f₃₅ f₃₆ f₅₈ f₆₈ := by
-    subst_vars
-    apply IsPullback.paste_horiz bot_left bot_right
-  have top : IsPullback f₀₂ f₀₃ f₂₅ f₃₅ := by
-    subst_vars
-    apply IsPullback.paste_horiz top_left top_right
-  have left : IsPullback f₀₁ f₀₆ f₁₇ f₆₇ := by
-    subst_vars
-    apply IsPullback.paste_vert top_left bot_left
-  have right : IsPullback f₁₂ f₁₇ f₂₈ f₇₈ := by
-    subst_vars
-    apply IsPullback.paste_vert top_right bot_right
-  have total : IsPullback f₀₂ f₀₆ f₂₈ f₆₈ := by
-    subst_vars
-    apply IsPullback.paste_horiz left right
-  have hcomp_top :=
-    P.baseChangeIso_comp_horiz' _ _ _ _ _ _ _ _ _ top_left top_right top h₀₁₂ h₃₄₅
-  have hcomp_bot :=
-    P.baseChangeIso_comp_horiz' _ _ _ _ _ _ _ _ _ bot_left bot_right bot h₃₄₅ h₆₇₈
-  have vcomp_hcomp :=
-    P.baseChangeIso_comp_vert' _ _ _ _ _ _ _ _ _ top bot total (by grind) (by grind)
-  have vcomp_left :=
-    P.baseChangeIso_comp_vert' _ _ _ _ _ _ _ _ _ top_left bot_left left h₀₃₆ h₁₄₇
-  have vcomp_right :=
-    P.baseChangeIso_comp_vert' _ _ _ _ _ _ _ _ _ top_right bot_right right h₁₄₇ h₂₅₈
-  have hcomp_vcomp :=
-    P.baseChangeIso_comp_horiz' _ _ _ _ _ _ _ _ _ left right total (by grind) (by grind)
-  rw [reassoc_of% wl% hcomp_bot, reassoc_of% wr% hcomp_top] at vcomp_hcomp
-  rw [reassoc_of% wl% vcomp_left, reassoc_of% wr% vcomp_right] at hcomp_vcomp
-  rw [hcomp_vcomp] at vcomp_hcomp
-  simpa using vcomp_hcomp.symm
-
-  -- rw [reassoc_of% wl% hcomp_bot, reassoc_of% wr% hcomp_top,
-  --   reassoc_of% wl% vcomp_left, reassoc_of% wr% vcomp_right] at vcomp_hcomp
-  -- simpa using vcomp_hcomp
+  apply P.baseChangeIso_comp_vert
 
 section Adjunction
 
--- syntax (name := comp2) (priority := high) term:81
---   ppSpace ppRealGroup("⊸" ppHardSpace ppDedent(term:80)) : term
--- macro_rules (kind := comp2) | `($a ⊸ $b) => `(CategoryStruct.comp $a $b)
--- @[app_unexpander CategoryStruct.comp] meta def unexpandComp : Lean.PrettyPrinter.Unexpander
---   | `($_ $a $b) => `($a ⊸ $b)
---   | _ => throw ()
---
 section Ψ
 
 /-- A shorthand for the isomorphism 𝟙 (P.obj z) ≅ P.u (𝟙 z) ≫ P.v (𝟙 z)
 coming from unitality of the pseudofunctors. We’ll be seeing this
-composition a lot, so it’s beter to give it a name. -/
+composition a lot, so it’s better to give it a name. -/
 def Ψ (z : C) :
     𝟙 (P.obj z) ≅ P.u (𝟙 z) ≫ P.v (𝟙 z) :=
-    (P.uId' (𝟙 _)).symm ≪≫ (ρ_ _).symm ≪≫ whiskerLeftIso _ (P.vId' (𝟙 _)).symm
+  (P.uId' (𝟙 _)).symm ≪≫ (ρ_ _).symm ≪≫ whiskerLeftIso _ (P.vId' (𝟙 _)).symm
 
 /-- A shorthand for the isomorphism 𝟙 (P.obj z) ≅ P.v (𝟙 z) ≫ P.u (𝟙 z)
 coming from unitality of the pseudofunctors. We’ll be seeing this
-composition a lot, so it’s beter to give it a name. -/
+composition a lot, so it’s better to give it a name. -/
 def Ψ' (z : C) :
     𝟙 (P.obj z) ≅ P.v (𝟙 z) ≫ P.u (𝟙 z) :=
-    (P.vId' (𝟙 _)).symm ≪≫ (ρ_ _).symm ≪≫ whiskerLeftIso _ (P.uId' (𝟙 _)).symm
+  (P.vId' (𝟙 _)).symm ≪≫ (ρ_ _).symm ≪≫ whiskerLeftIso _ (P.uId' (𝟙 _)).symm
 
 /-- A restatement of `baseChange_id_eq` in terms of `Ψ` and `Ψ'` -/
 lemma Ψ_baseChange_id (z : C) :
@@ -623,11 +494,6 @@ lemma baseChange_id_Ψ'_inv (z : C) :
     (P.Ψ z).inv :=
   Eq.symm <| rotate_isos% 1 0 (P.baseChange_id_Ψ_inv z)
 
-/-- The square
-
-<MISSING DIAGRAM>
-
-commutes. -/
 @[reassoc]
 lemma Ψ_eq (z : C) :
     P.Ψ z =
@@ -660,11 +526,6 @@ lemma Ψ_inv_eq' (z : C) :
     (P.uId' (𝟙 z)).hom ▷ P.v (𝟙 z) ≫ (λ_ (P.v (𝟙 z))).hom ≫ (P.vId' (𝟙 z)).hom := by
   simpa using congr($(P.Ψ_eq z).inv)
 
-/-- The square
-
-<MISSING DIAGRAM>
-
-commutes. -/
 @[reassoc]
 lemma Ψ'_eq (z : C) :
     P.Ψ' z =
@@ -729,98 +590,14 @@ lemma ε_v_hom : (P.ε_v e).hom = (P.vComp' e.hom e.inv _).inv ≫ (P.vId' (𝟙
 lemma ε_v_inv : (P.ε_v e).inv = (P.vId' (𝟙 _)).inv ≫ (P.vComp' e.hom e.inv _).hom := rfl
 
 end
--- syntax (name := comp2) (priority := high) term:81
---   ppSpace ppRealGroup("⊚≫" ppHardSpace ppDedent(term:80)) : term
--- macro_rules (kind := comp2) | `($a ⊚≫ $b) => `(CategoryStruct.comp $a $b)
--- @[app_unexpander CategoryStruct.comp] meta def unexpandComp : Lean.PrettyPrinter.Unexpander
---   | `($_ $a $b) => `($a ⊚≫ $b)
---   | _ => throw ()
--- syntax (name := wl2) (priority := high) term:81
---   ppSpace ppRealGroup("⊚◁" ppHardSpace ppDedent(term:80)) : term
--- macro_rules (kind := wl2) | `($a ⊚◁ $b) => `(Bicategory.whiskerLeft $a $b)
--- @[app_unexpander Bicategory.whiskerLeft] meta def unexpandwl2 : Lean.PrettyPrinter.Unexpander
---   | `($_ $a $b) => `($a ⊚◁ $b)
---   | _ => throw ()
---
--- syntax (name := wl3) (priority := high) term:80
---   ppSpace ppRealGroup("⊚▷" ppHardSpace ppDedent(term:81)) : term
--- macro_rules (kind := wl3) | `($a ⊚▷ $b) => `(Bicategory.whiskerRight $a $b)
--- @[app_unexpander Bicategory.whiskerRight] meta def unexpandwl3 : Lean.PrettyPrinter.Unexpander
---   | `($_ $a $b) => `($a ⊚▷ $b)
---   | _ => throw ()
-
-/- In this section, we build three equivalence data:
-- Given an isomorphism `e : x ≅ y`, an equivalence `P.obj x ≌ P.obj y` coming
-  from the pseudofunctoriality of `u`.
-- Given an isomorphism `e : x ≅ y`, an equivalence `P.obj x ≌ P.obj y`
-  from the pseudofunctoriality of `v`.
-- Given an isomorphism `e : x ≅ y`, an equivalence `P.obj x ≌ P.obj y`
-  from the base change isomorphism applied to the pullback.
-
-hence, we extract out of these the following three adjunctions data
-- An adjunction `P.u e.hom ⊣ P.u e.inv`,
-- An adjunction `P.u e.hom ⊣ P.v e.hom`,
-- An adjunction `P.v e.hom ⊣ P.v e.inv`.
-and the units/counits of these adjunctions are all isomorphisms.
-And we use the calculus of mates to show that this implies an isomorphism
-`P.u e.hom ≅ P.v e.hom`. -/
-
-/- The equivalences are made reducible so that typeclass synthesis
-(and hence bicategoricalComp) is happy with peeking at their 1-cells. -/
 
 /- A shorthand for a term we’re going to write a lot. -/
 local macro "⊠" : term => `(term| IsPullback.of_horiz_isIso .mk)
 
-/- The equivalence datum coming from an isomorphism `e : c₀ ≌ c₁` and the pseudofunctoriality
-of `u`. -/
-@[simps, reducible]
-def uEquivalenceOfIso {c₀ c₁ : C} (e : c₀ ≅ c₁) :
-    P.obj c₀ ≌ P.obj c₁ where
-  hom := P.u e.hom
-  inv := P.u e.inv
-  unit := P.η_u e
-  counit := P.ε_u e
-  left_triangle := by
-    ext
-    simp only [leftZigzagIso_hom, leftZigzag, bicategoricalComp, Iso.trans_hom, Iso.symm_hom,
-      η_u_hom, ε_u_hom,
-      comp_whiskerRight, BicategoricalCoherence.assoc_iso, BicategoricalCoherence.whiskerRight_iso,
-      BicategoricalCoherence.refl_iso, whiskerRightIso_hom, Iso.refl_hom, whiskerRight_comp,
-      id_whiskerRight, Category.id_comp, Iso.inv_hom_id, Category.comp_id, whiskerLeft_comp,
-      Category.assoc]
-    have := P.uComp'_associativity' e.hom e.inv e.hom (𝟙 _) (𝟙 _) e.hom
-      (by simp) (by simp) (by simp)
-    simp only [P.uComp'_id_l, Iso.trans_hom, Iso.symm_hom, whiskerLeftIso_hom, Category.assoc,
-      P.uComp'_id_r, whiskerRightIso_hom] at this
-    rw [Iso.eq_inv_comp, Eq.comm, ← IsIso.eq_inv_comp, ← Iso.eq_comp_inv] at this
-    simp [this]
-
-/- The equivalence datum coming from an isomorphism `e : c₀ ≌ c₁` and the pseudofunctoriality
-of `v`. -/
-@[reducible]
-def vEquivalenceOfIso {c₀ c₁ : C} (e : c₀ ≅ c₁) :
-    P.obj c₁ ≌ P.obj c₀ where
-  hom := P.v e.hom
-  inv := P.v e.inv
-  unit := P.η_v e
-  counit := P.ε_v e
-  left_triangle := by
-    ext
-    simp only [η_v_hom, ε_v_hom,
-      leftZigzagIso_hom, leftZigzag, bicategoricalComp, Iso.trans_hom, Iso.symm_hom,
-      comp_whiskerRight, BicategoricalCoherence.assoc_iso, BicategoricalCoherence.whiskerRight_iso,
-      BicategoricalCoherence.refl_iso, whiskerRightIso_hom, Iso.refl_hom, whiskerRight_comp,
-      id_whiskerRight, Category.id_comp, Iso.inv_hom_id, Category.comp_id, whiskerLeft_comp,
-      Category.assoc]
-    have := P.vComp'₀₂₃_hom e.hom e.inv e.hom (𝟙 _) (𝟙 _) e.hom
-      (by simp) (by simp) (by simp)
-    simp only [P.vComp'_id_r, Iso.trans_hom, Iso.symm_hom, whiskerLeftIso_hom, P.vComp'_id_l,
-      whiskerRightIso_hom, Category.assoc] at this
-    rw [Iso.eq_inv_comp, Eq.comm, ← IsIso.eq_inv_comp, Eq.comm, ← IsIso.comp_inv_eq] at this
-    simp [← this]
-
-/- The equivalence datum coming from an isomorphism `e : c₀ ≌ c₁` and the base change isomorphism.
-This contains the data of an adjunction `P.u e.hom ⊣ P.v e.hom` -/
+/- The equivalence data coming from an isomorphism `e : c₀ ≌ c₁` and the base change isomorphism.
+This contains the data of an adjunction `P.u e.hom ⊣ P.v e.hom`.
+This equivalence is made reducible so that typeclass synthesis
+(and hence `bicategoricalComp`) is happy with peeking at its 1-cells. -/
 @[reducible]
 def baseChangeEquivalenceOfIso {c₀ c₁ : C} (e : c₀ ≅ c₁) :
     P.obj c₀ ≌ P.obj c₁ where
@@ -841,7 +618,7 @@ def baseChangeEquivalenceOfIso {c₀ c₁ : C} (e : c₀ ≅ c₁) :
       (f₀₂ := 𝟙 _) (f₁₃ := e.hom) (f₃₅ := 𝟙 _)
       (f₂₄ := e.hom) (f₀₄ := e.hom) (f₁₅ := e.hom)
       ⊠ ⊠ ⊠ (by simp) (by simp)
-    simp only [P.baseChange_unit_right, P.uComp'_id_l, Iso.trans_hom, Iso.symm_hom,
+    simp only [P.baseChangeIso_unit_horiz, P.uComp'_id_l, Iso.trans_hom, Iso.symm_hom,
       whiskerLeftIso_hom, comp_whiskerRight, whisker_assoc, triangle_assoc_comp_right_inv_assoc,
       P.uComp'_id_r, Iso.trans_inv, whiskerRightIso_inv, Iso.symm_inv, whiskerLeft_comp,
       Category.assoc, Iso.inv_hom_id_assoc] at bc''
@@ -852,96 +629,9 @@ def baseChangeEquivalenceOfIso {c₀ c₁ : C} (e : c₀ ≅ c₁) :
       ← reassoc_of% wr% Ψ'_inv_eq] at bc''
     simp [inv% bc'']
 
-/- The compatibility isomorphism `P.u e.hom ≅ P.v e.inv` when e is an isomorphism. -/
-def isoOfIso {c₀ c₁ : C} (e : c₀ ≅ c₁) :
-    P.u e.hom ≅ P.v e.inv :=
-  ((Bicategory.conjugateIsoEquiv
-    (P.baseChangeEquivalenceOfIso e).adjunction
-      (P.vEquivalenceOfIso e).symm.adjunction).symm (.refl _)).symm
-
-lemma isoOfIso_hom_eq {c₀ c₁ : C} (e : c₀ ≅ c₁) :
-    (P.isoOfIso e).hom =
-      (λ_ (P.u e.hom)).inv
-      ≫ (P.ε_v e).inv ▷ P.u e.hom
-      ≫ (α_ (P.v e.inv) (P.v e.hom) (P.u e.hom)).hom
-      ≫ P.v e.inv ◁ (P.baseChangeIso e.hom e.hom (𝟙 c₁) (𝟙 c₁) ⊠).inv
-      ≫ P.v e.inv ◁ (P.Ψ _).inv
-      ≫ (ρ_ (P.v e.inv)).hom := by
-  simp [isoOfIso, Bicategory.conjugateEquiv_symm_apply']
-
-lemma isoOfIso_inv_eq {c₀ c₁ : C} (e : c₀ ≅ c₁) :
-    (P.isoOfIso e).inv =
-    (λ_ (P.v e.inv)).inv
-      ≫ (P.Ψ' c₀).hom ▷ P.v e.inv
-      ≫ (P.baseChangeIso (𝟙 c₀) (𝟙 c₀) e.hom e.hom ⊠).inv ▷ P.v e.inv
-      ≫ (α_ (P.u e.hom) (P.v e.hom) (P.v e.inv)).hom
-      ≫ P.u e.hom ◁ (P.η_v e).inv
-      ≫ (ρ_ (P.u e.hom)).hom := by
-  simp [isoOfIso, Bicategory.conjugateEquiv_symm_apply']
-
-@[simps]
-def _root_.CategoryTheory.Bicategory.LocallyDiscrete.equivalenceOfIso {C : Type*} [Category* C]
-    {x y : C} (f : x ≅ y) : LocallyDiscrete.mk x ≌ LocallyDiscrete.mk y where
-  hom := f.hom.toLoc
-  inv := f.inv.toLoc
-  unit := Discrete.eqToIso (by simp)
-  counit := Discrete.eqToIso (by simp)
-
-lemma isoOfIso_refl (c : C) :
-    (P.uId' (𝟙 _)).inv ≫ (P.isoOfIso (Iso.refl c)).hom ≫ (P.vId' (𝟙 _)).hom = 𝟙 _ := by
-  rw [← Category.assoc, Iso.comp_hom_eq_id, Iso.inv_comp_eq]
-  simp only [Iso.refl_inv, Iso.refl_hom, isoOfIso_hom_eq]
-  simp_rw [reassoc_of% wl% P.baseChange_id_Ψ_inv c]
-  simp only [P.ε_v_inv, Iso.refl_inv, Iso.refl_hom, P.vComp'_id_r, Iso.trans_hom, Iso.symm_hom,
-    whiskerLeftIso_hom, comp_whiskerRight, whisker_assoc, triangle_assoc_comp_right_inv_assoc,
-    P.Ψ'_inv_eq, whiskerLeft_comp, whiskerLeft_rightUnitor, Category.assoc, Iso.inv_hom_id_assoc]
-  simp_rw [rightUnitor_comp_assoc, cancelIso, ← reassoc_of% wl% whisker_exchange,
-    reassoc_of% wl% id_whiskerLeft, cancelIso,
-    reassoc_of% wl% whiskerRight_id, cancelIso, ← whisker_exchange_assoc]
-  bicategory
-
--- TODO: generalize to for an arbitrary pseudofunctor.
-/-- An auxiliary computation for isoOfIso_trans -/
-lemma conjugateIsoEquiv_comp_rComp {x y z : C}
-    (f : x ≅ y) (g : y ≅ z) (h : x ≅ z)
-    (hfg : f ≪≫ g = h := by cat_disch) :
-    (Bicategory.conjugateIsoEquiv
-      ((P.vEquivalenceOfIso f).symm.adjunction.comp (P.vEquivalenceOfIso g).symm.adjunction)
-      (P.vEquivalenceOfIso h).symm.adjunction)
-        (P.vComp' g.inv f.inv h.inv) =
-        (P.vComp' f.hom g.hom h.hom).symm := by
-  ext : 1
-  subst h
-  dsimp
-  have {a b : C} (e : a ≅ b) :
-      (P.vEquivalenceOfIso e).symm.adjunction =
-      P.vPseudofunctor.mapAdj (LocallyDiscrete.equivalenceOfIso e.op).symm.adjunction := by
-    ext
-    · dsimp
-      generalize_proofs _ h
-      rw [P.ε_v_inv, PrelaxFunctor.map₂_eqToHom]
-      simp only [LocallyDiscrete.mkPseudofunctor_obj, LocallyDiscrete.mkPseudofunctor_map,
-        LocallyDiscrete.id_as, unop_id, LocallyDiscrete.comp_as, Quiver.Hom.toLoc_as, unop_comp,
-        Quiver.Hom.unop_op, Iso.cancel_iso_inv_left]
-      rw! [e.hom_inv_id]
-      simp
-    · dsimp
-      generalize_proofs h
-      rw [P.η_v_inv, PrelaxFunctor.map₂_eqToHom]
-      simp only [LocallyDiscrete.mkPseudofunctor_obj, LocallyDiscrete.mkPseudofunctor_map,
-        LocallyDiscrete.comp_as, Quiver.Hom.toLoc_as, unop_comp, Quiver.Hom.unop_op,
-        LocallyDiscrete.id_as, unop_id]
-      rw! [e.inv_hom_id]
-      simp
-  convert dsimp% Pseudofunctor.conjugateEquiv_mapAdj_comp_mapComp_hom (F := P.vPseudofunctor)
-    (adj₁ := (LocallyDiscrete.equivalenceOfIso f.op).symm.adjunction)
-    (adj₂ := (LocallyDiscrete.equivalenceOfIso g.op).symm.adjunction)
-  · rw [this]
-  · rw [this]
-  · rw [this]
-    congr; ext <;> subsingleton
-
-/- A key equation for proving transitivity of `isoOfIso`. -/
+/- A key equation for proving that the to-be-defined pseudofunctor
+`EffBurnside C ⥤ᵖ B` attached to `P : PseudofunctorCore C B` respects
+composition of 2-morphisms. -/
 lemma baseChangeEquivalenceOfIso_counit_hom_comp
     {x y z : C} (f : x ≅ y) (g : y ≅ z) (h : x ≅ z)
     (hfg : f ≪≫ g = h := by cat_disch) :
@@ -982,7 +672,7 @@ lemma baseChangeEquivalenceOfIso_counit_hom_comp
   dsimp [leftZigzag, bicategoricalComp] at this
   have := (P.baseChangeEquivalenceOfIso g).adjunction.right_triangle
   dsimp [rightZigzag, bicategoricalComp] at this
-  simp only [whiskerRight_comp, whiskerLeft_comp, inv%P.baseChange_unit_right g.hom,
+  simp only [whiskerRight_comp, whiskerLeft_comp, inv%P.baseChangeIso_unit_horiz g.hom,
     whiskerLeft_rightUnitor_inv, Category.assoc, whiskerLeft_whiskerLeft_inv_hom_assoc,
     Iso.hom_inv_id_assoc, Iso.inv_hom_id, Category.comp_id, whiskerLeft_hom_inv_assoc]
   simp_rw [← whiskerLeft_comp_assoc, ← whiskerLeft_comp]
@@ -990,142 +680,30 @@ lemma baseChangeEquivalenceOfIso_counit_hom_comp
   simp_rw [cat_nf, leftUnitor_comp_assoc, cancelIso, P.Ψ_inv_eq']
   bicategory
 
-/-- A rather technical computation for an important property: the compositions
-isomorphisms for the pseudofunctors P.u and P.v are conjugate to each
-others via the base change adjunctions. This is a key property to show
-that the ismorphism `P.isoOfIso P.u e.hom ≅ P.v e.inv` is compatible with compositions. -/
-lemma conjugateIsoEquiv_baseChange
-    {x y z : C} (f : x ≅ y) (g : y ≅ z) (h : x ≅ z)
-    (hfg : f ≪≫ g = h := by cat_disch) :
-    letI bcAdj_f := (P.baseChangeEquivalenceOfIso f).adjunction
-    letI bcAdj_g := (P.baseChangeEquivalenceOfIso g).adjunction
-    letI bcAdj_h := (P.baseChangeEquivalenceOfIso h).adjunction
-    letI bcAdj_fg := bcAdj_f.comp bcAdj_g
-    letI Eₗ : P.u h.hom ≅ P.u f.hom ≫ P.u g.hom := P.uComp' f.hom g.hom h.hom
-    letI Eᵣ : P.v h.hom ≅ P.v g.hom ≫ P.v f.hom := P.vComp' f.hom g.hom h.hom
-    (Bicategory.conjugateIsoEquiv bcAdj_h bcAdj_fg) Eₗ.symm = Eᵣ := by
-  ext
-  dsimp
-  rw [Bicategory.conjugateEquiv_apply, Bicategory.mateEquiv_apply']
-  have := P.baseChangeEquivalenceOfIso_counit_hom_comp f g h
-  dsimp [bicategoricalComp] at this ⊢
-  rotate_isos ← 0 1 at this
-  simp only [this, Category.assoc, whiskerLeft_comp, comp_whiskerRight]
-  simp only [whiskerLeft_id, whiskerLeft_rightUnitor_inv, id_whiskerLeft, unitors_equal,
-    whiskerLeft_comp, whiskerLeft_rightUnitor, Category.assoc, whiskerRight_comp, id_whiskerRight,
-    Category.id_comp, Iso.inv_hom_id, leftUnitor_whiskerRight, comp_whiskerRight,
-    pentagon_inv_hom_hom_hom_inv_assoc, Iso.inv_hom_id_assoc, Category.comp_id, whiskerRight_id,
-    Iso.hom_inv_id, whisker_assoc, Iso.hom_inv_id_assoc, inv_hom_whiskerRight_whiskerRight_assoc,
-    inv_hom_whiskerRight_assoc, pentagon_hom_inv_inv_inv_inv_assoc, whiskerLeft_hom_inv_assoc,
-    whiskerLeft_inv_hom_assoc]
-  /- We first get rid of h -/
-  slice_lhs 11 17 => equals 𝟙 _ => bicategory
-  simp only [cat_nf, cancelIso]
-  simp_rw [← whiskerLeft_comp_assoc,
-    ← reassoc_of% wr% wr% associator_inv_naturality_left,
-    ← pentagon_hom_inv_inv_inv_inv_assoc, ← associator_inv_naturality_left_assoc,
-    whisker_exchange_assoc, cat_nf, cancelIso]
-  rotate_isos 1 0
-  clear this hfg h
-  /- giving shorthands helps here -/
-  set Uf := (P.baseChangeEquivalenceOfIso f).adjunction.unit with Uf_def
-  set Ug := (P.baseChangeEquivalenceOfIso g).adjunction.unit with Ug_def
-  set Cf := (P.baseChangeEquivalenceOfIso f).adjunction.counit with Cf_def
-  set Cg := (P.baseChangeEquivalenceOfIso g).adjunction.counit with Cg_def
-  dsimp at Uf Ug Cf Cg Uf_def Ug_def Cf_def Cg_def
-  rw [← reassoc_of% wl% wl% Uf_def,
-    ← reassoc_of% wl% wl% wl% wr% Ug_def,
-    ← reassoc_of% wl% wr% wr% wr% Cf_def,
-    ← reassoc_of% wr% wr% Cg_def]
-  calc _ = 𝟙 _ ⊗≫
-            (P.v g.hom ◁ P.v f.hom ◁ Uf) ≫
-              (P.v g.hom ◁ P.v f.hom ◁ P.u f.hom ◁ (λ_ (P.v f.hom)).inv) ⊗≫
-            (P.v g.hom ◁ P.v f.hom ◁ P.u f.hom ◁ Ug ▷ P.v f.hom) ⊗≫
-            (P.v g.hom ◁ Cf ▷ P.u g.hom ▷ P.v g.hom ▷ P.v f.hom) ⊗≫
-            (Cg ▷ P.v g.hom ▷ P.v f.hom) ⊗≫ 𝟙 _ := by
-          bicategory
-      _ = 𝟙 _ ⊗≫
-            (P.v g.hom ◁ P.v f.hom ◁ Uf) ≫
-              (P.v g.hom ◁ P.v f.hom ◁ P.u f.hom ◁ (λ_ (P.v f.hom)).inv) ⊗≫
-            P.v g.hom ◁ (Cf ▷ _ ≫ _ ◁ Ug) ▷ P.v f.hom ⊗≫
-            (Cg ▷ P.v g.hom ▷ P.v f.hom) ⊗≫ 𝟙 _ := by
-          rw [← whisker_exchange]
-          bicategory
-      _ = 𝟙 _ ⊗≫
-            (P.v g.hom ◁ (Bicategory.rightZigzag Uf Cf)) ⊗≫
-            (Bicategory.rightZigzag Ug Cg) ▷ P.v f.hom ⊗≫ 𝟙 _ := by
-          bicategory
-      _ = 𝟙 (P.v g.hom ≫ P.v f.hom) := by
-          dsimp [Uf, Ug, Cf, Cg]
-          have rtf := (P.baseChangeEquivalenceOfIso f).adjunction.right_triangle
-          have rtg := (P.baseChangeEquivalenceOfIso g).adjunction.right_triangle
-          dsimp [bicategoricalComp] at rtf rtg
-          rw [rtf, rtg]
-          bicategory
-
--- TODO inline properly the letIs for cleaning up
-lemma isoOfIso_trans {x y z : C} (f : x ≅ y) (g : y ≅ z) (h : x ≅ z)
-    (hfg : f ≪≫ g = h := by cat_disch) :
-    (P.isoOfIso h).hom =
-    (P.uComp' f.hom g.hom h.hom).hom ≫
-    ((P.isoOfIso f).hom ▷ P.u g.hom) ≫
-    P.v f.inv ◁ (P.isoOfIso g).hom ≫
-    (P.vComp' g.inv f.inv h.inv).inv := by
-  -- This one will be hard.
-  -- first, we’ll bring up some pasting laws
-  -- The idea is that the adjunctions for `h` should be composites of the ones for f and g.
-  letI bcAdj_h := (P.baseChangeEquivalenceOfIso h).adjunction
-  letI bcAdj_f := (P.baseChangeEquivalenceOfIso f).adjunction
-  letI bcAdj_g := (P.baseChangeEquivalenceOfIso g).adjunction
-  letI equivOfIsoAdj_h_symm := (P.vEquivalenceOfIso h).symm.adjunction
-  letI equivOfIsoAdj_f_symm := (P.vEquivalenceOfIso f).symm.adjunction
-  letI equivOfIsoAdj_g_symm := (P.vEquivalenceOfIso g).symm.adjunction
-  dsimp at bcAdj_f bcAdj_g bcAdj_h equivOfIsoAdj_h_symm equivOfIsoAdj_f_symm equivOfIsoAdj_g_symm
-  letI bcAdj_fg := bcAdj_f.comp bcAdj_g
-  letI equivOfIsoAdj_gf_symm := equivOfIsoAdj_f_symm.comp equivOfIsoAdj_g_symm
-  letI Eₗ : P.u h.hom ≅ P.u f.hom ≫ P.u g.hom := P.uComp' f.hom g.hom h.hom
-  letI Eᵣ : P.v h.hom ≅ P.v g.hom ≫ P.v f.hom := P.vComp' f.hom g.hom h.hom
-  letI Eₗ_inv := P.uComp' g.inv f.inv h.inv
-  letI Eᵣ_inv := P.vComp' g.inv f.inv h.inv
-  dsimp [isoOfIso]
-  change (Bicategory.conjugateEquiv equivOfIsoAdj_h_symm bcAdj_h).symm _ = _
-  have congrLeft1 := conjugateEquiv_symm_congrIso_left (adj₁ := equivOfIsoAdj_h_symm)
-    (adj₁' := equivOfIsoAdj_gf_symm)
-    (adj₂ := bcAdj_h) (e₁ := Eᵣ_inv) (e₂ := Eᵣ.symm) (conjugateIsoEquiv_comp_rComp _ _ _ _) (𝟙 _)
-  simp only [congrLeft1, Iso.symm_hom, Category.comp_id]
-  have congrRight1 := conjugateEquiv_symm_congrIso_right (adj₁ := equivOfIsoAdj_gf_symm)
-    (adj₂ := bcAdj_h) (adj₂' := bcAdj_fg) (e₁ := Eₗ.symm) (e₂ := Eᵣ)
-      (conjugateIsoEquiv_baseChange ..) Eᵣ.inv
-  simp only [congrRight1, Iso.symm_inv, Iso.inv_hom_id, Category.assoc]
-  dsimp [equivOfIsoAdj_gf_symm, bcAdj_fg, Eₗ, Eᵣ_inv,
-    equivOfIsoAdj_g_symm, equivOfIsoAdj_f_symm, bcAdj_f, bcAdj_g]
-  simp only [conjugateEquiv_symm_apply, Category.id_comp, Category.assoc, comp_whiskerRight,
-    leftUnitor_inv_whiskerRight, whiskerLeft_comp, whiskerLeft_rightUnitor, Iso.cancel_iso_hom_left,
-    Iso.cancel_iso_inv_left]
-  have mate_hcomp := Bicategory.mateEquiv_symm_hcomp
-    (adj₁ := (P.vEquivalenceOfIso f).symm.adjunction)
-    (adj₂ := (P.baseChangeEquivalenceOfIso f).adjunction)
-    (adj₃ := (P.vEquivalenceOfIso g).symm.adjunction)
-    (adj₄ := (P.baseChangeEquivalenceOfIso g).adjunction)
-    (g := 𝟙 _) (h := 𝟙 _) (k := 𝟙 _)
-    (α := (ρ_ _).hom ≫ (λ_ _).inv) (β := (ρ_ _).hom ≫ (λ_ _).inv)
-  dsimp [leftAdjointSquare.hcomp, rightAdjointSquare.hcomp] at mate_hcomp
-  simp only [whiskerLeft_comp, whiskerLeft_rightUnitor, Category.assoc, comp_whiskerRight,
-    leftUnitor_inv_whiskerRight, Iso.inv_hom_id, Category.comp_id, triangle_assoc_comp_right_assoc,
-    whiskerLeft_inv_hom_assoc, Iso.hom_inv_id_assoc] at mate_hcomp
-  simp only [mate_hcomp, Category.assoc, Iso.cancel_iso_inv_left]
-  bicategory
-
 /-- A technical compatibility of base change isomorphisms: given two pullback
-square
-
+squares
+```
+      t
+  c₀ ---> c₁
+  |       |
+l |       | r
+  v       v
+  c₂ ---> c₃
+      b
+```
 and
-
-as well as an isomorphism (e : c₀ ≅ c₀') compatible with the projections
-(which is then unique), the base change isomorphism for teh second
-square can be expressed in terms of the first and the one for the square
-
-. -/
+```
+      t'
+  c₀'---> c₁
+  |       |
+l'|       | r
+  v       v
+  c₂ ---> c₃
+      b
+```
+as well as an isomorphism `e : c₀' ≅ c₀` compatible with the projections
+(which is then unique), the base change isomorphism for the second
+square can be expressed in terms of the first and the one for the square involving `e`. -/
 lemma baseChange_change_pullback {c₀ c₀' c₁ c₂ c₃ : C}
     (t : c₀ ⟶ c₁) (l : c₀ ⟶ c₂) (r : c₁ ⟶ c₃) (b : c₂ ⟶ c₃)
     (t' : c₀' ⟶ c₁) (l' : c₀' ⟶ c₂)
@@ -1159,7 +737,7 @@ lemma baseChange_change_pullback {c₀ c₀' c₁ c₂ c₃ : C}
   simp only [cat_nf] at vert
   conv_rhs at vert => enter [2,2,1]; rw [horiz₁]
   simp only [cat_nf] at vert
-  simp only [P.baseChange_unit_left, P.baseChange_unit_right,
+  simp only [P.baseChangeIso_unit_vert, P.baseChangeIso_unit_horiz,
     P.uComp'_id_r, P.vComp'_id_r, cat_nf, whisker_assoc, cancelIso] at vert
   simp only [Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, comp_whiskerRight,
     leftUnitor_inv_whiskerRight, Category.assoc, whiskerLeftIso_hom, whiskerLeft_comp,
@@ -1186,7 +764,6 @@ lemma baseChange_change_pullback {c₀ c₀' c₁ c₂ c₃ : C}
   simp_rw [← Category.assoc, cancel_mono, Category.assoc]
   bicategory
 
--- #exit
 end Adjunction
 
 noncomputable section toPseudoFunctor
@@ -1210,14 +787,19 @@ abbrev map₂ {x y : EffBurnside C} {S S' : x ⟶ y}
 noncomputable abbrev mapId (x : EffBurnside C) : P.map (𝟙 x) ≅ 𝟙 (P.obj' x) :=
     (P.baseChangeEquivalenceOfIso (Iso.refl _)).counit
 
-/-- A shorthand for a kind of isomorphism that will show up a few time. -/
-@[reducible]
-def 𝔯 {x y z : EffBurnside C} (f : x ⟶ y) (g : y ⟶ z) :=
-    P.vComp' (Spans.πₗ f.of g.of) f.of.l (f.of ≫ g.of).l
+-- TODO: maybe 𝔯 and 𝔩 could be local notations instead?
 
+/-- A shorthand for a kind of isomorphism that will show up a few times. -/
 @[reducible]
-def 𝔩 {x y z : EffBurnside C} (f : x ⟶ y) (g : y ⟶ z) :=
-    P.uComp' (Spans.πᵣ f.of g.of) g.of.r (f.of ≫ g.of).r
+def 𝔯 {x y z : EffBurnside C} (f : x ⟶ y) (g : y ⟶ z) :
+    P.v (f.of ≫ g.of).l ≅ P.v f.of.l ≫ P.v (Spans.πₗ f.of g.of) :=
+  P.vComp' (Spans.πₗ f.of g.of) f.of.l (f.of ≫ g.of).l
+
+/-- A shorthand for a kind of isomorphism that will show up a few times. -/
+@[reducible]
+def 𝔩 {x y z : EffBurnside C} (f : x ⟶ y) (g : y ⟶ z) :
+    P.u (f.of ≫ g.of).r ≅ P.u (Spans.πᵣ f.of g.of) ≫ P.u g.of.r :=
+  P.uComp' (Spans.πᵣ f.of g.of) g.of.r (f.of ≫ g.of).r
 
 /-- A shorthand for a morphism that we will be seeing a lot. -/
 @[reducible]
@@ -1244,11 +826,13 @@ lemma μ_inv' {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
   rw [← whisker_exchange]
   exact P.μ_inv _ _
 
-/-- Again a shorthand for a morphism that we will be seeing a lot. -/
+/-- A shorthand for a morphism that we will be seeing a lot. -/
 abbrev Γ {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :=
   P.baseChangeIso (Spans.πₗ S₁.of S₂.of) (Spans.πᵣ S₁.of S₂.of) S₁.of.r S₂.of.l
     (IsPullback.of_isLimit (Spans.isLimitCompPullbackCone S₁.of S₂.of))
 
+/-- The `mapComp` field of the to-be-defined pseudofunctor
+`EffBurnside C ⥤ᵖ B` attached to `P : PseudofunctorCore C B` -/
 noncomputable abbrev mapComp {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
     P.map (S₁ ≫ S₂) ≅ P.map S₁ ≫ P.map S₂ :=
   (P.μ S₁ S₂) ≪⊗≫
@@ -1266,18 +850,19 @@ lemma mapComp_inv {x y z : EffBurnside C} (S₁ : x ⟶ y) (S₂ : y ⟶ z) :
   bicategory
 
 lemma map₂_id {a b : EffBurnside C} (f : a ⟶ b) : P.map₂ (𝟙 f) = 𝟙 (P.map f) := by
-    dsimp [map₂]
-    rw [inv% P.baseChange_id_eq]
-    simp only [cat_nf, cancelIso, Iso.trans_hom, Iso.symm_hom, whiskerLeftIso_hom,
-      whiskerRightIso_hom, P.uComp'_id_r, P.vComp'_id_r]
-    simp_rw [← reassoc_of% wl% associator_inv_naturality_middle, cancelIso,
-      associator_naturality_middle_assoc,
-      ← reassoc_of% wl% whisker_exchange, reassoc_of% wl% associator_inv_naturality_left,
-      reassoc_of% wl% wr% whiskerRight_id, P.Ψ_inv_eq', cat_nf, cancelIso]
-    bicategory
+  dsimp [map₂]
+  rw [inv% P.baseChange_id_eq]
+  simp only [cat_nf, cancelIso, Iso.trans_hom, Iso.symm_hom, whiskerLeftIso_hom,
+    whiskerRightIso_hom, P.uComp'_id_r, P.vComp'_id_r]
+  simp_rw [← reassoc_of% wl% associator_inv_naturality_middle, cancelIso,
+    associator_naturality_middle_assoc,
+    ← reassoc_of% wl% whisker_exchange, reassoc_of% wl% associator_inv_naturality_left,
+    reassoc_of% wl% wr% whiskerRight_id, P.Ψ_inv_eq', cat_nf, cancelIso]
+  bicategory
 
 /-- A shorthand for the counit of the base change adjunction deduced by a 2-morphism in
-`EffBurnside C`: having it prevents some unfoldings. -/
+`EffBurnside C`: having it as a standalone definition prevents some
+unwanted unfoldings. -/
 private def ε {c c' : EffBurnside C} {f g : c ⟶ c'} (η : f ⟶ g) :
     P.v (η.iso.hom.hom) ≫ P.u (η.iso.hom.hom) ≅ 𝟙 (P.obj g.of.apex) :=
   (P.baseChangeEquivalenceOfIso (Spans.apexIso η.iso)).counit
@@ -1350,6 +935,6 @@ lemma map₂_comp {c c' : EffBurnside C} {f g h : c ⟶ c'} (η : f ⟶ g) (θ :
 
 end toPseudoFunctor
 
-end PseudoFunctorCore
+end PseudofunctorCore
 
 end CategoryTheory.EffBurnside

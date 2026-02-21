@@ -233,41 +233,41 @@ a pair of pseudofunctors, along with base change isomorphisms. This is a rather
 technical result involving heavy bicategory computations. -/
 
 /--
-info: CategoryTheory.EffBurnside.PseudoFunctorCore.{w₁, v₁, v₂, u₁, u₂} (C : Type u₁) [Category.{v₁, u₁} C] (B : Type u₂)
+info: CategoryTheory.EffBurnside.PseudofunctorCore.{w₁, v₁, v₂, u₁, u₂} (C : Type u₁) [Category.{v₁, u₁} C] (B : Type u₂)
   [Bicategory B] : Type (max (max (max (max u₁ u₂) v₁) v₂) w₁)
 -/
 #guard_msgs in
-#check EffBurnside.PseudoFunctorCore
+#check EffBurnside.PseudofunctorCore
 
 /--
-info: CategoryTheory.EffBurnside.PseudoFunctorCore.u.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {B : Type u₂}
-  [Bicategory B] (self : EffBurnside.PseudoFunctorCore C B) {x y : C} : (x ⟶ y) → (self.obj x ⟶ self.obj y)
+info: CategoryTheory.EffBurnside.PseudofunctorCore.u.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {B : Type u₂}
+  [Bicategory B] (self : EffBurnside.PseudofunctorCore C B) {x y : C} : (x ⟶ y) → (self.obj x ⟶ self.obj y)
 -/
 #guard_msgs in
-#check EffBurnside.PseudoFunctorCore.u
+#check EffBurnside.PseudofunctorCore.u
 
 /--
-info: CategoryTheory.EffBurnside.PseudoFunctorCore.v.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {B : Type u₂}
-  [Bicategory B] (self : EffBurnside.PseudoFunctorCore C B) {x y : C} : (x ⟶ y) → (self.obj y ⟶ self.obj x)
+info: CategoryTheory.EffBurnside.PseudofunctorCore.v.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C] {B : Type u₂}
+  [Bicategory B] (self : EffBurnside.PseudofunctorCore C B) {x y : C} : (x ⟶ y) → (self.obj y ⟶ self.obj x)
 -/
 #guard_msgs in
-#check EffBurnside.PseudoFunctorCore.v
+#check EffBurnside.PseudofunctorCore.v
 
 /--
-info: CategoryTheory.EffBurnside.PseudoFunctorCore.baseChangeIso.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C]
-  {B : Type u₂} [Bicategory B] (self : EffBurnside.PseudoFunctorCore C B) {x y z t : C} (a : x ⟶ y) (b : x ⟶ z)
-  (c : y ⟶ t) (d : z ⟶ t) (S : IsPullback a b c d) : self.u c ≫ self.v d ≅ self.v a ≫ self.u b
+info: CategoryTheory.EffBurnside.PseudofunctorCore.baseChangeIso.{w₁, v₁, v₂, u₁, u₂} {C : Type u₁} [Category.{v₁, u₁} C]
+  {B : Type u₂} [Bicategory B] (self : EffBurnside.PseudofunctorCore C B) {c₀ c₁ c₂ c₃ : C} (t : c₀ ⟶ c₁) (l : c₀ ⟶ c₂)
+  (r : c₁ ⟶ c₃) (b : c₂ ⟶ c₃) (S : IsPullback t l r b) : self.u r ≫ self.v b ≅ self.v t ≫ self.u l
 -/
 #guard_msgs in
-#check EffBurnside.PseudoFunctorCore.baseChangeIso
+#check EffBurnside.PseudofunctorCore.baseChangeIso
 
 /--
-info: CategoryTheory.EffBurnside.PseudoFunctorCore.toPseudofunctor.{w₁, v₁, v₂, u₁, u₂} {C : Type v₁} [Category.{u₁, v₁} C]
-  {B : Type u₂} [Bicategory B] (P : EffBurnside.PseudoFunctorCore C B) [Limits.HasPullbacks C] :
+info: CategoryTheory.EffBurnside.PseudofunctorCore.toPseudofunctor.{w₁, v₁, v₂, u₁, u₂} {C : Type v₁} [Category.{u₁, v₁} C]
+  {B : Type u₂} [Bicategory B] (P : EffBurnside.PseudofunctorCore C B) [Limits.HasPullbacks C] :
   Pseudofunctor (EffBurnside C) B
 -/
 #guard_msgs in
-#check EffBurnside.PseudoFunctorCore.toPseudofunctor
+#check EffBurnside.PseudofunctorCore.toPseudofunctor
 
 /-! To bundle a symmetric monoidal category as a pseudofunctor out of `BurnsideFintypecat`,
 it is good to make the distinction of the computations that happen "formally" and
@@ -317,7 +317,7 @@ example (J : Type) : (SList.Kleisli.pseudoOfSymmMonCat C).obj (.mk <| J) ≌ (J 
 constructor. -/
 
 /--
-info: CategoryTheory.SList.EffBurnside.pseudoFunctorCore : EffBurnside.PseudoFunctorCore FintypeCat SList.Kleisli.{0}
+info: CategoryTheory.SList.EffBurnside.pseudoFunctorCore : EffBurnside.PseudofunctorCore FintypeCat SList.Kleisli.{0}
 -/
 #guard_msgs in
 #check SList.EffBurnside.pseudoFunctorCore

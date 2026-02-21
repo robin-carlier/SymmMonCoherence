@@ -83,7 +83,7 @@ lemma linearOfIsPullback {X Y Z T : FintypeCat} {u : X ⟶ Y} {v : X ⟶ Z} {f :
     ↓reduceIte, ite_eq_left_iff, zero_ne_one, imp_false, Decidable.not_not]
   grind
 
-noncomputable def pseudoFunctorCore : EffBurnside.PseudoFunctorCore FintypeCat.{0} Kleisli.{0} where
+noncomputable def pseudoFunctorCore : EffBurnside.PseudofunctorCore FintypeCat.{0} Kleisli.{0} where
   obj J := .mk J
   u {X Y} f := .mk <| pushforwardAux f
   v {X Y} f := .mk <| RelativePseudomonad.ι _ ∘ f
@@ -146,13 +146,13 @@ noncomputable def pseudoFunctorCore : EffBurnside.PseudoFunctorCore FintypeCat.{
         have := congr($(S.w) a)
         simp at this
         grind
-  baseChange_unit_left {X Y} f := by
+  baseChangeIso_unit_vert {X Y} f := by
     ext i
     dsimp
     have : IsPullback f (𝟙 _) (𝟙 _) f := .of_vert_isIso (by simp)
     haveI := linearOfIsPullback this
     subsingleton
-  baseChange_unit_right {X Y} f := by
+  baseChangeIso_unit_horiz {X Y} f := by
     ext i
     dsimp
     have : IsPullback (𝟙 _) f f (𝟙 _) := .of_horiz_isIso (by simp)
@@ -161,7 +161,7 @@ noncomputable def pseudoFunctorCore : EffBurnside.PseudoFunctorCore FintypeCat.{
         (RelativePseudomonad.ι Y.carrier i)).Linear := linearOfIsPullback this i
     dsimp at this
     subsingleton
-  baseChange_comp_horiz {x y z t m n} {f g h k u v w} S₁ S₂ := by
+  baseChangeIso_comp_horiz {x y z t m n} {f g h k u v w} S₁ S₂ := by
     ext i
     dsimp
     have := S₁.paste_horiz S₂
@@ -170,7 +170,7 @@ noncomputable def pseudoFunctorCore : EffBurnside.PseudoFunctorCore FintypeCat.{
         (RelativePseudomonad.ι n.carrier (w (v i)))).Linear :=
       linearOfIsPullback this i
     subsingleton
-  baseChange_comp_vert {x y z t m n} {f g h k u v w} S₁ S₂ := by
+  baseChangeIso_comp_vert {x y z t m n} {f g h k u v w} S₁ S₂ := by
     ext i
     dsimp
     have := S₁.paste_vert S₂

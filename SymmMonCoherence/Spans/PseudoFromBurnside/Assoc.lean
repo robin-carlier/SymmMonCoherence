@@ -9,18 +9,29 @@ import all SymmMonCoherence.Spans.PseudoFromBurnside.Basic
 public import SymmMonCoherence.Spans.PseudoFromBurnside.Basic
 public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
-/-! # Pseudofunctors from the Burnside (2,1)-category . -/
+/-! # Pseudofunctors from the effective Burnside (2,1)-category.
 
--- @[expose] public section
+In this file, we carry out the computations needed to show that the
+data of a `PseudofunctorCore` satisfies associativity.
 
-namespace CategoryTheory.EffBurnside.PseudoFunctorCore
+The computation is rather painful, as one of the main shortcomings of
+`bicategoricalComp` is its inability to correctly infer arguments
+in placeholders, this means that we have to spell out the entire expressions
+every time.
+It also appears that the number of `bicategoricalComp` causes slowdowns,
+and we have to raise the number of max heartbeats in the proofs
+in a few places. An ongoing project is to rewrite this
+proof and to try to make it nicer.
+-/
+
+namespace CategoryTheory.EffBurnside.PseudofunctorCore
 
 open CategoryTheory Bicategory
 
 universe w₁ v₁ v₂ u₁ u₂
 
 variable {C : Type v₁} [Category.{u₁} C] {B : Type u₂} [Bicategory.{w₁, v₂} B]
-    (P : PseudoFunctorCore C B)
+    (P : PseudofunctorCore C B)
 
 noncomputable section toPseudoFunctor
 
@@ -30,15 +41,19 @@ open Spans
 
 section comp_assoc
 
-
 /- The field map₂_assoc for the pseudofunctor is the most technical to supply.
 This amounts to a very big bicategorical computation, which we break down in several lemmas
-computing or simplifying some subterms fo the final expression. Even with such sublemmas,
+computing or simplifying some subterms of the final expression. Even with such sublemmas,
 the computation remains painful as we cannot use placeholders in chains of bicategorical
 compositions, and we can’t directly perform rewrites, because nothing
 can actually be proved about `bicategoricalComp`. -/
 
 section
+
+/- In this section, we give names to some of the morphisms that appear in the computation,
+this is really just an attempt at reducing the size of the expressions in the
+`bicategoricalComp`-based computations below, and some (maybe all)
+of these abbrevs could be local notations instead. -/
 
 variable {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
 
@@ -147,15 +162,6 @@ abbrev Θ₂ :=
     (πᵣ f.of g.of) (πₗ g.of h.of) (isPullback_Θ₂ f g h)
 end
 
--- syntax (name := bcomp2) (priority := high) term:81
---   ppSpace ppRealGroup("⊚≫" ppHardSpace ppDedent(term:80)) : term
--- macro_rules (kind := bcomp2) | `($a ⊚≫ $b) => `(bicategoricalComp $a $b)
--- @[app_unexpander _root_.CategoryTheory.bicategoricalComp] public meta def unexpandBComp :
---       Lean.PrettyPrinter.Unexpander
---   | `($_ $a $b) => `($a ⊚≫ $b)
---   | _ => throw ()
--- #check bicategoricalComp
-
 lemma assoc₀ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (P.vα₃ f g h).hom ≫ (P.𝔯 f g).hom ▷
       P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ⊗≫
@@ -199,7 +205,6 @@ lemma assoc₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ 
     (f := ((f.of ≫ g.of) ≫ h.of).l)
     (by simp) (by simp) (by simp)]
 
--- #exit
 set_option maxHeartbeats 500000 in -- Calc + bicategory is so slow
 lemma aux₀ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     P.v (f.of ≫ g.of).l ◁
@@ -247,16 +252,16 @@ lemma aux₀ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
           whisker_exchange (θ := ((P.uα₃ f g h).hom ≫ (P.uα₂' f g h).hom ▷ P.u h.of.r))]
         bicategory
     _ = 𝟙 _ ⊗≫
-          ((P.vα₃ f g h).inv ▷ (P.v (α_ f.of g.of h.of).hom.hom ≫ P.u (α_ f.of g.of h.of).hom.hom ≫
-            (P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r)) ⊗≫
-          P.v (f.of ≫ g.of ≫ h.of).l ◁ P.v (α_ f.of g.of h.of).hom.hom ◁
-            P.u (α_ f.of g.of h.of).hom.hom ◁
-          ((P.uα₂' f g h).inv ▷ P.u h.of.r ≫ (P.uα₃ f g h).inv ≫
-            (P.uα₃ f g h).hom ≫ (P.uα₂' f g h).hom ▷ P.u h.of.r) ⊗≫
-          (P.v (f.of ≫ g.of ≫ h.of).l ◁ P.η f g h) ▷
-            ((P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r) ⊗≫
-          (P.vα₃ f g h).hom ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
-            P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫ 𝟙 _ := by
+        ((P.vα₃ f g h).inv ▷ (P.v (α_ f.of g.of h.of).hom.hom ≫ P.u (α_ f.of g.of h.of).hom.hom ≫
+          (P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r)) ⊗≫
+        P.v (f.of ≫ g.of ≫ h.of).l ◁ P.v (α_ f.of g.of h.of).hom.hom ◁
+          P.u (α_ f.of g.of h.of).hom.hom ◁
+        ((P.uα₂' f g h).inv ▷ P.u h.of.r ≫ (P.uα₃ f g h).inv ≫
+          (P.uα₃ f g h).hom ≫ (P.uα₂' f g h).hom ▷ P.u h.of.r) ⊗≫
+        (P.v (f.of ≫ g.of ≫ h.of).l ◁ P.η f g h) ▷
+          ((P.u (πᵣ f.of (g.of ≫ h.of)) ≫ P.u (πᵣ g.of h.of)) ≫ P.u h.of.r) ⊗≫
+        (P.vα₃ f g h).hom ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
+          P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫ 𝟙 _ := by
       bicategory
     _ = 𝟙 _ ⊗≫
         ((P.vα₃ f g h).inv ▷ ((P.v (α_ f.of g.of h.of).hom.hom ≫ P.u (α_ f.of g.of h.of).hom.hom) ≫
@@ -418,15 +423,15 @@ lemma comp₁ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
 
 lemma comp₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₃ f g h).hom ⊗≫
-        P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₂' f g h).hom ▷ P.u h.of.r ⊗≫
-        (P.vα₃ f g h).hom ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
-          ((P.𝔯 f g).hom ▷ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ▷
-          P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
-        P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁
-          P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
-            P.u (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv ⊗≫
-        P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
-          P.u (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv) = (⊗𝟙).hom := by
+      P.v (f.of ≫ g.of ≫ h.of).l ◁ (P.uα₂' f g h).hom ▷ P.u h.of.r ⊗≫
+      (P.vα₃ f g h).hom ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+        ((P.𝔯 f g).hom ▷ P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ▷
+        P.u (πᵣ f.of (g.of ≫ h.of)) ▷ P.u (πᵣ g.of h.of) ▷ P.u h.of.r ⊗≫
+      P.v f.of.l ◁ P.v (πₗ f.of g.of) ◁
+        P.v ((α_ f.of g.of h.of).inv.hom ≫ πₗ (f.of ≫ g.of) h.of) ◁
+          P.u (πᵣ f.of (g.of ≫ h.of)) ◁ (P.𝔩 g h).inv ⊗≫
+      P.v f.of.l ◁ (P.vα₂ f g h).inv ▷ P.u (πᵣ f.of (g.of ≫ h.of)) ▷
+        P.u (g.of ≫ h.of).r ⊗≫ (P.μ f (g ≫ h)).inv) = (⊗𝟙).hom := by
   rw [P.μ_inv']
   conv_lhs =>
     equals
@@ -634,9 +639,7 @@ lemma aux₂ {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
   simp only [cancelIso]
   bicategory
 
--- #exit
 set_option maxHeartbeats 800000 in -- calc + bicat is very slow
-/-- Associativity is by far the most technical point -/
 public lemma map₂_assoc
     {a b c d : EffBurnside C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     P.map₂ (α_ f g h).hom =
@@ -772,8 +775,9 @@ public lemma map₂_assoc
   rw [P.cocycle₂ f g h]
 
 end comp_assoc
+
 end toPseudoFunctor
 
-end PseudoFunctorCore
+end PseudofunctorCore
 
 end CategoryTheory.EffBurnside
