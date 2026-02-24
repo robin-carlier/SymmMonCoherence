@@ -49,7 +49,7 @@ variable (f : J → C) in
 
 /--
 info: CategoryTheory.SList.monoidalLiftNatTrans.{u_1, v_1, u_2} {C : Type u_1} {D : Type u_2} [Category.{v_1, u_2} D]
-  [MonoidalCategory D] [SymmetricCategory D] {F G : SList C ⥤ D} [F.Braided] [G.Braided]
+  [MonoidalCategory D] [SymmetricCategory D] {F G : SList C ⥤ D} [F.Braided] [G.LaxBraided]
   (φ : (c : C) → F.obj [c]~ ⟶ G.obj [c]~) : F ⟶ G
 -/
 #guard_msgs in
@@ -57,7 +57,7 @@ info: CategoryTheory.SList.monoidalLiftNatTrans.{u_1, v_1, u_2} {C : Type u_1} {
 
 /--
 info: CategoryTheory.SList.monoidalNatTrans_ext_app_singleton.{u_1, v_1, u_2} {C : Type u_1} {D : Type u_2}
-  [Category.{v_1, u_2} D] [MonoidalCategory D] [SymmetricCategory D] {F G : SList C ⥤ D} [F.Braided] [G.Braided]
+  [Category.{v_1, u_2} D] [MonoidalCategory D] [SymmetricCategory D] {F G : SList C ⥤ D} [F.Braided] [G.LaxBraided]
   {α β : F ⟶ G} [NatTrans.IsMonoidal α] [NatTrans.IsMonoidal β] (h : ∀ (c : C), α.app [c]~ = β.app [c]~) : α = β
 -/
 #guard_msgs in

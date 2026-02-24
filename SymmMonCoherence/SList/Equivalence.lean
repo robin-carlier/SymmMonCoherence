@@ -889,7 +889,7 @@ public instance (p : C → D) : (monoidalLift p).Braided :=
 /-- Given two symmetric monoidal functors `F G : SList C ⥤ D`, a family of morphisms
 `F.obj [c]~ → G.obj [c]~` determines a monoidal natural transformation from `F` to `G`. -/
 @[expose] public def monoidalLiftNatTrans
-    {F G : SList C ⥤ D} [F.Braided] [G.Braided]
+    {F G : SList C ⥤ D} [F.Braided] [G.LaxBraided]
     (φ : ∀ (c : C), F.obj [c]~ ⟶ G.obj [c]~) :
     F ⟶ G :=
   letI F' : FreeSymmetricMonoidalCategory C ⥤ D := (equivalence C).inverse ⋙ F
@@ -906,6 +906,7 @@ public instance (p : C → D) : (monoidalLift p).Braided :=
 
 public section
 
+-- TODO: upstream this in mathlib
 variable {C : Type*} [Category* C] [MonoidalCategory C]
   {D : Type*} [Category* D] [MonoidalCategory D]
   {E : Type*} [Category* E] [MonoidalCategory E]
@@ -927,7 +928,7 @@ instance {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal]
 
 end
 
-public instance {F G : SList C ⥤ D} [F.Braided] [G.Braided]
+public instance {F G : SList C ⥤ D} [F.Braided] [G.LaxBraided]
     (φ : ∀ (c : C), F.obj [c]~ ⟶ G.obj [c]~) : (monoidalLiftNatTrans φ).IsMonoidal := by
   dsimp [monoidalLiftNatTrans]
   -- The composition is a bit too big, so we have to provide an intermediate instance
@@ -944,10 +945,11 @@ public instance {F G : SList C ⥤ D} [F.Braided] [G.Braided]
 
 public section
 
-variable {F G : SList C ⥤ D} [F.Braided] [G.Braided] (φ : ∀ (c : C), F.obj [c]~ ⟶ G.obj [c]~)
-
 @[simp]
-lemma monoidalLiftNatTrans_app_singleton (c : C) : (monoidalLiftNatTrans φ).app [c]~ = φ c := by
+lemma monoidalLiftNatTrans_app_singleton
+    {F G : SList C ⥤ D} [F.Braided] [G.LaxBraided] (φ : ∀ (c : C), F.obj [c]~ ⟶ G.obj [c]~)
+    (c : C) :
+    (monoidalLiftNatTrans φ).app [c]~ = φ c := by
   letI F' : FreeSymmetricMonoidalCategory C ⥤ D := (equivalence C).inverse ⋙ F
   letI G' : FreeSymmetricMonoidalCategory C ⥤ D := (equivalence C).inverse ⋙ G
   letI φ' : ∀ (c : C), F'.obj (of c) ⟶ G'.obj (of c) := φ
@@ -969,12 +971,23 @@ lemma monoidalLiftNatTrans_app_singleton (c : C) : (monoidalLiftNatTrans φ).app
     liftNatTrans_app_of, Category.assoc, F', α₀, φ']
   simp [← Functor.map_comp, ← Functor.map_comp_assoc, normalization_of]
 
-lemma monoidalNatTrans_ext_app_singleton {α β : F ⟶ G} [α.IsMonoidal] [β.IsMonoidal]
+lemma monoidalNatTrans_ext_app_singleton
+    {F G : SList C ⥤ D} [F.Braided] [G.LaxBraided]
+    {α β : F ⟶ G} [α.IsMonoidal] [β.IsMonoidal]
     (h : ∀ c : C, α.app [c]~ = β.app [c]~) : α = β := by
   apply (Functor.whiskeringLeft .. |>.obj ((equivalence C).inverse)).map_injective
   dsimp
   apply FreeSymmetricMonoidalCategory.ext_of_monoidal
   exact h
+
+lemma monoidalLiftNatTrans_comp {F G H : SList C ⥤ D} [F.Braided] [G.Braided] [H.LaxBraided]
+    (φ : ∀ (c : C), F.obj [c]~ ⟶ G.obj [c]~)
+    (ψ : ∀ c : C, G.obj [c]~ ⟶ H.obj [c]~) :
+    monoidalLiftNatTrans φ ≫ monoidalLiftNatTrans ψ =
+    monoidalLiftNatTrans (fun c ↦ φ c ≫ ψ c) := by
+  apply monoidalNatTrans_ext_app_singleton
+  intro c
+  simp
 
 @[expose, simps] public def monoidalLiftNatIso
     {F G : SList C ⥤ D} [F.Braided] [G.Braided]

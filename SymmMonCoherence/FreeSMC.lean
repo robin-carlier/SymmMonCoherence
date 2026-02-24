@@ -435,11 +435,10 @@ section NatTrans
 
 section
 
-
 def liftNatTransAux
     {D : Type*} [Category D] [MonoidalCategory D] [SymmetricCategory D]
     {G G' : F C ⥤ D}
-    [G.Braided] [G'.Braided]
+    [G.Braided] [G'.LaxBraided]
     (e : ∀ c : C, G.obj (of c) ⟶ G'.obj (of c)) :
     ∀ (x : FreeSymmetricMonoidalCategory C), (G.obj x) ⟶ (G'.obj x)
   | .unit => (Functor.OplaxMonoidal.η G) ≫ (Functor.LaxMonoidal.ε G')
@@ -452,7 +451,7 @@ def liftNatTransAux
 variable
   {D : Type*} [Category D] [MonoidalCategory D] [SymmetricCategory D]
   {G G' : F C ⥤ D}
-  [G.Braided] [G'.Braided]
+  [G.Braided] [G'.LaxBraided]
   (e : ∀ c : C, G.obj (of c) ⟶ G'.obj (of c))
 
 @[local simp]
@@ -498,8 +497,12 @@ lemma liftNatTransAux_tensor (x y : F C) :
     | l_inv X => simp [MonoidalCategory.tensorHom_def, ← whisker_exchange_assoc]
     | ρ_hom X => simp [MonoidalCategory.tensorHom_def, ← whisker_exchange_assoc]
     | ρ_inv X => simp [MonoidalCategory.tensorHom_def, ← whisker_exchange_assoc]
-    | β_hom X Y => simp
-    | β_inv X Y => rw [← SymmetricCategory.braiding_swap_eq_inv_braiding]; simp
+    | β_hom X Y => simp [Functor.LaxBraided.braided]
+        -- [Functor.map_braiding, liftNatTransAux_tensor, Category.assoc,
+        --   Functor.Monoidal.μ_δ_assoc, BraidedCategory.braiding_naturality_assoc]
+    | β_inv X Y =>
+      rw [← SymmetricCategory.braiding_swap_eq_inv_braiding]
+      simp [Functor.LaxBraided.braided]
     | comp f g ihf ihg => simp [reassoc_of% ihf, ihg]
     | whiskerLeft X f hf =>
       have := congr(G'.obj X ◁ $hf)
@@ -617,7 +620,7 @@ section
 lemma ext_of_monoidal
     {D : Type*} [Category D] [MonoidalCategory D] [SymmetricCategory D]
     {G G' : FreeSymmetricMonoidalCategory C ⥤ D}
-    [G.Braided] [G'.Braided]
+    [G.Braided] [G'.LaxBraided]
     {η η' : G ⟶ G'} [η.IsMonoidal] [η'.IsMonoidal]
     (h : ∀ (x : C), η.app (of x) = η'.app (of x)) :
     η = η' := by
