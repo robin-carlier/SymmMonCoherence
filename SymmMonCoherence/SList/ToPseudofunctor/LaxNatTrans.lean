@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax
 
 /-! # Unbiasing of lax symmetric monoidal functors.
 
-In this file, we show that if `F : C ⥤ D` is a lax monoidal
+In this file, we show that if `F : C ⥤ D` is a lax braided monoidal
 functor of symmetric monoidal categories, `F` defines a lax natural
 transformation of the pseudofunctors from the Kleisli bicategory induced by the
 source and target symmetric monoidal categories. -/
@@ -111,12 +111,12 @@ between the pseudfunctors out of the Kleisli bicategory classifying the source a
 target monoidal categories. -/
 @[simps!]
 def natTransOfLaxBraided {C D : Type u} [Category.{v} C] [Category.{v} D]
-  [MonoidalCategory C] [MonoidalCategory D]
-  [SymmetricCategory C] [SymmetricCategory D]
-  (F : C ⥤ D) [F.LaxBraided] :
-    Lax.LaxTrans
-      (SList.Kleisli.pseudoOfSymmMonCat C).toLax
-      (SList.Kleisli.pseudoOfSymmMonCat D).toLax where
+    [MonoidalCategory C] [MonoidalCategory D]
+    [SymmetricCategory C] [SymmetricCategory D]
+    (F : C ⥤ D) [F.LaxBraided] :
+      Lax.LaxTrans
+        (SList.Kleisli.pseudoOfSymmMonCat C).toLax
+        (SList.Kleisli.pseudoOfSymmMonCat D).toLax where
   app J := Cat.Hom.ofFunctor <| Pi.postcompFunctor J.of F
   naturality {J K} f := Cat.Hom₂.ofNatTrans <|
     (Functor.associator _ _ _).inv ≫ (Functor.whiskerRight (generalizedμ _ _) _)

@@ -498,8 +498,6 @@ lemma liftNatTransAux_tensor (x y : F C) :
     | ρ_hom X => simp [MonoidalCategory.tensorHom_def, ← whisker_exchange_assoc]
     | ρ_inv X => simp [MonoidalCategory.tensorHom_def, ← whisker_exchange_assoc]
     | β_hom X Y => simp [Functor.LaxBraided.braided]
-        -- [Functor.map_braiding, liftNatTransAux_tensor, Category.assoc,
-        --   Functor.Monoidal.μ_δ_assoc, BraidedCategory.braiding_naturality_assoc]
     | β_inv X Y =>
       rw [← SymmetricCategory.braiding_swap_eq_inv_braiding]
       simp [Functor.LaxBraided.braided]
