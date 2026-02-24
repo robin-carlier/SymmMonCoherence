@@ -1,4 +1,5 @@
 import SymmMonCoherence.SList.ToPseudofunctor.Specs
+import SymmMonCoherence.SList.ToPseudofunctor.LaxNatTrans
 
 open CategoryTheory
 
@@ -312,6 +313,26 @@ info: CategoryTheory.SList.Kleisli.pseudoOfSymmMonCat.{v', u'} (C : Type u') [Ca
 #check SList.Kleisli.pseudoOfSymmMonCat
 
 example (J : Type) : (SList.Kleisli.pseudoOfSymmMonCat C).obj (.mk <| J) ≌ (J → C) := .refl
+
+/-! A lax symmetric monoidal functor defines a lax natural transformation between the
+pseudofunctors on the Kleisli bicategories. -/
+
+/--
+info: CategoryTheory.SList.Kleisli.natTransOfLaxBraided.{v, u} {C D : Type u} [Category.{v, u} C] [Category.{v, u} D]
+  [MonoidalCategory C] [MonoidalCategory D] [SymmetricCategory C] [SymmetricCategory D] (F : C ⥤ D) [F.LaxBraided] :
+  Lax.LaxTrans (SList.Kleisli.pseudoOfSymmMonCat C).toLax (SList.Kleisli.pseudoOfSymmMonCat D).toLax
+-/
+#guard_msgs in
+#check SList.Kleisli.natTransOfLaxBraided
+
+/--
+info: CategoryTheory.SList.Kleisli.natTransOfLaxBraided_app_toFunctor_obj.{v, u} {C D : Type u} [Category.{v, u} C]
+  [Category.{v, u} D] [MonoidalCategory C] [MonoidalCategory D] [SymmetricCategory C] [SymmetricCategory D] (F : C ⥤ D)
+  [F.LaxBraided] (J : SList.Kleisli.{0}) (f : (i : J.of) → (fun a ↦ C) i) (i : J.of) :
+  ((SList.Kleisli.natTransOfLaxBraided F).app J).toFunctor.obj f i = F.obj (f i)
+-/
+#guard_msgs in
+#check SList.Kleisli.natTransOfLaxBraided_app_toFunctor_obj
 
 /-! Finally, we build a pseudofunctor from EffBurnsideFintype to `Kleisli` using the previous
 constructor. -/
