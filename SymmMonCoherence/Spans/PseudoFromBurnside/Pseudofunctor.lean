@@ -12,7 +12,7 @@ public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 /-! # Pseudofunctors from the effective Burnside (2,1)-category.
 
 This file constructs a pseudofunctor `EffBurnside C ⥤ᵖ B` from a `PseudofunctorCore C B`.
-specifically, the action on spans of the form `Spans.inr` is given by the field `u`
+Specifically, the action on spans of the form `Spans.inr` is given by the field `u`
 and the action on spans of the form `Spans.inl` is given by the field `v`.
 -/
 

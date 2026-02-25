@@ -42,7 +42,7 @@ variable {C D : Type*} [Category* C] [Category* D]
    v              v
 (K → D) ---> (SList K ⥤ D)
 ```
-This is a `K`-ary version of Functor.LaxMonoidal.μ, with -/
+This is a `K`-ary version of `Functor.Monoidal.μIso`. -/
 def generalizedμIso (K : Type*) :
     (Pi.postcompFunctor _ F) ⋙ SList.monoidalLiftFunctor K D ≅
     (SList.monoidalLiftFunctor K C) ⋙ (Functor.whiskeringRight _ _ _|>.obj F) :=
@@ -79,8 +79,8 @@ section
 
 universe v u
 
-/-- A lax monoidal functor between monoidal categories interprets as a lax natural transformation
-between the pseudfunctors out of the Kleisli bicategory classifying the source and
+/-- A braided monoidal functor between monoidal categories interprets as a strong natural
+transformation between the pseudofunctors out of the Kleisli bicategory classifying the source and
 target monoidal categories. -/
 @[simps!]
 def strongTransOfLaxBraided {C D : Type u} [Category.{v} C] [Category.{v} D]

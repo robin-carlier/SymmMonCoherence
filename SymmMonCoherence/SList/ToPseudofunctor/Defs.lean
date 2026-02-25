@@ -10,12 +10,12 @@ public import SymmMonCoherence.SList.Kleisli
 public import SymmMonCoherence.Spans.PseudoFromBurnside.Pseudofunctor
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
-/-! # Spans of finite types and the Kleisli bicateory of
+/-! # Spans of finite types and the Kleisli bicategory of
 symmetric lists.
 
 In this file, we use the results from the file
 `SymmMonCoherence.Spans.PseudoFromBurnside.Pseudofunctor` to construct a pseudofunctor
-from `Bursnide (FintypeCat)` to the bicategory `SList.Kleisli`.-/
+from `Burnside (FintypeCat)` to the bicategory `SList.Kleisli`.-/
 universe u
 
 @[expose] public section
@@ -23,7 +23,7 @@ universe u
 namespace CategoryTheory.SList.EffBurnside
 
 /-- An auxiliary construction for computing the monoidal pushforwards.
-given `f : J → K`, this is the family `K → SList J` that sends `k` to a
+Given `f : J → K`, this is the family `K → SList J` that sends `k` to a
 symmetric list corresponding to the fibers `f ''⁻¹ {k}`. -/
 noncomputable def pushforwardAux {J K : Type u} [Finite J] (f : J → K) :
     K → SList J :=

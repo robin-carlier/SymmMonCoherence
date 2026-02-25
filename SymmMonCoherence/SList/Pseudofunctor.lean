@@ -18,7 +18,7 @@ public import SymmMonCoherence.SList.Equivalence
 namespace CategoryTheory.SList
 
 /-- The action of a map of types on symmetric lists.
-it is determined by the formulas
+It is determined by the formulas
 `mapFn.obj []~ ≅ []~`
 and
 `mapFn.obj (x ::~ l) ≅ (f x) ::~ ((mapFn f).obj l)`

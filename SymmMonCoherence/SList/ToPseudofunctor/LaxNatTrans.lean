@@ -107,7 +107,7 @@ variable {C D : Type u} [Category.{v} C] [Category.{v} D]
   (F : C ⥤ D) [F.LaxBraided]
 
 /-- A lax monoidal functor between monoidal categories interprets as a lax natural transformation
-between the pseudfunctors out of the Kleisli bicategory classifying the source and
+between the pseudofunctors out of the Kleisli bicategory classifying the source and
 target monoidal categories. -/
 @[simps!]
 def natTransOfLaxBraided {C D : Type u} [Category.{v} C] [Category.{v} D]

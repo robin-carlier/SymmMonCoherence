@@ -16,7 +16,7 @@ public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.InvElaborator
 public import SymmMonCoherence.ForMathlib.CategoryTheory.Bicategory.Adjunction.Mates
 public import Mathlib.Tactic.DepRewrite
 
-/-! # Pseudofunctors from the effective Burnside (2,1)-category . -/
+/-! # Pseudofunctors from the effective Burnside (2,1)-category. -/
 
 @[expose] public section
 
@@ -28,9 +28,9 @@ variable (C : Type u₁) [Category.{v₁} C]
 
 /-- A helper structure to construct pseudofunctors out of the effective Burnside
 category of a category. This is essentially the data of two pseudofunctors
-`u : LocallyDiscrete C ⥤ᵖ B` and `v : (LocallyDiscrete C)ᵒᵖ ⥤ᵖ B` that
+`u : LocallyDiscrete C ⥤ᵖ B` and `v : LocallyDiscrete Cᵒᵖ ⥤ᵖ B` that
 (definitionally) share the same action on objects, along with the extra data
-of base change isomorphism  `l f ≫ r g ≅ r u ≫ l v` when
+of a base change isomorphism `u r ≫ v b ≅ v t ≫ u l` when
 ```
      t
  c₀----> c₁
@@ -41,7 +41,7 @@ l|       |r
      b
 ```
 is a pullback square in `C`,
-which must furthermore satisfies compatibilities with respect to pasting of squares.
+which must furthermore satisfy compatibilities with respect to pasting of squares.
 
 In the paper, these are called "Pith-Beck-Chevalley systems". -/
 structure PseudofunctorCore (B : Type u₂) [Bicategory.{w₁, v₂} B] where
@@ -172,7 +172,7 @@ results about pseudofunctors from a strict bicategory to them within the proofs 
 toPseudofunctor, but we keep most of this private, as they become
 useless once we have.
 Even as abbrev, the definitional equality
-`lPseudofunctor.obj = PseudofunctorCore.rPseudofunctor.obj` does
+`uPseudofunctor.obj = PseudofunctorCore.vPseudofunctor.obj` does
 not hold at reducible transparency. -/
 
 /-- Bundling the data in `u` and related fields as a pseudofunctor
@@ -356,7 +356,7 @@ private lemma vComp'₀₁₃_hom
   exact P.vPseudofunctor.mapComp'₀₂₃_hom _ _ _ _ _ _ _
     (by grind) (by grind)
 
-/-- This is a version of `Pseudofunctor.mapComp'₀₁₃_hom` for
+/-- This is a version of `Pseudofunctor.mapComp'₀₂₃_hom` for
 `vComp'`. -/
 @[reassoc]
 private lemma vComp'₀₂₃_hom
@@ -563,27 +563,27 @@ variable {c₀ c₁ : C} (e : c₀ ≅ c₁)
 
 /- We are intentionally not making some of the lemma simp so that we don’t end up with expressions
 that are too big. For the same reason, these are `defs` and not abbrev so that we have
-more control on wether or not they unfold. -/
+more control on whether or not they unfold. -/
 
-/- Shorthand of the unit of the equivalence `P.obj c₀ ≌ P.obj c₁` induced by `e` via `P.u`. -/
+/- Shorthand for the unit of the equivalence `P.obj c₀ ≌ P.obj c₁` induced by `e` via `P.u`. -/
 def η_u : 𝟙 (P.obj c₀) ≅ P.u e.hom ≫ P.u e.inv := (P.uId' (𝟙 c₀)).symm ≪≫ P.uComp' e.hom e.inv _
 
 lemma η_u_hom : (P.η_u e).hom = (P.uId' (𝟙 c₀)).inv ≫ (P.uComp' e.hom e.inv _).hom := rfl
 lemma η_u_inv : (P.η_u e).inv =  (P.uComp' e.hom e.inv _).inv ≫ (P.uId' (𝟙 c₀)).hom := rfl
 
-/- Shorthand of the counit of the equivalence `P.obj c₀ ≌ P.obj c₁` induced by `e` via `P.u`. -/
+/- Shorthand for the counit of the equivalence `P.obj c₀ ≌ P.obj c₁` induced by `e` via `P.u`. -/
 def ε_u : P.u e.inv ≫ P.u e.hom ≅ 𝟙 (P.obj c₁) := (P.uComp' e.inv e.hom _).symm ≪≫ P.uId' (𝟙 _)
 
 lemma ε_u_hom : (P.ε_u e).hom = (P.uComp' e.inv e.hom _).inv ≫ (P.uId' (𝟙 _)).hom := rfl
 lemma ε_u_inv : (P.ε_u e).inv = (P.uId' (𝟙 _)).inv ≫ (P.uComp' e.inv e.hom _).hom := rfl
 
-/- Shorthand of the unit of the equivalence `P.obj c₁ ≌ P.obj c₀` induced by `e` via `P.v`. -/
+/- Shorthand for the unit of the equivalence `P.obj c₁ ≌ P.obj c₀` induced by `e` via `P.v`. -/
 def η_v : 𝟙 (P.obj c₁) ≅ P.v e.hom ≫ P.v e.inv := (P.vId' (𝟙 c₁)).symm ≪≫ P.vComp' e.inv e.hom _
 
 lemma η_v_hom : (P.η_v e).hom = (P.vId' (𝟙 c₁)).inv ≫ (P.vComp' e.inv e.hom _).hom := rfl
 lemma η_v_inv : (P.η_v e).inv = (P.vComp' e.inv e.hom _).inv ≫ (P.vId' (𝟙 c₁)).hom := rfl
 
-/- Shorthand of the counit of the equivalence `P.obj c₁ ≌ P.obj c₀` induced by `e` via `P.v`. -/
+/- Shorthand for the counit of the equivalence `P.obj c₁ ≌ P.obj c₀` induced by `e` via `P.v`. -/
 def ε_v : P.v e.inv ≫ P.v e.hom ≅ 𝟙 (P.obj c₀) := (P.vComp' e.hom e.inv _).symm ≪≫ P.vId' (𝟙 _)
 
 lemma ε_v_hom : (P.ε_v e).hom = (P.vComp' e.hom e.inv _).inv ≫ (P.vId' (𝟙 _)).hom := rfl

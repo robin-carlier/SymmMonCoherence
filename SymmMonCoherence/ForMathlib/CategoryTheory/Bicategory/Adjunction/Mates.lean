@@ -74,7 +74,7 @@ lemma conjugateEquiv_congrIso_left {l₁' : a ⟶ b} {r₁' : b ⟶ a} (adj₁' 
   simp [conjugateIsoEquiv_apply_inv, conjugateEquiv_comp]
 
 /-- Relating the conjugateEquiv of adjunctions when
-replacing the left adjunction by an isomorphic one. -/
+replacing the right adjunction by an isomorphic one. -/
 lemma conjugateEquiv_congrIso_right {l₂' : a ⟶ b} {r₂' : b ⟶ a} (adj₂' : l₂' ⊣ r₂')
     (e₁ : l₂' ≅ l₂) (e₂ : r₂ ≅ r₂') (h : (Bicategory.conjugateIsoEquiv adj₂ adj₂') e₁ = e₂)
     (φ : l₂ ⟶ l₁) :
@@ -146,7 +146,7 @@ variable {a b c : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
 /-- Given `adj₁ : l₁ ⊣ r₁` and `adj₂ : l₂ ⊣ r₂`,
 the adjunctions `F.mapAdj (adj₁.comp adj₂)` and `(F.mapAdj adj₁).comp (F.mapAdj adj₂)`
 are isomorphic in the sense that the isomorphisms `F.mapComp l₁ l₂` and `F.mapComp r₂ r₁`
-induce an isomorphism between these adjunctions, i.e are conjugate via through the adjunctions. -/
+induce an isomorphism between these adjunctions, i.e. are conjugate via the adjunctions. -/
 lemma Pseudofunctor.conjugateEquiv_mapAdj_comp_mapComp_hom :
     conjugateEquiv ((F.mapAdj adj₁).comp (F.mapAdj adj₂)) (F.mapAdj (adj₁.comp adj₂))
       (F.mapComp l₁ l₂).hom =

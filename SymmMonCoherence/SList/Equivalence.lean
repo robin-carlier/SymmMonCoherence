@@ -249,7 +249,7 @@ lemma μIso_natural_right
       simp_rw [Category.comp_id, whiskerLeft_comp] at this
       simp_rw [reassoc_of% this, whiskerLeft_inv_hom_assoc]
       congr 2
-      -- Now all remainaing morphisms are eqToHoms under the hood, so we don’t have to try
+      -- Now all remaining morphisms are eqToHoms under the hood, so we don’t have to try
       -- to be too smart.
       -- An alternative proof that does not use strictness is to show that JObjConsIso is
       -- natural in the second var.
@@ -366,7 +366,7 @@ lemma J_braided_nil_left (x : SList C) :
       SList.braiding_hom_app_nil, whiskerLeft_comp, Category.assoc,
       SList.braiding_inv_app_nil,
       SList.whiskerLeft_cons, Category.assoc, cancel_epi]
-    -- At this point all of the brainding have been rewritten,
+    -- At this point all of the braiding have been rewritten,
     -- and what remains is "pure" monoidal category stuff
     simp only [Functor.map_comp, whiskerLeft_comp, Iso.map_inv_hom_id_assoc, Category.assoc]
     simp only [← Category.assoc, cancel_mono]
@@ -713,7 +713,7 @@ public instance : (unitIso C).hom.IsMonoidal where
         Functor.Monoidal.μ_δ_assoc, normalization_of, associator_naturality_right_assoc,
         Iso.inv_hom_id_assoc]
       simp only [← Category.assoc, cancel_mono]; simp only [Category.assoc]
-      -- and now it’s all strict norphisms so we can just rip it apart.
+      -- and now it’s all strict morphisms so we can just rip it apart.
       simp [show (λ_ _) = SList.leftUnitor _ by rfl,
         show (α_ _ _ _) = SList.associator _ _ _ by rfl,
         SList.leftUnitor, tensorObjConsIso, appendNilIso, unitIsoNil, SList.associator, eqToHom_map]
@@ -796,7 +796,7 @@ public def equivalence : SList C ≌ FreeSymmetricMonoidalCategory C where
     the correct unit, but potentially not the correct counit. But the adjointification process
     preserves monoidal natural transformations, so in that adjointified equivalence,
     the counit will be monoidal.
-    But then the counit is uniquely determined by its components on elemets from `C`,
+    But then the counit is uniquely determined by its components on elements from `C`,
     and by fully faithfulness of `normalization C` (which we can know without knowing adjointness)
     these elements have no automorphisms in the free symmetric monoidal category, so
     this adjointified counit is the same as ours. -/

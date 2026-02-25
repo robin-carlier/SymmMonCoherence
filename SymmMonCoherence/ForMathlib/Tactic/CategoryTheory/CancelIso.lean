@@ -23,8 +23,8 @@ This is useful as simp-normal forms in category theory are right-associated.
 
 For instance, the simproc will successfully rewrite expressions such as
 `F.map (G.map (inv (H.map (e.hom)))) ≫ F.map (G.map (H.map (e.inv)))` to `𝟙 _`
-because `CategoyTheory.Functor.map_inv` is a `@[push ←]` lemma, and
-`CategoyTheory.IsIso.Iso.inv_hom` is a `[push]` lemma.
+because `CategoryTheory.Functor.map_inv` is a `@[push ←]` lemma, and
+`CategoryTheory.IsIso.Iso.inv_hom` is a `[push]` lemma.
 
 This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
 have already been traversed beforehand.
@@ -51,7 +51,7 @@ lemma hom_inv_id_of_eq_assoc {C : Type*} [Category* C] {x y : C}
 /-- Given expressions `C x y z f g` assumed to represent
 composable morphisms `f : x ⟶ y` and `g : y ⟶ z` in a category `C`,
 check if `g` is equal to the inverse of `f` by
-1. first checking the objects match (i.e x = z).
+1. first checking the objects match (i.e. x = z).
 2. Checking that `f` is an isomorphism by synthesizing an `IsIso` instance for it
 3. running `push inv` on both `f` and `g`, and checking that the results are equal.
 
@@ -83,18 +83,18 @@ This is useful as simp-normal forms in category theory are right-associated.
 
 For instance, the simproc will successfully rewrite expressions such as
 `F.map (G.map (inv (H.map (e.hom)))) ≫ F.map (G.map (H.map (e.inv)))` to `𝟙 _`
-because `CategoyTheory.Functor.map_inv` is a `@[push ←]` lemma, and
-`CategoyTheory.IsIso.Iso.inv_hom` is a `[push]` lemma.
+because `CategoryTheory.Functor.map_inv` is a `@[push ←]` lemma, and
+`CategoryTheory.IsIso.Iso.inv_hom` is a `[push]` lemma.
 
 This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
 have already been traversed beforehand. -/
 def cancelIsoSimproc : Simp.Simproc := fun e => do
   let_expr CategoryStruct.comp C instCat x y t f g := e | return .continue
   match_expr g with
-  -- Right_associated expressions needs their own logic.
+  -- Right-associated expressions need their own logic.
   | CategoryStruct.comp _ _ _ z _ g h =>
     let some p₀ ← tryCancelPair C x y z f g | return .continue
-    -- Builds the proof that `f ≫ g ≫ h = h.
+    -- Builds the proof that `f ≫ g ≫ h = h`.
     let P ← mkAppOptM ``hom_inv_id_of_eq_assoc #[C, none, x, y, f, none, g, p₀, none, h]
     return .done {expr := h, proof? := P}
   -- Otherwise, same logic but with hom_inv_id_of_eq instead of hom_inv_id_of_eq_assoc

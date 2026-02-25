@@ -8,13 +8,13 @@ set_option linter.unusedVariables false
 open CategoryTheory
 variable {A B C D E : Type*} [Category* A] [Category* B] [Category* C] [Category* D] [Category* E]
 
--- tesing the tactic on compositions of isomorphisms
+-- testing the tactic on compositions of isomorphisms
 
 -- example {a₁ a₂ a₃ a₄ a₅ : A} {f f' : a₁ ≅ a₂} {g g': a₂ ≅ a₃} {h h': a₃ ≅ a₄} {i i': a₄ ≅ a₅}
 --     (hyp : f ≪≫ g ≪≫ h ≪≫ i = f' ≪≫ (g' ≪≫ h') ≪≫ i') :
 --     h ≪≫ i = g.symm ≪≫ f.symm ≪≫ f' ≪≫ g' ≪≫ h' ≪≫ i' := rotate_isos% 2 0 hyp
 --
--- -- tesing the tactic on compositions of isomorphisms
+-- -- testing the tactic on compositions of isomorphisms
 --
 -- example {a₁ a₂ a₃ a₄ a₅ : A} {f f' : a₁ ≅ a₂} {g g': a₂ ≅ a₃} {h h': a₃ ≅ a₄} {i i': a₄ ≅ a₅}
 --     (hyp : f ≪≫ g ≪≫ h ≪≫ i = f' ≪≫ (g' ≪≫ h') ≪≫ i') :
@@ -30,7 +30,7 @@ variable {A B C D E : Type*} [Category* A] [Category* B] [Category* C] [Category
 --   rotate_isos ← 2 1 at hyp
 --   exact hyp
 --
--- tesing the tactic for terms under a forall, and checks that binder infos are preserved.
+-- testing the tactic for terms under a forall, and checks that binder infos are preserved.
 
 -- /--
 -- info: ∀ {f' : a₁ ≅ a₂} (f : a₁ ≅ a₂) ⦃g' : a₂ ≅ a₃⦄, g ≪≫ h ≪≫ i ≪≫ i'.symm ≪≫ h'.symm = f.symm ≪≫ f' ≪≫ g'
@@ -150,7 +150,7 @@ example {a₁ a₂ a₃ a₄ a₅ a₆ a₇ a₈ a₉ : A}
 --   rotate_isos 1 0
 -- Note rotate_isos will aggressively cancel isomorphisms
 
--- tesing the elaborator in rewrites
+-- testing the elaborator in rewrites
 example {a₁ a₂ a₃ a₄ : A} {f f' : a₁ ⟶ a₂} {g g' : a₂ ⟶ a₃} {h h' : a₃ ⟶ a₄}
     [IsIso f] [IsIso g] [IsIso h]
     [IsIso f]

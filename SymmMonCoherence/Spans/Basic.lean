@@ -12,8 +12,8 @@ public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 
 In this file, given a category `C` and two morphism properties
 Wₗ Wᵣ in C satisfying suitable assumptions regarding identities and base changes,
-we construt the bicategory of spans in C with left morphism in Wᵣ and right morphism
-in Wₗ.
+we construct the bicategory of spans in C with left morphism in Wₗ and right morphism
+in Wᵣ.
 
 -/
 
@@ -42,7 +42,7 @@ namespace Span
 
 variable {Wₗ Wᵣ} {c c' : C}
 
-/-- A morphism of span is a morphism betwen the apices compatible
+/-- A morphism of span is a morphism between the apices compatible
 with the projections. -/
 structure Hom (S₁ S₂ : Span Wₗ Wᵣ c c') : Type _ where
   hom : S₁.apex ⟶ S₂.apex
@@ -83,7 +83,7 @@ attribute [grind =] mkIso_hom_hom mkIso_inv_hom
 section MorphismProperty
 -- TODO: need to be upstreamed and moved elsewhere
 
-/-- `P.IsStableUnderBaseChangeAgainst P'` states that for any morphism `f`satisfying `P` and
+/-- `P.IsStableUnderBaseChangeAgainst P'` states that for any morphism `f` satisfying `P` and
 any morphism `g` with the same codomain as `f` satisfying `P'`, any pullback of `f` along `g`
 also satisfies `P`. -/
 class _root_.CategoryTheory.MorphismProperty.IsStableUnderBaseChangeAgainst
@@ -102,9 +102,8 @@ lemma _root_.CategoryTheory.MorphismProperty.isStableUnderBaseChangeAgainst_top_
       (h.isStableUnderBaseChangeAlong _ (by tauto)).of_isPullback h' h''⟩,
     fun _ ↦ inferInstance⟩
 
-/-- `P.IsStableUnderBaseChangeAgainst P'` states that for any morphism `f`satisfying `P` and
-any morphism `g` with the same codomain as `f` satisfying `P'`, any pullback of `f` along `g`
-also satisfies `P`. -/
+/-- `P.HasPullbacksAgainst P'` states that for any morphism `f` satisfying `P'`,
+`P` has pullbacks along `f`. -/
 class _root_.CategoryTheory.MorphismProperty.HasPullbacksAgainst
     (P P' : MorphismProperty C) : Prop where
   hasPullbacksAlong ⦃X Y : C ⦄ (f : X ⟶ Y) (hf : P' f) :
@@ -497,8 +496,8 @@ lemma hom_inv_id_hom {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y} (e : S ≅ S') :
 lemma inv_hom_id_hom {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y} (e : S ≅ S') :
     e.inv.hom ≫ e.hom.hom = 𝟙 _ := by simp [← hom₂_comp_hom]
 
-/-- extract the isomorphisms between the apices from the data of an isomorphisms of 1-morphisms
-in `Spans C _ _. -/
+/-- extract the isomorphisms between the apices from the data of an isomorphism of 1-morphisms
+in `Spans C _ _`. -/
 @[simps]
 abbrev apexIso {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y} (e : S ≅ S') :
     S.apex ≅ S'.apex where

@@ -15,8 +15,8 @@ namespace Mathlib.Tactic.dsimpPercent
 
 /-- Syntax for the `dsimp%` elaborator.
 Runs `dsimp` on the specified term, simplifying both its type and its
-value (if this is not a Prop) and return the new term.
-Useful e.g for avoiding the pattern
+value (if this is not a Prop) and returns the new term.
+Useful e.g. for avoiding the pattern
 ```
 have foo := ...
 dsimp at foo

@@ -16,13 +16,13 @@ public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 # Symmetric monoidal substitution and symmetric lists
 
 In this file, we define "symmetric monoidal substitution" for symmetric lists,
-i.e, given a symmetric monoidal category `C` and a type `K`, a symmetric
+i.e., given a symmetric monoidal category `C` and a type `K`, a symmetric
 monoidal functor
 SList K ⥤ (K → C) ⥤ C, which, informally, "substitutes" in the first argument
 the values obtainable in the second.
 
-When `C` is `FreeSymmetricMonoidalCatgeory K`, and the given family of object is
-`of : K → FreeSymmetricMonoidalCatgeory K`, this is the "inclusion" functor
+When `C` is `FreeSymmetricMonoidalCategory K`, and the given family of objects is
+`of : K → FreeSymmetricMonoidalCategory K`, this is the "inclusion" functor
 from symmetric lists in the free symmetric monoidal category, which is a part of
 the equivalence between the two categories.
 

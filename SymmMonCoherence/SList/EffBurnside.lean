@@ -251,13 +251,13 @@ instance : IsEmpty (𝟙_ (J ⟶ K)).of.apex := inferInstanceAs (IsEmpty (PEmpty
     (X ⊗ Y).of.apex ≃ X.of.apex ⊕ Y.of.apex :=
   .refl _
 
-/-- The left inclution from x.of.apex to (x ⊗ y).of.apex. Note that this is
+/-- The left inclusion from x.of.apex to (x ⊗ y).of.apex. Note that this is
 a plain function and not a morphism in FintypeGrpd (it is not an equivalence). -/
 @[match_pattern]
 noncomputable abbrev inl (x y : J ⟶ K) : x.of.apex → (x ⊗ y).of.apex :=
   fun x ↦ (tensorObjApexEquiv _ _).symm (Sum.inl x)
 
-/-- The right inclution from y.of.apex to (x ⊗ y).of.apex. Note that this is
+/-- The right inclusion from y.of.apex to (x ⊗ y).of.apex. Note that this is
 a plain function and not a morphism in FintypeGrpd (it is not an equivalence). -/
 @[match_pattern]
 noncomputable abbrev inr (x y : J ⟶ K) : y.of.apex → (x ⊗ y).of.apex :=
@@ -502,7 +502,7 @@ end Symmetric
 end monoidal
 
 /-- Interpret the constant function ((j : J) ↦ k) as a morphism `J ⟶ K` in the
-effective Bursnide (2,1)-category. -/
+effective Burnside (2,1)-category. -/
 public noncomputable def const (J : EffBurnsideFintype.{u}) {K : EffBurnsideFintype.{u}}
     (k : K.as.of) :
     J ⟶ K :=

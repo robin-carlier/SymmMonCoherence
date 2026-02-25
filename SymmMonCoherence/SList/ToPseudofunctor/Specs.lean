@@ -7,12 +7,12 @@ module
 
 public import SymmMonCoherence.SList.ToPseudofunctor.Defs
 
-/-! # Spans of finite types and the Kleisli bicateory of
+/-! # Spans of finite types and the Kleisli bicategory of
 symmetric lists.
 
 In this file, we use the results from the file
 `SymmMonCoherence.Spans.PseudoFromBurnside.Pseudofunctor` to construct a pseudofunctor
-from `Bursnide (FintypeCat)` to the bicategory `SList.Kleisli`.-/
+from `Burnside (FintypeCat)` to the bicategory `SList.Kleisli`.-/
 
 universe v' u'
 

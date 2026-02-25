@@ -49,7 +49,7 @@ lemma fiber_prop' (k : K) (L : SList K) (i : fiber k L) :
   i.prop
 -- def fiberInclusion (k : K) (L : SList K) : fiber k L → Fin L.length := Subtype.val
 
-/-- Given a morphism of symmetrict lists with values in K, and an element `k : K`, this
+/-- Given a morphism of symmetric lists with values in K, and an element `k : K`, this
 is the equivalence between the types of elements lying over a given value of `K`. -/
 @[simps apply symm_apply]
 def fiberEquivOfHom (k : K) {L L' : SList K} (f : L ⟶ L') :
@@ -260,7 +260,7 @@ lemma tot'TensEquiv_symm_apply_inr (L L' : SList K) (k : K) (i : Fin L'.length)
   rw [Equiv.symm_apply_eq]
   simp
 
-/- The projection Tot' L ⊕ Tot' L' → K corresonding to the sum of the projections. -/
+/- The projection Tot' L ⊕ Tot' L' → K corresponding to the sum of the projections. -/
 def π (L L' : SList K) : Tot' L ⊕ Tot' L' → K := Sum.elim (·.fst) (·.fst)
 
 @[simp, grind =] lemma π_inl {L : SList K} (t : Tot' L) (L' : SList K) :
@@ -332,7 +332,7 @@ public lemma fiberTensEquiv_apply_inr (k : K) (L L' : SList K) (x : L'.fiber k) 
     (fiberTensEquiv k L L') (.inr x) = ⟨Ψ _ _ (.inr x.val), (by simp)⟩ := by
   simp [fiberTensEquiv]
 
--- leanving `h` as a hole so that it is exactly the right type. -/
+-- leaving `h` as a hole so that it is exactly the right type. -/
 @[simp, grind =]
 public lemma fiberTensEquiv_symm_apply_inl
       (k : K) (L L' : SList K) (x : Fin L.length) (h' : L.toList[x] = k) :
@@ -351,13 +351,13 @@ end
 
 section eval₀
 
-/-- Given (k : K) and (L : SList K), evalObj.{u} k L is the `SList PUnit.{u}`
-which corresponds to the list of length count k L.toList . -/
+/-- Given (k : K) and (L : SList K), `eval₀Obj k L` is the `FintypeGrpd`
+corresponding to the fiber of `L` over `k`. -/
 abbrev eval₀Obj (k : K) (L : SList K) : FintypeGrpd :=
   .mk <| .of <| fiber k L
 
-/-- Given (k : K) and (L : SList K), evalObj.{u} k L is the `SList PUnit.{u}`
-which corresponds to the list of length count k L.toList . -/
+/-- Given `(k : K)` and a morphism `f : L ⟶ L'` in `SList K`, `eval₀Map k f` is the
+induced morphism on fibers over `k`. -/
 abbrev eval₀Map (k : K) {L L' : SList K} (f : L ⟶ L') :
     eval₀Obj k L ⟶ eval₀Obj k L' :=
   FintypeGrpd.mkHom (fiberEquivOfHom k (inv f))
@@ -656,11 +656,11 @@ end eval
 
 /- A (noncomputable) construction of an explicit object in SList K isomorphic
 to the image by fib₀ of a given family.
-It’s usefull to know a model of such an object rather than the generic
+It’s useful to know a model of such an object rather than the generic
 fact that the functor is essentially surjective.
 (Note that the construction could be made computable by taking as
 input a [FinEnum] instance on `K`, telling "which order" should
-be used to construct the symmetric list. -/
+be used to construct the symmetric list.) -/
 def fib₀.liftEssIm [Finite K] (X : K → FintypeGrpd) : SList K :=
   letI φ := Finite.equivFin K
   SList.ofList <| List.flatten <| .ofFn (n := (Nat.card K)) (fun l ↦

@@ -22,7 +22,7 @@ attribute [cat_nf]
 
 def catNormalize (e : Expr) : MetaM Simp.Result := do
   let some cat_nf_ext ← getSimpExtension? `cat_nf | throwError "cat_nf has not been initialized"
-  -- Adding the builtins theorems to replicate what `simpOnlyNames` is doing
+  -- Adding the builtin theorems to replicate what `simpOnlyNames` is doing
   let builtins : SimpTheorems ← Tactic.simpOnlyBuiltins.foldlM (SimpTheorems.addConst · ·) {}
   let ctx : Simp.Context ←
     Simp.mkContext { decide := false }
@@ -32,7 +32,7 @@ def catNormalize (e : Expr) : MetaM Simp.Result := do
     (simprocs := ← (Simp.SimprocsArray.add #[] `cancelIso true))
 
 /-- Syntax for the `cat_nf%` elaborator.
-Simplify a morphims or an equality of morphisms according to basic category theory simp normal
+Simplify a morphism or an equality of morphisms according to basic category theory simp normal
 forms. The simp lemmas used are the ones in the `cat_nf` simp set. -/
 elab (name := invPercent) "cat_nf%" t:term : term => do
   mapForallTelescope (fun e => do

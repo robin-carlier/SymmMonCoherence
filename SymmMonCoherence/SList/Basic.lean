@@ -21,7 +21,7 @@ In this file, we define the category of symmetric lists on a type `J`.
 Symmetric lists are defined as a category by generators and relations, such
 that the underlying type is equivalent to the type of lists. The morphisms
 are defined inductively in a way that all constructors are naturals,
-and a generating morhism `swap : x ::~ y ::~ l ⟶ y ::~ x ::~ l` is
+and a generating morphism `swap : x ::~ y ::~ l ⟶ y ::~ x ::~ l` is
 added, subject to a symmetry and hexagon condition.
 
 The construction of this category was
@@ -52,7 +52,7 @@ as an inductive with the same constructors as `List`. -/
 inductive SListQuiv where
   /-- The empty List, seen as `SListQuiv`. -/
   | nil : SListQuiv
-  /-- construction of a List. -/
+  /-- Construction of a list by prepending an element. -/
   | cons (head : C) (tail : SListQuiv) : SListQuiv
 
 namespace SListQuiv
@@ -134,13 +134,13 @@ lemma listCases_asSListQuiv
 
 -- don’t want to expose this one?
 /-- Given `L L' : SListQuiv C`, `Hom L L'` is the type of morphisms in the generating quiver
-for symmetric lists: such a generating morphisms is either a swap morphism
+for symmetric lists: such a generating morphism is either a swap morphism
 `a::b::L ⟶ b::a::L` or a morphism of the form `x::f` where `f` is a generating morphism. -/
 inductive Hom : SListQuiv C → SListQuiv C → Type u
   /-- The swap morphism `x::y::l ⟶ y::x::l` -/
   | swap (x y : C) (l : SListQuiv C) :
       Hom (x ::… (y ::… l)) (y ::… (x ::… l))
-  /-- Given a generating morhpism  l ⟶ l', there is a generating morphism `x::l ⟶ x::l'` for
+  /-- Given a generating morphism  l ⟶ l', there is a generating morphism `x::l ⟶ x::l'` for
     all `x : C`. -/
   | cons (z : C) {l l' : SListQuiv C} :
       Hom l l' → Hom (z ::… l) (z ::… l')
@@ -278,10 +278,10 @@ notation3 x " ::_ₘ " f => (x>_).map f
 
 notation3 "[]_" => (ι _).obj SListQuiv.nil
 
-/-- `swapPath` is `Q₁.swap` as a path, and should be preferred over
-`Paths.of (SListQuiv C) |>.map Q₁.swap _ _ _`.
+/-- `swap` is the swap morphism as a morphism in the path category, and should be preferred over
+`Paths.of (SListQuiv C) |>.map β₀_ _ _ _`.
 It is bundled as a definition so that it accepts an argument
-of type `Paths (Slist₀ C)` instead of `SListQuiv C`. -/
+of type `Paths (SListQuiv C)` instead of `SListQuiv C`. -/
 public def swap (x y : C) (l : FreeSListQuiv C) :
     (x ::_ (y ::_ l)) ⟶ (y ::_ (x ::_ l)) :=
   (ι C).map (β₀_ x y l.p)
@@ -1087,7 +1087,7 @@ end toList
 
 section ofList
 
-/-- The underlying list of a symmetric list. -/
+/-- Construct a symmetric list from an ordinary list. -/
 public def ofList (L : List C) : SList C :=
   (π C).obj <| (FreeSListQuiv.ι C).obj (SListQuiv.listEquiv.symm L)
 

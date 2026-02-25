@@ -126,7 +126,7 @@ private lemma inversionSet_mul_swap_castSucc_succ_eq_of_le
   let τ : Equiv.Perm (Fin (n + 1) × Fin (n + 1)) :=
     Equiv.prodCongr (Ψ i) (Ψ i)
   have not_mem : ⟨i.castSucc, i.succ⟩ ∉ Fin.inversionSet σ := by grind
-  -- Then, it is an inversion in the next :
+  -- Then, it is an inversion in the next:
   have mem : ⟨i.castSucc, i.succ⟩ ∈
       Fin.inversionSet (σ * (Equiv.swap i.succ i.castSucc)) := by simpa
   have : Finset.image τ (ℐ σ) ⊆
@@ -286,15 +286,15 @@ theorem exchange : (Fin.preCoxeterSystem n).ExchangeProperty' := by
   let b := σ i.castSucc
   let a := σ i.succ
   have a_ne_b : a ≠ b := by grind
-  -- if ω = [s₁, …, sₖ], Consider the first index for which [s₁,…, sᵢ] "inverts b and a"
+  -- if ω = [s₁, …, sₖ], consider the first index for which [s₁,…, sᵢ] "inverts b and a"
   let i₀ := ω.inits.findIdx (fun l ↦ (φ l)⁻¹ b < (φ l)⁻¹ a)
-  -- as [s₁,…, sₖ]  inverts a and b, i₀ is at least < ω.length + 1,
+  -- as [s₁,…, sₖ] inverts a and b, i₀ is at least < ω.length + 1,
   -- (the number of initial sublists of ω)
   have hi₀ : i₀ < ω.length + 1 := by
     dsimp [i₀]
     rw [← List.length_inits, List.findIdx_lt_length]
     exact ⟨ω, by simp, by simp [a, b, σ]⟩
-  -- as [] does not inverts a and b, 0 < i₀
+  -- as [] does not invert a and b, 0 < i₀
   have hi₀' : 0 < i₀ := by
     dsimp [i₀]
     apply List.lt_findIdx_of_not
@@ -346,7 +346,7 @@ theorem exchange : (Fin.preCoxeterSystem n).ExchangeProperty' := by
       Function.comp_apply] at e₁ e₂
     grind
   -- Thanks to that computation, we can now compute the value on both sides depending on
-  -- wether or not `k ∈ {i.castSucc, i.succ}`, and observe the results are the same.
+  -- whether or not `k ∈ {i.castSucc, i.succ}`, and observe the results are the same.
   simp only [Equiv.Perm.coe_mul, Function.comp_apply, List.eraseIdx_eq_take_drop_succ,
     CoxeterSystem.wordProd_append, map_mul]
   by_cases! hk : k = i.castSucc ∨ k = i.succ
@@ -443,7 +443,7 @@ lemma AinfToPerm_simple' (i : ℕ) :
     AinfToPerm (Ainf.simple i) = Equiv.swap i (i + 1) :=
   rfl
 
-/-- Lifting `Fin.castLE` to a morphisms from `(Aₙ n).Group` to `(Aₙ m).Group` -/
+/-- Lifting `Fin.castLE` to a morphism from `(Aₙ n).Group` to `(Aₙ m).Group` -/
 def Aₙ.castLE {n m : ℕ} (h : n ≤ m) : (CoxeterMatrix.Aₙ n).Group →* (CoxeterMatrix.Aₙ m).Group :=
   (CoxeterMatrix.Aₙ n).toCoxeterSystem.lift
     ⟨fun k ↦ (CoxeterMatrix.Aₙ m).toCoxeterSystem.simple (k.castLE h), by

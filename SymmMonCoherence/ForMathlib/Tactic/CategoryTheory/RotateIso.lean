@@ -30,7 +30,7 @@ example (a b c d e : C) (g : b ≅ c) (h : d ≅ c) (i : d ⟶ e) (k : a ⟶ e)
 
 ```
 This file also provides two terms elaborators: `rotate_isos%` and `rotate_isos_iff%`, that
-are used to apply the tactic at a term and use it as a `e.g` a rewrite rule or as simp lemmas. -/
+are used to apply the tactic at a term and use it e.g. as a rewrite rule or as simp lemmas. -/
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta _root_.CategoryTheory
 
@@ -40,13 +40,8 @@ initialize registerTraceClass `rotate_isos
 
 /-- Given an `Expr e` assumed to be representing a sequence of
 composition of morphisms in a category,
-traverse `e` and build an array of the morphisms that appears in `e`,
-The source and target of morphisms are also part of the array.
-
-If the flag `rev` is set, the expression is traversed from right to left.
-
-If the flag `rev_assoc` is set, the expression is assumed to be left-associated instead
-of right-associated. -/
+traverse `e` and build an array of the morphisms that appear in `e`.
+The source and target of morphisms are also part of the array. -/
 partial def getMorphisms (e : Expr) :
     MetaM (Array ((Expr × Expr) × Expr)) := do
   return (← go e).reverse where
@@ -57,13 +52,11 @@ partial def getMorphisms (e : Expr) :
       return #[((x, y), e)]
     return (← go g) |>.push ((x, y), f)
 
-/-- Given expressions `C` and `instCat`
-representing a type and a category instance on that type, as well as `morphisms : Array Expr`,
+/-- Given `morphisms : Array Expr` and `k : ℕ`,
 construct an expression for the composition of the first or last `k` morphisms of `morphisms`.
-The `src` parameters is supposed to be an expression of the source or target of the first morphism
-to be composed.
-The `rev` flags controls whether we compose the first `k` or last `k` morphihms.
-The `rev_assoc` controls wether the resulting expression is left-associated or right-associated. -/
+The `d` parameter is supposed to be an expression for the source or target object
+used as the identity when composing 0 morphisms.
+The `rev` flag controls whether we compose the first `k` or last `k` morphisms. -/
 def compose (rev : Bool) (d : Expr)
     (morphisms : Array Expr) (k : ℕ) : MetaM Expr := do
   if k == 0 then return d -- early return
@@ -140,28 +133,28 @@ def rotateIsosCore (e : Expr) (a b : ℕ) (rev : Bool) : MetaM (Expr × Expr) :=
   trace[rotate_isos] "iff_final type : {← inferType <| iff_final}"
   return (← mkEq final_lhs.expr final_rhs.expr, iff_final)
 
-/-- Wrapper to apply `RotateIsosCore` for expressions in binders. -/
+/-- Wrapper to apply `rotateIsosCore` for expressions in binders. -/
 def rotateIsosForallTelescope (e : Expr) (a b : ℕ) (rev : Bool) : MetaM Expr := do
   mapForallTelescope (fun e => do
     mkAppM ``Iff.mpr #[(← rotateIsosCore (← inferType e) a b rev).2, e]) e
 
-/-- Wrapper to apply `RotateIsosCore` for expressions in binders. -/
+/-- Wrapper to apply `rotateIsosCore` for expressions in binders. -/
 def rotateIsosForallTelescopeIff (e : Expr) (a b : ℕ) (rev : Bool) : MetaM Expr := do
   mapForallTelescope (fun e => do
     return ← mkAppM ``Iff.symm #[(← rotateIsosCore (← inferType e) a b rev).2]) e
 
 open Term in
-/-- A term elaborator to produce the result of `rotate_isos` at a term.. -/
+/-- A term elaborator to produce the result of `rotate_isos` at a term. -/
 elab "rotate_isos% " p:patternIgnore("←" <|> "<-")? ppSpace n:num ppSpace m:num ppSpace t:term :
     term => do rotateIsosForallTelescope (← elabTerm t none) n.getNat m.getNat p.isSome
 
 open Term in
-/-- A term elaborator to produce the iff statement betwen the given term and the result of
+/-- A term elaborator to produce the iff statement between the given term and the result of
 running `rotate_isos` at that term. -/
 elab "rotate_isos_iff% " p:patternIgnore("←" <|> "<-")? ppSpace n:num ppSpace m:num ppSpace t:term :
     term => do rotateIsosForallTelescopeIff (← elabTerm t none) n.getNat m.getNat p.isSome
 
-/-- Wrapper to run `rotateIsosForallTelescope` at an hypothesis in the local context. -/
+/-- Wrapper to run `rotateIsosForallTelescope` at a hypothesis in the local context. -/
 def rotateIsosAtHyp (a b : ℕ) (rev : Bool) (h : FVarId) (g : MVarId) :
     TacticM MVarId := do
   let d ← h.getDecl

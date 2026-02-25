@@ -15,7 +15,7 @@ public import Mathlib.Data.Fintype.Sum
 /-! # The groupoid of finite types and bijections
 
 In this file, we construct by hand a symmetric monoidal
-category structure on the groupoid of finite type, i.e
+category structure on the groupoid of finite types, i.e.
 on Core (FintypeCat).
 
 -/
@@ -110,12 +110,12 @@ instance : IsEmpty (𝟙_ (FintypeGrpd.{u})) := inferInstanceAs (IsEmpty (PEmpty
 /- An equivalence to help type-checking when working with the tensor product in FintypeGrpd -/
 @[no_expose] def tensorObjEquiv (x y : FintypeGrpd.{u}) : x.of ⊕ y.of ≃ (x ⊗ y).of := Equiv.refl _
 
-/-- The left inclution from x.of to (x ⊗ y).of. Note that this is
+/-- The left inclusion from x.of to (x ⊗ y).of. Note that this is
 a plain function and not a morphism in FintypeGrpd (it is not an equivalence). -/
 @[match_pattern]
 def inl (x y : FintypeGrpd.{u}) : x.of → (x ⊗ y).of := fun k ↦ tensorObjEquiv x y (Sum.inl k)
 
-/-- The right inclution from y.of to (x ⊗ y).of. Note that this is
+/-- The right inclusion from y.of to (x ⊗ y).of. Note that this is
 a plain function and not a morphism in FintypeGrpd (it is not an equivalence). -/
 @[match_pattern]
 def inr (x y : FintypeGrpd.{u}) : y.of → (x ⊗ y).of := fun k ↦ tensorObjEquiv x y (Sum.inr k)

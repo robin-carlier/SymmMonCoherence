@@ -13,8 +13,8 @@ public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 /-! # Adjunctions and Spans
 
 In this file, given an arrow `f : c ⟶ c'` in a category `C` with pullbacks,
-the 1-cells `(Spans.inr C).map f.toloc` and
-`(Spans.inl C).map f.op.toloc` are adjoint to each other in the bicategorical
+we show that the 1-cells `(Spans.inr C).map f.toLoc` and
+`(Spans.inl C).map f.op.toLoc` are adjoint to each other in the bicategorical
 sense, and that the adjunction is pseudofunctorial.
 We furthermore show that a pullback square
 in `C` induces an adjointable square in the bicategory of spans.

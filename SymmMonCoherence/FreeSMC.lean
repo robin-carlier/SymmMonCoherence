@@ -66,7 +66,7 @@ inductive Hom : F C → F C → Type u
 
 local infixr:10 " ⟶ᵐ " => Hom
 
-/-- The morphisms of the free symmetric monoidal category satisfies
+/-- The morphisms of the free symmetric monoidal category satisfy
 relations ensuring that the resulting category is in fact a category and that it is
 symmetric monoidal. Compare to the relations -/
 inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
@@ -321,7 +321,7 @@ section Functor
 
 variable {D : Type u'} [Category.{v'} D] [MonoidalCategory D] [SymmetricCategory D] (f : C → D)
 
-/-- Auxiliary definition for `free_monoidal_category.project`. -/
+/-- Auxiliary definition for `FreeSymmetricMonoidalCategory.project`. -/
 def projectObj : F C → D
   | FreeSymmetricMonoidalCategory.of X => f X
   | FreeSymmetricMonoidalCategory.unit => 𝟙_ D
@@ -331,7 +331,7 @@ section
 
 open Hom
 
-/-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
+/-- Auxiliary definition for `FreeSymmetricMonoidalCategory.project`. -/
 @[simp]
 def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projectObj f Y)
   | _, _, Hom.id _ => 𝟙 _
@@ -349,7 +349,7 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
   | _, _, Hom.tensor f g => projectMapAux f ⊗ₘ projectMapAux g
 
 -- Porting note: this declaration generates the same panic.
-/-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
+/-- Auxiliary definition for `FreeSymmetricMonoidalCategory.project`. -/
 def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :=
   Quotient.lift (projectMapAux f) <| by
     intro f g h

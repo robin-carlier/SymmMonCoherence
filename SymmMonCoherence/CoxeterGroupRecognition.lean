@@ -9,16 +9,16 @@ public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 public import Mathlib.Order.Fin.Basic
 
-/-! # Recognition principle for coxeter groups
+/-! # Recognition principle for Coxeter groups
 
 In this file, we give useful criteria to show that a group is a Coxeter group.
 
-This is essentially [Björer-Brenti, 1.5](bjorner2005),
+This is essentially [Björner-Brenti, 1.5](bjorner2005),
 and this will be applied to symmetric groups. -/
 
 @[expose] public section
 
-/-- Given a coxeter matrix `M`, a Pre-Coxeter system on a Group `G` is the data of a
+/-- Given a Coxeter matrix `M`, a Pre-Coxeter system on a Group `G` is the data of a
 surjective group homomorphism `hom : M.Group →* G` such that the orders of the images of simple
 reflections are the coefficients of the given Coxeter matrix.
 
@@ -55,7 +55,7 @@ lemma eq_of_hom_simple_eq {i j : B} (h : S.hom (M.simple i) = S.hom (M.simple j)
   rw [show i = j by grind [CoxeterMatrix.off_diagonal]]
 
 open scoped Classical in
-/-- The length of an element of `g` is the minimal length (in the sense of coxeter systems) of
+/-- The length of an element of `G` is the minimal length (in the sense of Coxeter systems) of
 the length of the preimages of `g` in `M.Group`. This corresponds to the minimal length of
 a word of generators needed to express `g`. -/
 noncomputable def length (g : G) : ℕ :=
@@ -65,7 +65,7 @@ local prefix:100 "ℓ " => S.length
 local prefix:100 "π " => M.toCoxeterSystem.wordProd
 local notation "φ " x:max => S.hom (M.toCoxeterSystem.wordProd x)
 
-/-- Every element of `g` can be written as a product of generators in such a way that
+/-- Every element of `G` can be written as a product of generators in such a way that
 the length of the list is minimal. -/
 lemma exists_reduced_word (g : G) :
     ∃ (ω : List B), ω.length = ℓ g ∧ φ ω = g := by
@@ -75,7 +75,7 @@ lemma exists_reduced_word (g : G) :
   obtain ⟨ω, l, rfl⟩ := M.toCoxeterSystem.exists_reduced_word x
   grind [length]
 
-/-- Every element of `g` can be written as a product of generators in such a way that
+/-- Every element of `G` can be written as a product of generators in such a way that
 the length of the list is minimal. -/
 lemma exists_reduced_word' (g : G) :
     ∃ (ω : List B), ω.length = ℓ g ∧
@@ -100,7 +100,7 @@ lemma length_le_of_eq_wordProd (g : G) (ω : List B) (h : g = S.hom (π ω)) : �
   h ▸ (length_wordProd_le ω)
 
 /-! The next few lemmas are essentially duplications/generalizations to pre-Coxeter
-systems of those from coxeter systems.
+systems of those from Coxeter systems.
 These correspond to properties (ii), (iii), (iv) and (vi) of prop 1.4.2 from
 [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005). -/
 @[simp] theorem length_one : ℓ (1 : G) = 0 :=
@@ -144,8 +144,8 @@ lemma length_simple (i : B) : ℓ (S.hom <| M.toCoxeterSystem.simple i) = 1 := b
 @[simp, grind =]
 lemma length_simple' (i : B) : ℓ (S.hom <| M.simple i) = 1 := by simpa using S.length_simple i
 
-/-- A word `ω` in `B` (i.e a list of elements of `B`) is said to be reduced (with respect to
-a pre-Coxeter System `S` if it has minimal length, i.e if the length of the word is the length of
+/-- A word `ω` in `B` (i.e. a list of elements of `B`) is said to be reduced (with respect to
+a pre-Coxeter System `S`) if it has minimal length, i.e., if the length of the word is the length of
 the element of `G` it defines. -/
 abbrev IsReduced (ω : List B) : Prop := ℓ (S.hom <| π ω ) = ω.length
 
@@ -202,7 +202,7 @@ lemma _root_.CoxeterSystem.wordprod_self_cons {cs : CoxeterSystem M G} (a : B) (
 
 
 /-- The "deletion property" for a Pre-Coxeter system `S`: if a word of generators
-$$w = s_1\cdotss_k$$ in `G` is not reduced, then there exists `1 ≤ i < j ≤ k` such that
+$$w = s_1 \cdots s_k$$ in `G` is not reduced, then there exists `1 ≤ i < j ≤ k` such that
 $$w = s_1 \cdots \hat{s_i} \cdots \hat{s_j} \cdots s_k$$.
 
 This property implies that `hom` is injective, and so that one can extend the data in `S` to an
@@ -212,10 +212,10 @@ def DeletionProperty : Prop :=
       ∃ (i j : ℕ) (_ : i < j) (_ : j < ω.length),
         φ ω = φ ((ω.eraseIdx i).eraseIdx <| j - 1)
 
-/-- The "exchage property" for a Pre-Coxeter system `S`: if a word of generators
-$$w = s_1\cdotss_k$$ in `G` is reduced and reduces further when multiplying on a left by a
-generator, then there exists `1 ≤ i < j ≤ k` such that
-$$s*w = s_1 \cdots \hat{s_i} \cdots \hat{s_j} \cdots s_k$$.
+/-- The "exchange property" for a Pre-Coxeter system `S`: if a word of generators
+$$w = s_1 \cdots s_k$$ in `G` is reduced and reduces further when multiplying on the left by a
+generator, then there exists `1 ≤ i ≤ k` such that
+$$s \cdot w = s_1 \cdots \hat{s_i} \cdots s_k$$.
 
 This property implies that `hom` is injective, and so that one can extend the data in `S` to an
 actual `CoxeterSystem`. -/
@@ -337,7 +337,7 @@ private lemma even_length_of_hom_wordProd_eq_one
 /-- Given `S : PreCoxeterSystem M G` and two words (lists) ω, ω' of generators,
 they are said to be fine if their equality in
 `G` means they were already equal in `M.Group`.
-Almost tautologically, `S` is an actual coxeter system (i.e `S.hom` is injective)
+Almost tautologically, `S` is an actual Coxeter system (i.e. `S.hom` is injective)
 if and only if all pairs of lists are fine. -/
 private abbrev Fine : List B → List B → Prop := fun ω ω' ↦
   φ ω = φ ω' → π ω = π ω'
@@ -426,7 +426,7 @@ private lemma nonReduced_case
   rw [List.take_succ_eq_append_getElem (by grind)] at eq₁'''
   grind [CoxeterSystem.wordProd_append, CoxeterSystem.wordprod_self_cons]
 
-/-- This is "Case 1" in [Björer-Brenti, proof of 1.5.1 (p.19)](bjorner2005) : when
+/-- This is "Case 1" in [Björner-Brenti, proof of 1.5.1 (p.19)](bjorner2005) : when
 applying the exchange property, this is the case that has to be handled if the index
 is not maximal. -/
 private lemma fine_non_maximal_index
@@ -480,7 +480,7 @@ private lemma fine_non_maximal_index
       simp [CoxeterSystem.wordProd_cons, mul_assoc, ← CoxeterSystem.wordProd_append]
 
 open CoxeterSystem in
-/-- A reduction that we have to perform multiple time in the rest of the argumment. -/
+/-- A reduction that we have to perform multiple time in the rest of the argument. -/
 private lemma reduction_step
     (E : S.ExchangeProperty)
     {s₁ s₁' : B} {ω ω' : List B}
@@ -567,7 +567,7 @@ private lemma mul_pow_mul_pow_eq' {G : Type*} [Group G] (a b : G) (k : ℕ) :
     rw [mul_assoc (a*b), mul_assoc, hr, ← pow_succ']
 
 open CoxeterSystem in
-/-- One of the actual base case of the induction: relations between alternating words are fine. -/
+/-- One of the actual base cases of the induction: relations between alternating words are fine. -/
 private lemma fine_alternatingWord (s₁ s₁' : B) (j : ℕ) :
     S.Fine (alternatingWord s₁ s₁' (j + 1)) (alternatingWord s₁ s₁' j ++ [s₁]) := by
   intro h
@@ -621,7 +621,7 @@ open CoxeterSystem in
 that we repeatedly get the largest possible index when using the exchange property,
 we show that eventually the situation reduces to fineness of relations involving
 alternating words, which we handled in `fine_alternatingWord`.
-This is part of "Case 2" as described in [Björer-Brenti, proof of 1.5.1](bjorner2005). -/
+This is part of "Case 2" as described in [Björner-Brenti, proof of 1.5.1](bjorner2005). -/
 private lemma fine_alternatingWord_append_induction
     (E : S.ExchangeProperty)
     {s₁ s₁' : B} {ω : List B}
@@ -702,7 +702,7 @@ private lemma fine_alternatingWord_append_induction
         grind
 
 open CoxeterSystem in
-/-- This is the rest of "Case 2" from [Björer-Brenti, proof of 1.5.1](bjorner2005) -/
+/-- This is the rest of "Case 2" from [Björner-Brenti, proof of 1.5.1](bjorner2005) -/
 private lemma sub_induction_1
     (E : S.ExchangeProperty)
     {s₁ s₁' : B} {ω ω' : List B}

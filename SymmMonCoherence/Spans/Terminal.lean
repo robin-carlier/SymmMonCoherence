@@ -13,8 +13,8 @@ public import SymmMonCoherence.Spans.Inclusions
 In this file, given a category `C` with pullbacks,
 we record some equivalences of categories between hom-categories
 in bicategories of spans (with respect to all morphisms)
-where one of the object is terminal, and
-over/under-categories of `C`. More precisely, we constructs equivalences
+where one of the objects is terminal, and
+over/under-categories of `C`. More precisely, we construct equivalences
 
 - `(x : Spans C ⊤ ⊤) ⟶ y ≌ C` when both `x` and `y` are terminal
 - `(x : Spans C ⊤ ⊤) ⟶ y ≌ Over x` when `y` is terminal
@@ -42,7 +42,7 @@ noncomputable def spanOverEquivalenceLeftOfIsTerminal
   unitIso := NatIso.ofComponents (fun S ↦ Spans.mkIso₂ (.refl _) (by apply hx.hom_ext))
   counitIso := NatIso.ofComponents (fun S ↦ .refl _)
 
-noncomputable def spanOverEquivalenceRightOfIsterminal
+noncomputable def spanOverEquivalenceRightOfIsTerminal
     (x y : Spans C ⊤ ⊤) (hx : Limits.IsTerminal y.of) :
     (x ⟶ y) ≌ Over x.of where
   functor := Spans.toOverLeft _ _

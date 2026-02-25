@@ -11,7 +11,7 @@ namespace CategoryTheory
 
 /-- A "weight" on a category `C` in a monoid `M`
 is the data of a function from morphisms in `C` to `M`
-that sends identities to the neutral element, and send
+that sends identities to the neutral element, and sends
 compositions to multiplications. Under the hood, this is a functor
 from `C` to a one-object category. -/
 public structure weight (C : Type*) [Category C] (M : Type*) [Monoid M] where

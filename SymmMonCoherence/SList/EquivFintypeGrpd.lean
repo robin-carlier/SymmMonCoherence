@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Elementwise
 
 /-! # Symmetric lists and FintypeGrpd
 
-Symetric lists on the unit type are equivalent to the groupoid of finite types and bijections,
+Symmetric lists on the unit type are equivalent to the groupoid of finite types and bijections,
 and the equivalence is symmetric monoidal. -/
 
 @[expose] public section
@@ -24,7 +24,7 @@ namespace CategoryTheory.SList
 
 /-- The functor from symmetric lists on a unit type to the groupoid
 of finite types and bijections. The API for this definition is minimal,
-please prefer its equivalence version below (unitEquivalence). -/
+please prefer its equivalent version below (unitEquivalence). -/
 @[pp_with_univ]
 def toFintypeGrpdFunctor : SList PUnit.{v + 1} ⥤ FintypeGrpd.{u} where
   obj x := .mk <| .of <| ULift <| Fin x.length
@@ -239,8 +239,8 @@ def ofFintype (X : Type u) [Fintype X] : SList PUnit.{v + 1} :=
 lemma ofFintype_length (X : Type*) [Fintype X] :
   (ofFintype X).length = Fintype.card X := by simp [ofFintype]
 
-/- The equivalence between Fin (ofFintype X).length X induced by the
-equality of their cardinal. -/
+/- The equivalence between `Fin (ofFintype X).length` and `X` induced by the
+equality of their cardinalities. -/
 @[pp_with_univ]
 noncomputable irreducible_def ofFintype.ι.{s, t} (X : Type t) [Fintype X] :
     X ≃ Fin (ofFintype.{s, t} X).length :=
@@ -503,7 +503,7 @@ noncomputable abbrev unitEquivalence :  SList PUnit.{v + 1} ≌ FintypeGrpd.{u} 
   counitIso := unitEquivalence.counitIso.{v, u}
   unitIso := unitEquivalence.unitIso.{v, u}
   functor_unitIso_comp X := by
-    /- We restate it as an equality of natural transormations, so that
+    /- We restate it as an equality of natural transformations, so that
     we can use the universal property -/
     suffices H : (Functor.leftUnitor _).inv ≫
         Functor.whiskerRight (unitEquivalence.unitIso.hom) toFintypeGrpdFunctor ≫

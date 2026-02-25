@@ -18,7 +18,7 @@ universe u
 /-! # The Kleisli bicategory of symmetric lists
 
 In this file, we introduce the Kleisli bicategory of symmetric lists,
-i.e the bicategory whose objecst are types, and arrows
+i.e the bicategory whose objects are types, and arrows
 J -> K are functions K -> SList J (notice the reversal in direction).
 
 This category is a tool to abstract the monoidal computations required to build
@@ -26,7 +26,7 @@ a pseudo-functor Burnside (FintypeCat) ⥤ᵖ Cat out of a symmetric monoidal ca
 we will show that any symmetric monoidal category in fact defines an object
 Kleisli ⥤ᵖ Cat first. Then, the natural target for the functor out of
 `Burnside (FintypeCat)` will be Kleisli instead of `Cat`: this fully encodes the
-idea that "all of the formulas involevd are universal": in practice, this will
+idea that "all of the formulas involved are universal": in practice, this will
 lessen the back and forth between the category we interpret the formulas in and
 the category of symmetric lists.
 -/
@@ -260,8 +260,8 @@ instance : Bicategory Kleisli.{u} where
       ← NatTrans.comp_app]
     congr 1
     /- Rewriting `Category.comp_id` followed by `congr` as we did above yields an expression that
-    abuses associativity of functor composition (one of the identity that
-    got rewritten was secretely a `Functor.associator ..`).
+    abuses associativity of functor composition (one of the identities that
+    got rewritten was secretly a `Functor.associator ..`).
     Resolving the abuse as below is a bit ugly but still faster than trying to avoid the
     rewriting of that identity (which would involve precisely identifying from which
     associator every identity comes from, using nth-rewrite to only rewrite this one and
@@ -357,7 +357,7 @@ def pseudoOfSymmMonCat (C : Type u') [Category.{v'} C] [MonoidalCategory C] [Sym
       Category.id_comp, Pi.comp_apply, Pi.isoMk_hom, Iso.app_hom, Iso.symm_hom,
       Pi.precompFunctor'_map, Pi.isoMk_inv, Iso.app_inv, Iso.symm_inv]
     /- again, there is an abuse of functor associativity, when trying to go back to the level of
-    natural transforms, this time the fastest way is to manually add the correction the term -/
+    natural transforms, this time the fastest way is to manually add the correction term -/
     rw [← Category.comp_id
       ((RelativePseudomonad.μ X f.of).hom.app ((monoidalLift g.of).obj (h.of i))),
       show (𝟙 ((monoidalLift f.of ⋙ monoidalLift X).obj ((monoidalLift g.of).obj (h.of i)))) =

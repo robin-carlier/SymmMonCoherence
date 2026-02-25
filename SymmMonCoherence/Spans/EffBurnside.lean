@@ -12,12 +12,12 @@ public import Mathlib.CategoryTheory.Bicategory.Opposites
 /-! # Effective Burnside (2,1)-categories
 
 In this file, we define the effective Burnside (2,1)-category of a category with pullbacks
-as an abbreviation for the Pith of the bicategory of spans in C .
+as an abbreviation for the Pith of the bicategory of spans in C.
 
 Spelled explicitly, this is a bicategory where
 - objects are (a type alias for) objects of `C`
 - 1-morphisms `c → c'` are spans `c ← x → c'` in `C`.
-- 2-morphisms are isomorphisms of spans, i.e digrams
+- 2-morphisms are isomorphisms of spans, i.e., diagrams
   ```
       c
     ↗ ↑
@@ -29,15 +29,15 @@ Spelled explicitly, this is a bicategory where
 
 ## Terminological note
 
-The name "Burnside category" comes from the litterature on equivariant homotopy
+The name "Burnside category" comes from the literature on equivariant homotopy
 theory and more specifically the theory of Mackey functors, where local group-completion of
 the pith of the bicategory of spans on finite G-sets is called the "Burnside category of G",
-as a categorificaton of the Burnside ring of G
-(which itself is the group-completion of the semiring of isomorphisms classes of finite G-sets).
+as a categorification of the Burnside ring of G
+(which itself is the group-completion of the semiring of isomorphism classes of finite G-sets).
 The terminology "effective Burnside ∞-category" was then coined by Barwick and used
 without mention of any group (like we do) for the (∞,1)-categorical analogue of the pith of the
 category of spans on a category. When interpreting locally groupoidal bicategories as
-(∝,1)-categories, we recover Barwick's object.
+(∞,1)-categories, we recover Barwick's object.
 -/
 
 @[expose] public section
@@ -49,7 +49,7 @@ The effective Burnside bicategory of a category with pullbacks is the pith of th
 bicategory of spans of `C`. Spelled explicitly, this is a bicategory where
 - objects are objects of `C`
 - 1-morphisms `c → c'` are spans `c ← x → c'` in `C`.
-- 2-morphisms are isomorphisms of spans, i.e digrams
+- 2-morphisms are isomorphisms of spans, i.e., diagrams
   ```
       c
     ↗ ↑
@@ -110,7 +110,7 @@ lemma _root_.CategoryTheory.Bicategory.Opposite.unop2_hom_ext {B : Type u} [Bica
 open Opposite Bicategory.Opposite
 
 /-- The canonical equivalence (in fact, isomorphism) of categories between
-`a ⟶ b` and `op b ⟶ op a`,. -/
+`a ⟶ b` and `op b ⟶ op a`. -/
 def _root_.CategoryTheory.Bicategory.Opposite.homCategoryEquivalence
     {B : Type u} [Bicategory.{w, v} B]
     (a b : B) : (op a ⟶ op b) ≌ (b ⟶ a) where

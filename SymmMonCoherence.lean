@@ -81,7 +81,7 @@ info: CategoryTheory.SList.getElem_toList_toEquiv.{u} {C : Type u} {x y : SList 
 #guard_msgs in
 #check SList.getElem_toList_toEquiv
 
-/-! The permutation attached to a morphisms fully characterizes it -/
+/-! The permutation attached to a morphism fully characterizes it -/
 
 /--
 info: CategoryTheory.SList.hom_eq_iff_toEquiv_eq.{u} {C : Type u} {x y : SList C} (f g : x ⟶ y) :
@@ -101,7 +101,7 @@ info: CategoryTheory.SList.liftEquiv.{u} {C : Type u} {x y : SList C} (φ : Fin 
 #check SList.liftEquiv
 
 /-! The main ingredient for this characterization of morphisms is to link
-relations of morphismms in symmetric list with the Coxeter group of type `A∞`,
+relations of morphisms in symmetric list with the Coxeter group of type `A∞`,
 and then link this group to permutations of `ℕ`. This essentially boils
 down to the fact that permutations of `Fin n` form a Coxeter group of type `Aₙ`. -/
 
@@ -145,7 +145,7 @@ info: AinfToPerm_simple (i : ℕ) : AinfToPerm (Ainf.toCoxeterSystem.simple i) =
 #guard_msgs in
 #check injective_AinfToPerm
 
-/-! From, this, we can define a a symmetric monoidal equivalence between
+/-! From this, we can define a symmetric monoidal equivalence between
 symmetric lists on a unit type and the groupoid of finite types and permutations
 (equipped with the coproduct monoidal structure). -/
 
@@ -173,7 +173,7 @@ example : FintypeGrpd ≌ Core (FintypeCat) := .refl
 
 /-! The equivalence can be upgraded to many-objects: for every finite type
 `K`, there is a symmetric monoidal equivalence of categories between `SList K` and
-`K → SList Unit`, by sending each `k` to the list corresponing to the "fiber" of
+`K → SList Unit`, by sending each `k` to the list corresponding to the "fiber" of
 the list at `k`. -/
 
 /-- info: CategoryTheory.SList.fib₁.{u_1} (K : Type u_1) : SList K ⥤ (K → SList Unit) -/

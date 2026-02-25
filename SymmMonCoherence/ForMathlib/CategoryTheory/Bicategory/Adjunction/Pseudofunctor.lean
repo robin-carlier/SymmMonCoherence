@@ -84,7 +84,7 @@ def _root_.CategoryTheory.Bicategory.Equivalence.adjunction {x y : C} (e : x ≌
   right_triangle := congr($(e.right_triangle).hom)
 
 @[simps]
-/- The symmetric of an equivalence. -/
+/- The inverse equivalence of an equivalence internal to a bicategory. -/
 def _root_.CategoryTheory.Bicategory.Equivalence.symm {x y : C} (e : x ≌ y) :
     y ≌ x where
   hom := e.inv

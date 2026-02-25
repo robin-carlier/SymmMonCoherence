@@ -34,8 +34,8 @@ end lemmas
 /--
 Given an equation `η = θ` between 2 morphisms `f ⟶ g` in a category,
 where f g : X ⟶ Y
-produce the equation `∀ {Z} (h : Y ⟶ Z), f ▷ h = g ▷ h`,
-but with whiskering left reassociated.
+produce the equation `∀ {Z} (h : Y ⟶ Z), η ▷ h = θ ▷ h`,
+but with whiskering right reassociated.
 Also returns the category `C` and any instance metavariables that need to be solved for.
 -/
 def whiskerRightExprHom (e : Expr) : MetaM (Expr × Array MVarId) := do
@@ -76,7 +76,7 @@ elab "wr% " t:term : term => do
 /--
 Given an equation `η = θ` between 2 morphisms `f ⟶ g` in a category,
 where f g : X ⟶ Y
-produce the equation `∀ {Z} (h : Y ⟶ Z), f ▷ h = g ▷ h`,
+produce the equation `∀ {Z} (h : Z ⟶ X), h ◁ η = h ◁ θ`,
 but with whiskering left reassociated.
 Also returns the category `C` and any instance metavariables that need to be solved for.
 -/
@@ -100,7 +100,7 @@ def whiskerLeftExpr (pf : Expr) : MetaM (Expr × Array MVarId) := do
     return (← mkLambdaFVars xs pf, insts)
 
 /--
-Version of `whiskerRightExpr` for the `TermElabM` monad.
+Version of `whiskerLeftExpr` for the `TermElabM` monad.
 Handles instance metavariables automatically.
 -/
 def whiskerLeftExpr' (pf : Expr) : TermElabM Expr := do

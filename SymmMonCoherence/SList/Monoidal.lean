@@ -28,8 +28,8 @@ section append
 /-- Setup a notation for "singleton" symmetric lists. -/
 notation3 "["c"]~" => c ::~ []~
 
-/-- The `RecursiveFunctorData` that defines the bifunctor on SList C that append a
-symmetric lists to an other. -/
+/-- The `RecursiveFunctorData` that defines the bifunctor on SList C that appends
+symmetric lists to another. -/
 abbrev appendRecData : RecursiveFunctorData C (SList C ⥤ SList C) where
   nilObj := 𝟭 (SList C)
   consF c := Functor.whiskeringRight _ _ _|>.obj (c>~)
@@ -138,22 +138,22 @@ public instance : MonoidalCategoryStruct (SList C) where
 
 open MonoidalCategory
 
-/-- The isomorphim that defines the unit object for symmetric lists. -/
+/-- The isomorphism that defines the unit object for symmetric lists. -/
 public lemma unit_eq_nil : 𝟙_ (SList C) = []~ := rfl
 
-/-- The isomorphim that defines the unit object for symmetric lists. -/
+/-- The isomorphism that defines the unit object for symmetric lists. -/
 @[expose] public def unitIsoNil : 𝟙_ (SList C) ≅ []~ := eqToIso unit_eq_nil
 
 public instance : IsEmpty (Fin (𝟙_ (SList C)).length) := by
   simp only [unit_eq_nil, length_nil]
   infer_instance
 
-/-- The isomorphim that defines the unit object for symmetric lists. -/
+/-- The equality that defines the tensor product for symmetric lists. -/
 public lemma tensorObj_eq_append_obj_obj (x y : SList C) : x ⊗ y = x ++~ y := rfl
 
-/-- The isomorphim that defines the tensor product on symmetric lists.
+/-- The isomorphism that defines the tensor product on symmetric lists.
 It is usually a bad idea to try to go through this one: prefer phrasing things
-in "monoidal langage". -/
+in "monoidal language". -/
 @[expose] public def tensorObjIsoDef (x y : SList C) : x ⊗ y ≅ x ++~ y :=
   eqToIso <| tensorObj_eq_append_obj_obj _ _
 
@@ -255,7 +255,7 @@ end
 
 open MonoidalCategory
 
-/-- The function ψ is essentially a cast along the equality
+/-- The function `Ψ` is essentially a cast along the equality
 `(x ⊗ y).length = x.length + y.length`, followed by the equivalence between
 `Fin (n + m)` and `Fin n ⊕ Fin m`, but giving it a name and hiding its
 implementation as a cast makes for better automation. -/
@@ -514,7 +514,7 @@ public lemma consTensSingletonIso_inv_naturality (x : C) {l l' : SList C} (f : l
   simp only [Iso.eq_comp_inv, Category.assoc, ← consTensSingletonIso_hom_naturality]
   simp
 
-/-! Now that we have the monoidal structure, the rest of this file is devoted to extend it to a
+/-! Now that we have the monoidal structure, the rest of this file is devoted to extending it to a
 symmetric monoidal structure. The construction follows Piceghello’s thesis (chapter 4). -/
 
 section Q
@@ -665,7 +665,7 @@ end Q
 section
 
 /--
-The new braiding `new_braid l₁ l₂ : l₁ ⊗ l₂ ≅ l₂ ⊗ l₁`.
+The braiding `l₁ ⊗ l₂ ≅ l₂ ⊗ l₁` is built inductively by repeated applications of `Q`.
 This corresponds to Lemma 4.29 in Piceghello's thesis.
 -/
 public def braidNatIso (l₂ : SList C) : tensorRight l₂ ≅ tensorLeft l₂ :=
