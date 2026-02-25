@@ -112,12 +112,4 @@ def monoidalSubstSingletonIso {K : Type*} (C : Type*) [Category* C]
     (monoidalSubst K C).obj [k]~ ≅ Pi.eval _ k :=
   monoidalLiftConsNilIso _ _
 
--- def Φ (K L : Type*) : SList K ⥤ (K → SList L) ⥤ SList L :=
---   monoidalSubst K (SList L)
---
--- /- Kleisli composition in symmetric lists -/
--- def Θ (J K L : Type*) : (J → SList K) ⥤ (K → SList L) ⥤ (J → SList L) where
---   obj X := Functor.pi' (fun j ↦ Φ K L |>.obj (X j))
---   map {X X'} f := NatTrans.pi' fun j ↦ (Φ K L).map (f j)
---
 end CategoryTheory.SList

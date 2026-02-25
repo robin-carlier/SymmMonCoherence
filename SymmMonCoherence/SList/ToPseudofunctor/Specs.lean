@@ -12,7 +12,7 @@ symmetric lists.
 
 In this file, we use the results from the file
 `SymmMonCoherence.Spans.PseudoFromBurnside.Pseudofunctor` to construct a pseudofunctor
-from `Burnside (FintypeCat)` to the bicategory `SList.Kleisli`.-/
+from `Burnside (FintypeCat)` to the bicategory `SList.Kleisliᵒᵖ`.-/
 
 universe v' u'
 

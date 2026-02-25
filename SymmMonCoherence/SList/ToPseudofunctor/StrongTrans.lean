@@ -14,8 +14,8 @@ public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax
 
 In this file, we show that if `F : C ⥤ D` is a braided monoidal
 functor of symmetric monoidal categories, `F` defines a strong natural
-transformation of the pseudofunctors from the Kleisli bicategory induced by the
-source and target symmetric monoidal categories.
+transformation of the pseudofunctors from the (opposite of the) Kleisli bicategory induced by
+the source and target symmetric monoidal categories.
 
 We give this as a `Oplax.LaxTrans.StrongCore` on the transformation underlying
 -/
@@ -83,7 +83,7 @@ universe v u
 transformation between the pseudofunctors out of the Kleisli bicategory classifying the source and
 target monoidal categories. -/
 @[simps!]
-def strongTransOfLaxBraided {C D : Type u} [Category.{v} C] [Category.{v} D]
+def strongTransOfBraided {C D : Type u} [Category.{v} C] [Category.{v} D]
     [MonoidalCategory C] [MonoidalCategory D]
     [SymmetricCategory C] [SymmetricCategory D]
     (F : C ⥤ D) [F.Braided] :

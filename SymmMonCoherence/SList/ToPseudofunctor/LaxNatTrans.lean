@@ -13,8 +13,8 @@ public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax
 
 In this file, we show that if `F : C ⥤ D` is a lax braided monoidal
 functor of symmetric monoidal categories, `F` defines a lax natural
-transformation of the pseudofunctors from the Kleisli bicategory induced by the
-source and target symmetric monoidal categories. -/
+transformation of the pseudofunctors from the opposite of the Kleisli bicategory
+induced by the source and target symmetric monoidal categories. -/
 
 @[expose] public section
 
@@ -117,7 +117,7 @@ def natTransOfLaxBraided {C D : Type u} [Category.{v} C] [Category.{v} D]
       Lax.LaxTrans
         (SList.Kleisli.pseudoOfSymmMonCat C).toLax
         (SList.Kleisli.pseudoOfSymmMonCat D).toLax where
-  app J := Cat.Hom.ofFunctor <| Pi.postcompFunctor J.of F
+  app J := Cat.Hom.ofFunctor <| Pi.postcompFunctor J.unop.of F
   naturality {J K} f := Cat.Hom₂.ofNatTrans <|
     (Functor.associator _ _ _).inv ≫ (Functor.whiskerRight (generalizedμ _ _) _)
   naturality_id J := by
@@ -131,7 +131,7 @@ def natTransOfLaxBraided {C D : Type u} [Category.{v} C] [Category.{v} D]
     ext j
     dsimp [Functor.postcompose₂]
     simp only [Category.id_comp]
-    have := congr_app (laxAssoc F f.of X) (g.of j)
+    have := congr_app (laxAssoc F f.unop.of X) (g.unop.of j)
     dsimp at this
     simp only [Category.comp_id, Category.id_comp] at this
     rw [this]

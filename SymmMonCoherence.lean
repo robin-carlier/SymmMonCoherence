@@ -1,5 +1,5 @@
 import SymmMonCoherence.SList.ToPseudofunctor.Specs
-import SymmMonCoherence.SList.ToPseudofunctor.LaxNatTrans
+import SymmMonCoherence.SList.ToPseudofunctor.StrongTrans
 
 open CategoryTheory
 
@@ -287,35 +287,37 @@ Kleisli bicategory for the relative pseudomonad defined by `SList`. -/
 info: structure CategoryTheory.SList.Kleisli.Hom.{u} (X Y : SList.Kleisli.{u}) : Type u
 number of parameters: 2
 fields:
-  CategoryTheory.SList.Kleisli.Hom.of : Y.of → SList X.of
+  CategoryTheory.SList.Kleisli.Hom.of : X.of → SList Y.of
 constructor:
-  CategoryTheory.SList.Kleisli.Hom.mk.{u} {X Y : SList.Kleisli.{u}} (of : Y.of → SList X.of) : X.Hom Y
+  CategoryTheory.SList.Kleisli.Hom.mk.{u} {X Y : SList.Kleisli.{u}} (of : X.of → SList Y.of) : X.Hom Y
 -/
 #guard_msgs in
 #print SList.Kleisli.Hom
 
 /--
 info: @[defeq] theorem CategoryTheory.SList.Kleisli.comp_of.{u} : ∀ {X Y Z : SList.Kleisli.{u}} (f : X ⟶ Y) (g : Y ⟶ Z),
-  (f ≫ g).of = (Pi.precompFunctor' (SList X.of) g.of).obj (SList.monoidalLift f.of) :=
+  (f ≫ g).of = (Pi.precompFunctor' (SList Z.of) f.of).obj (SList.monoidalLift g.of) :=
 fun {X Y Z} f g ↦ Eq.refl (f ≫ g).of
 -/
 #guard_msgs in
 #print SList.Kleisli.comp_of
 
-/-! A symmetric monoidal category defines a pseudofunctor out of the Kleisli bicategory to
-`Cat` "via Yoneda". -/
+/-! A symmetric monoidal category defines a pseudofunctor out of the opposite of
+the Kleisli bicategory to `Cat` "via Yoneda". -/
 
 /--
 info: CategoryTheory.SList.Kleisli.pseudoOfSymmMonCat.{v', u'} (C : Type u') [Category.{v', u'} C] [MonoidalCategory C]
-  [SymmetricCategory C] : Pseudofunctor SList.Kleisli.{0} Cat
+  [SymmetricCategory C] : Pseudofunctor SList.Kleisli.{0}ᵒᵖ Cat
 -/
 #guard_msgs in
 #check SList.Kleisli.pseudoOfSymmMonCat
 
-example (J : Type) : (SList.Kleisli.pseudoOfSymmMonCat C).obj (.mk <| J) ≌ (J → C) := .refl
+example (J : Type) :
+    (SList.Kleisli.pseudoOfSymmMonCat C).obj (Opposite.op <| .mk <| J) ≌ (J → C) :=
+  .refl
 
 /-! A lax symmetric monoidal functor defines a lax natural transformation between the
-pseudofunctors on the Kleisli bicategories. -/
+pseudofunctors from the opposite of the Kleisli bicategory. -/
 
 /--
 info: CategoryTheory.SList.Kleisli.natTransOfLaxBraided.{v, u} {C D : Type u} [Category.{v, u} C] [Category.{v, u} D]
@@ -328,17 +330,35 @@ info: CategoryTheory.SList.Kleisli.natTransOfLaxBraided.{v, u} {C D : Type u} [C
 /--
 info: CategoryTheory.SList.Kleisli.natTransOfLaxBraided_app_toFunctor_obj.{v, u} {C D : Type u} [Category.{v, u} C]
   [Category.{v, u} D] [MonoidalCategory C] [MonoidalCategory D] [SymmetricCategory C] [SymmetricCategory D] (F : C ⥤ D)
-  [F.LaxBraided] (J : SList.Kleisli.{0}) (f : (i : J.of) → (fun a ↦ C) i) (i : J.of) :
+  [F.LaxBraided] (J : SList.Kleisli.{0}ᵒᵖ) (f : (i : (Opposite.unop J).of) → (fun a ↦ C) i) (i : (Opposite.unop J).of) :
   ((SList.Kleisli.natTransOfLaxBraided F).app J).toFunctor.obj f i = F.obj (f i)
 -/
 #guard_msgs in
 #check SList.Kleisli.natTransOfLaxBraided_app_toFunctor_obj
 
-/-! Finally, we build a pseudofunctor from EffBurnsideFintype to `Kleisli` using the previous
+/-! When the functor is strong monoidal, the lax natural transformation above is
+a strong natural transformation of pseudofunctors. -/
+
+/--
+info: CategoryTheory.SList.Kleisli.strongTransOfBraided.{v, u} {C D : Type u} [Category.{v, u} C] [Category.{v, u} D]
+  [MonoidalCategory C] [MonoidalCategory D] [SymmetricCategory C] [SymmetricCategory D] (F : C ⥤ D) [F.Braided] :
+  Lax.StrongTrans (SList.Kleisli.pseudoOfSymmMonCat C).toLax (SList.Kleisli.pseudoOfSymmMonCat D).toLax
+-/
+#guard_msgs in
+#check SList.Kleisli.strongTransOfBraided
+
+universe v u in
+example {C D : Type u} [Category.{v, u} C] [Category.{v, u} D]
+    [MonoidalCategory C] [MonoidalCategory D] [SymmetricCategory C] [SymmetricCategory D]
+    (F : C ⥤ D) [F.Braided] :
+    (SList.Kleisli.strongTransOfBraided F).toLax = SList.Kleisli.natTransOfLaxBraided F :=
+  rfl
+
+/-! Finally, we build a pseudofunctor from EffBurnsideFintype to `Kleisliᵒᵖ` using the previous
 constructor. -/
 
 /--
-info: CategoryTheory.SList.EffBurnside.pseudoFunctorCore : EffBurnside.PseudofunctorCore FintypeCat SList.Kleisli.{0}
+info: CategoryTheory.SList.EffBurnside.pseudoFunctorCore : EffBurnside.PseudofunctorCore FintypeCat SList.Kleisli.{0}ᵒᵖ
 -/
 #guard_msgs in
 #check SList.EffBurnside.pseudoFunctorCore
