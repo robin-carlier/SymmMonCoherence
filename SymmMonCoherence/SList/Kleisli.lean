@@ -7,7 +7,6 @@ module
 
 public import SymmMonCoherence.SList.EffBurnside
 public import SymmMonCoherence.SList.Substitution
-public import SymmMonCoherence.SList.Pseudofunctor
 public import SymmMonCoherence.SList.Duality
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 

@@ -274,8 +274,6 @@ set_option quotPrecheck false in
 local notation "φ " x:max =>
     (Fin.preCoxeterSystem n).hom ((CoxeterMatrix.Aₙ n).toCoxeterSystem.wordProd x)
 
--- _root_.List.getElem_inits_eq_take
-
 theorem exchange : (Fin.preCoxeterSystem n).ExchangeProperty' := by
   intro ω hω i hi
   simp only [CoxeterSystem.wordProd_append, CoxeterSystem.wordProd_singleton,
@@ -618,8 +616,6 @@ def monoidToGroupMulEquiv : M.Monoid ≃* M.Group where
   map_mul' := M.monoidToGroup.map_mul'
   left_inv x := by simp
   right_inv x := by simp
-
--- lemma monoidToGroupBijective
 
 end CoxeterMatrix
 

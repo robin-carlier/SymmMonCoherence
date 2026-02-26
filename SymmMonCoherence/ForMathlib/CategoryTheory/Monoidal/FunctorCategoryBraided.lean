@@ -26,13 +26,6 @@ namespace CategoryTheory.Monoidal
 
 section
 
--- syntax (name := comp2) (priority := high) term:81
---   ppSpace ppRealGroup("⊚≫" ppHardSpace ppDedent(term:80)) : term
--- macro_rules (kind := comp2) | `($a ⊚≫ $b) => `(CategoryStruct.comp $a $b)
--- @[app_unexpander CategoryStruct.comp] meta def unexpandComp : Lean.PrettyPrinter.Unexpander
---   | `($_ $a $b) => `($a ⊚≫ $b)
---   | _ => throw ()
-
 @[simps!]
 instance {C : Type*} [Category* C] {D : Type*} [Category* D]
   [MonoidalCategory C] [MonoidalCategory D]

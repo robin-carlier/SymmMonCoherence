@@ -363,7 +363,6 @@ private lemma exchangeProperty_cons
     ← CoxeterSystem.wordProd_cons, ← CoxeterSystem.wordProd_cons, ← h]
   simp
 
--- TODO Clean this up a little bit
 /-- A first "discharge case": during an induction on the length of words,
 if a word is not reduced then any relation involving it is fine as it reduces to a shorter one. -/
 private lemma nonReduced_case

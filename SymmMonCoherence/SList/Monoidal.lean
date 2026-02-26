@@ -617,9 +617,7 @@ public lemma Q_hom_app_naturality (x : C) {l₂ l₂' : SList C} (f : l₂ ⟶ l
       ← reassoc_of% swap_natural x c (l₁ ◁ f), Iso.cancel_iso_hom_left]
     simp [← Functor.map_comp_assoc, -Functor.map_comp, ← ih, whiskerLeft_cons]
 
-/-- This is lemma 4.28 in Piceghello's thesis.
--- TODO draw nice Ascii/Unicode diagram mirroring Figure 4.8 in Piceghello's
--/
+/-- This is lemma 4.28 in Piceghello's thesis. -/
 lemma Q_cons_Q_cons_swap (x y : C) (l₁ l₂ : SList C) :
     β~ x y (l₂ ⊗ l₁) ≫
       (y ::~ₘ (tensorObjConsIso x l₂ l₁).inv) ≫
