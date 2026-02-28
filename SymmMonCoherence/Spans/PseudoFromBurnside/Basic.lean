@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
 public import SymmMonCoherence.ForMathlib.CategoryTheory.Bicategory.Adjunction.Pseudofunctor
-public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.CancelIso
 public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.InvElaborator
 public import SymmMonCoherence.ForMathlib.CategoryTheory.Bicategory.Adjunction.Mates
 public import Mathlib.Tactic.DepRewrite

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 public import SymmMonCoherence.ForMathlib.CategoryTheory.Bicategory.Adjunction.Pseudofunctor
-public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.CancelIso
 public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.RotateIso
 public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.BicategoryElaborators
 public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.CatNFElaborator
@@ -17,24 +16,7 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 @[expose] public section
 
-attribute [push]
-  CategoryTheory.Bicategory.inv_whiskerLeft
-  CategoryTheory.Bicategory.inv_whiskerRight
-  CategoryTheory.IsIso.inv_comp
-  CategoryTheory.IsIso.inv_inv
-  CategoryTheory.IsIso.Iso.inv_inv
-  CategoryTheory.IsIso.Iso.inv_hom
-  CategoryTheory.NatIso.inv_inv_app
-  -- CategoryTheory.MonoidalCategory.inv_whiskerLeft
-  -- CategoryTheory.MonoidalCategory.inv_whiskerRight
-  -- CategoryTheory.MonoidalCategory.inv_tensor
-
-attribute [push ←]
-  CategoryTheory.Functor.map_inv
-  CategoryTheory.NatIso.isIso_inv_app
-  CategoryTheory.op_inv
-  CategoryTheory.unop_inv
-  CategoryTheory.PrelaxFunctor.map₂_inv
+attribute [push ←] CategoryTheory.PrelaxFunctor.map₂_inv
 
 attribute [cat_nf]
   -- CategoryTheory.PrelaxFunctor.map₂_inv
@@ -49,7 +31,6 @@ attribute [cat_nf]
   CategoryTheory.Bicategory.whiskerRight_id
   CategoryTheory.Bicategory.id_whiskerLeft
   CategoryTheory.Bicategory.whiskerLeft_id
-
 
 open CategoryTheory in
 @[push]

@@ -5,7 +5,7 @@ Authors: Robin Carlier
 -/
 module
 
-public meta import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.CancelIso
+public meta import Mathlib.Tactic.CategoryTheory.CancelIso
 
 public meta section
 

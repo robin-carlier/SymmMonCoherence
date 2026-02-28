@@ -5,9 +5,8 @@ Authors: Robin Carlier
 -/
 module
 
-public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.CancelIso
 public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.CatNFAttr
-public import Mathlib.CategoryTheory.NatTrans
+public import Mathlib.CategoryTheory.NatIso
 
 public meta section
 

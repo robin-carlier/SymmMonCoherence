@@ -5,7 +5,7 @@ Authors: Robin Carlier
 -/
 module
 
-public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.CancelIso
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 public meta section
 namespace Mathlib.Tactic.CategoryTheory.invPercent
