@@ -8,11 +8,11 @@ module
 public import SymmMonCoherence.SList.Basic
 public import SymmMonCoherence.CategoryWeight
 public import SymmMonCoherence.SymmetricGroupCoxeterSystem
-/-! # Characterizing the morphisms in Symmetric lists.
+/-! # Characterizing morphisms in symmetric lists.
 
 In this file, we characterize morphisms in the category `SList C` in the
 following way: to each morphism `f : L ⟶ L'`, one can attach a formal permutation
-`formalPerm f : Equiv.Perm ℕ`, and two morphisms are equal if and only if the
+`toPerm f : Equiv.Perm ℕ`, and two morphisms are equal if and only if the
 attached formal permutations are equal.
 
 The idea is simple: the relations that define symmetric lists are essentially in
@@ -21,21 +21,22 @@ the symmetric group as a Coxeter group; this is the argument one usually goes wi
 in pen-and-paper mathematics (see e.g [MacLane CWM]), but the formal realization of this argument
 is in fact rather involved.
 
-To define the formal permutation attached to a morphism, we first attach labels that live
+To define the formal permutation attached to a morphism, we first attach labels
+(realized as `weight`) that live
 in `FreeMonoid ℕ` to every (formal composition of) generating morphisms: the `swap` morphism
 is labelled by `0`, and prepending an element to a morphism "shifts" the label by
 one: e.g `a::b::(swap c d (e::nil)) : [a,b,c,d,e] ⟶ [a,b,d,c,e]` is labelled with `2`.
 This way, a generating morphism is labelled with the first index of the list that
-gets swapped, formal compositions of generating morphisms (i.e morphism in `FreeSListQuiv C`)
-have elements in `FreeMonoid ℕ` ("words") attached to them.
+gets swapped. Formal compositions of generating morphisms (i.e., morphism in `FreeSListQuiv C`)
+gets labels in `FreeMonoid ℕ` ("words") attached to them.
 
 The relations between the morphisms make it so that two morphisms in relation will have
-labels related by the relation defined by the Coxeter matrix Ainf, and hence morphisms in
+labels related by the relation defined by the Coxeter matrix Ainf. Hence morphisms in
 `SList C` have a well-defined label in the monoid `Ainf.Monoid` (which is isomorphic to the
-corresponding Coxeter Group). As one can realize this monoid as a multiplicative subset of
+corresponding Coxeter group). As one can realize this monoid as a multiplicative subset of
 `Equiv.Perm ℕ`, this defines the formal permutation of a morphism: by this definition, the
 `swap` morphism gets sent to the permutation `Equiv.swap 0 1`, and
-e.g `a::b::(swap c d (e::nil)) : [a,b,c,d,e] ⟶ [a,b,d,c,e]` is labelled with `Equiv.swap 2 3`.
+e.g., `a::b::(swap c d (e::nil)) : [a,b,c,d,e] ⟶ [a,b,d,c,e]` is labelled with `Equiv.swap 2 3`.
 This definition realizes the idea that the "formal permutation" attached to a morphism is the
 permutation of the indices of the source and target that this morphism performed.
 
@@ -43,9 +44,9 @@ The converse (that two morphisms with same formal permutations are equal) is har
 one has to first work with formal compositions of generating morphisms
 (i.e., morphisms in `FreeSListQuiv C`) and labels in free monoids and show that
 1. Any two formal compositions of generating morphisms with same source, target and label are equal
-2. Any two formal compositions of generating morphisms with same source and label have equal target
-3. That for suitable labels and source, one can find formal compositions of generating morphisms out
-of the given source with given label.
+2. Any two formal compositions of generating morphisms with same source and label have equal targets
+3. For suitable labels and sources, one can find formal compositions of generating morphisms out
+  of the given source with given label.
 4. Using 1 and 2, that for each relation in the Coxeter matrix `Ainf`, one can find an
 explicit morphisms whose label realizes these relations, and that these morphisms reduce to
 identities in `SList`.
@@ -172,7 +173,6 @@ lemma mkWeight_app_ι {M : Type*} [Monoid M] {L : Quiver.Labelling (SListQuiv C)
     (mkWeight L).app ((FreeSListQuiv.ι C).map f) = L f := by
   simp [weight.app_mk, mkWeight]
 
--- @[simp, grind =]
 lemma mkWeight_app_swap {M : Type*} [Monoid M] {L : Quiver.Labelling (SListQuiv C) M}
     {x y : C} (l : FreeSListQuiv C) :
     (mkWeight L).app (FreeSListQuiv.swap x y l) = L (β₀_ x y (FreeSListQuiv.equiv l)) := by
@@ -304,7 +304,7 @@ lemma w₂_app_eq_of_homEquiv
     {i j : FreeSListQuiv C} (f g : i ⟶ j) (h : FreeSListQuiv.HomEquiv C f g) :
     w₂.app f = w₂.app g := by
   induction h with
-  | swap_naturality₀ X Y f =>
+  | swap_naturality X Y f =>
     simp only [weight.weight_comp, w₂_swap, w₂_app_consPath, FreeSListQuiv.mkWeight_app_ι]
     have e := Ainf.toCoxeterSystem.simple_mul_simple_pow 0 (labelling₀ f + 1 + 1)
     simp only [Ainf_M, Matrix.of_apply, Nat.right_eq_add, Nat.add_eq_zero_iff, OfNat.ofNat_ne_zero,

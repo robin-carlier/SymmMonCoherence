@@ -211,7 +211,7 @@ public lemma ι_obj_equiv (x : FreeSListQuiv C) : (ι C).obj (equiv x) = x := eq
 @[grind inj]
 lemma injective_ι_obj : Function.Injective (ι C).obj := equiv.symm.injective
 
-public def lift {D : Type*} [Category D]
+public def lift {D : Type*} [Category* D]
     (obj : SListQuiv C → D)
     (map : ∀ {x y : SListQuiv C}, (x ⟶ y) → (obj x ⟶ obj y)) :
     FreeSListQuiv C ⥤ D :=
@@ -240,7 +240,7 @@ public lemma hom_induction
 
 section
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
   {obj : SListQuiv C → D}
   {map : ∀ {x y : SListQuiv C}, (x ⟶ y) → (obj x ⟶ obj y)}
 
@@ -326,7 +326,7 @@ public lemma swap_eq (x y : C) (l : SListQuiv C) :
 
 section natTrans
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
 
 public def liftNatTrans {F G : FreeSListQuiv C ⥤ D}
     (app : ∀ (x : SListQuiv C), F.obj x ⟶ G.obj x)
@@ -454,7 +454,7 @@ variable (C) in
 - The hexagon relation
 - Soundness of `consPath`. -/
 public inductive HomEquiv : HomRel (FreeSListQuiv C)
-  | swap_naturality₀ (X Y : C) {l l' : SListQuiv C} (f : l ⟶ l') :
+  | swap_naturality (X Y : C) {l l' : SListQuiv C} (f : l ⟶ l') :
       HomEquiv
         (β₁_ X Y ((ι C).obj l) ≫
           (Y ::_ₘ (X ::_ₘ ((ι C).map f))))
@@ -681,18 +681,18 @@ lemma hom_induction
   rw [← e]
   exact h f
 
-public def lift {D : Type*} [Category D] (F : FreeSListQuiv C ⥤ D)
+public def lift {D : Type*} [Category* D] (F : FreeSListQuiv C ⥤ D)
     (h : ∀ {x y : FreeSListQuiv C} {f g : x ⟶ y},
       FreeSListQuiv.HomEquiv _ f g → F.map f = F.map g) :
     SList C ⥤ D := Quotient.lift _ F @h
 
-public lemma lift_π_obj {D : Type*} [Category D] (F : FreeSListQuiv C ⥤ D)
+public lemma lift_π_obj {D : Type*} [Category* D] (F : FreeSListQuiv C ⥤ D)
     {h : ∀ {x y : FreeSListQuiv C} {f g : x ⟶ y},
       FreeSListQuiv.HomEquiv _ f g → F.map f = F.map g}
     (x : FreeSListQuiv C) :
     (lift F h).obj ((π C).obj x) = F.obj x := rfl
 
-public lemma lift_π_map {D : Type*} [Category D] (F : FreeSListQuiv C ⥤ D)
+public lemma lift_π_map {D : Type*} [Category* D] (F : FreeSListQuiv C ⥤ D)
     {h : ∀ {x y : FreeSListQuiv C} {f g : x ⟶ y},
       FreeSListQuiv.HomEquiv _ f g → F.map f = F.map g}
     {x y : FreeSListQuiv C} (f : x ⟶ y) :
@@ -702,7 +702,7 @@ public lemma lift_π_map {D : Type*} [Category D] (F : FreeSListQuiv C ⥤ D)
   rfl
 
 public def liftπIso
-    {D : Type*} [Category D] (F : FreeSListQuiv C ⥤ D)
+    {D : Type*} [Category* D] (F : FreeSListQuiv C ⥤ D)
     (h : ∀ {x y : FreeSListQuiv C} {f g : x ⟶ y},
       FreeSListQuiv.HomEquiv _ f g → F.map f = F.map g) :
     π C ⋙ lift F h ≅ F := .refl _
@@ -710,13 +710,13 @@ public def liftπIso
 /-- To construct a natural transformation of functor, it suffices to
 construct one after precomposition with the quotient functor. -/
 public def liftNatTrans
-    {D : Type*} [Category D] {F G : SList C ⥤ D}
+    {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (α : π C ⋙ F ⟶ π C ⋙ G) :
     F ⟶ G := CategoryTheory.Quotient.natTransLift _ α
 
 @[simp, grind =]
 public lemma liftNatTrans_app_π
-    {D : Type*} [Category D] {F G : SList C ⥤ D}
+    {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (α : π C ⋙ F ⟶ π C ⋙ G)
     (x : FreeSListQuiv C) :
     (liftNatTrans α).app ((π C).obj x) = α.app x :=
@@ -725,13 +725,13 @@ public lemma liftNatTrans_app_π
 /-- To construct a natural transformation of functor, it suffices to
 construct one after precomposition with the quotient functor. -/
 public def liftNatIso
-    {D : Type*} [Category D] {F G : SList C ⥤ D}
+    {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (α : π C ⋙ F ≅ π C ⋙ G) :
     F ≅ G := CategoryTheory.Quotient.natIsoLift _ α
 
 @[simp, grind =]
 public lemma liftNatIso_hom_app_π
-    {D : Type*} [Category D] {F G : SList C ⥤ D}
+    {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (α : π C ⋙ F ≅ π C ⋙ G)
     (x : FreeSListQuiv C) :
     (liftNatIso α).hom.app ((π C).obj x) = α.hom.app x :=
@@ -739,7 +739,7 @@ public lemma liftNatIso_hom_app_π
 
 @[simp, grind =]
 public lemma liftNatIso_inv_app_π
-    {D : Type*} [Category D] {F G : SList C ⥤ D}
+    {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (α : π C ⋙ F ≅ π C ⋙ G)
     (x : FreeSListQuiv C) :
     (liftNatIso α).inv.app ((π C).obj x) = α.inv.app x :=
@@ -747,7 +747,7 @@ public lemma liftNatIso_inv_app_π
 
 -- Not an [ext] lemma because we don’t necessarily want to apply it in all situations
 public lemma natTrans_ext_π
-    {D : Type*} [Category D] {F G : SList C ⥤ D} {α β : F ⟶ G}
+    {D : Type*} [Category* D] {F G : SList C ⥤ D} {α β : F ⟶ G}
     (h : Functor.whiskerLeft (π C) α = Functor.whiskerLeft (π C) β) :
     α = β := by
   ext x
@@ -780,7 +780,7 @@ public def swapNatTrans (x y : C) :
     (y>~) ⋙ (x>~) ⟶ (x>~) ⋙ (y>~) :=
   liftNatTrans (FreeSListQuiv.liftNatTrans
     (fun _ ↦ β~ _ _ _) (fun {z t} f ↦ by
-      simpa [swap_π_def] using sound (.swap_naturality₀ x y f) |>.symm))
+      simpa [swap_π_def] using sound (.swap_naturality x y f) |>.symm))
 
 @[simp]
 public lemma swapNatTrans_app (x y : C) (l : SList C) :
@@ -869,7 +869,7 @@ lemma hom_induction' {motive : {x y : SList C} → (x ⟶ y) → Prop}
 
 /-- Probably not the most straightforward here: this doesn’t let me do the things recursively? -/
 @[no_expose] public def mkNatTrans
-    {D : Type*} [Category D] {F G : SList C ⥤ D}
+    {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (α_nil : F.obj []~ ⟶ G.obj []~)
     (α_cons : ∀ (c : C) (l : SList C), F.obj (c ::~ l) ⟶ G.obj (c ::~ l))
     (nat_swap : ∀ (x y : C) (l : SList C),
@@ -898,7 +898,7 @@ lemma hom_induction' {motive : {x y : SList C} → (x ⟶ y) → Prop}
         simpa using nat_cons _ _
 
 @[simp, grind =]
-public lemma mkNatTrans_app_nil {D : Type*} [Category D] {F G : SList C ⥤ D}
+public lemma mkNatTrans_app_nil {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (α_nil : F.obj []~ ⟶ G.obj []~)
     (α_cons : ∀ (c : C) (l : SList C), F.obj (c ::~ l) ⟶ G.obj (c ::~ l))
     (nat_swap : ∀ (x y : C) (l : SList C),
@@ -909,7 +909,7 @@ public lemma mkNatTrans_app_nil {D : Type*} [Category D] {F G : SList C ⥤ D}
   (rfl)
 
 @[simp, grind =]
-public lemma mkNatTrans_app_cons {D : Type*} [Category D] {F G : SList C ⥤ D}
+public lemma mkNatTrans_app_cons {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (α_nil : F.obj []~ ⟶ G.obj []~)
     (α_cons : ∀ (c : C) (l : SList C), F.obj (c ::~ l) ⟶ G.obj (c ::~ l))
     (nat_swap : ∀ (x y : C) (l : SList C),
@@ -923,7 +923,7 @@ public lemma mkNatTrans_app_cons {D : Type*} [Category D] {F G : SList C ⥤ D}
 end
 
 /-- Auxiliary construction for recNatTrans -/
-private def recNatTransAux {D : Type*} [Category D] {F G : SList C ⥤ D}
+private def recNatTransAux {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (nil : F.obj []~ ⟶ G.obj []~)
     (cons : ∀ (c : C) (l : SList C), (F.obj l ⟶ G.obj l) → (F.obj (c ::~ l) ⟶ G.obj (c ::~ l))) :
     (x : SListQuiv C) →
@@ -932,12 +932,12 @@ private def recNatTransAux {D : Type*} [Category D] {F G : SList C ⥤ D}
   | .cons c l => cons c (π C |>.obj <| (FreeSListQuiv.ι _).obj l) (recNatTransAux nil cons l)
 
 /-- A recursive natural transformation constructor. -/
-@[no_expose] public def recNatTrans {D : Type*} [Category D] {F G : SList C ⥤ D}
+@[no_expose] public def recNatTrans {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (nil : F.obj []~ ⟶ G.obj []~)
     (cons : ∀ (c : C) (l : SList C), (F.obj l ⟶ G.obj l) → (F.obj (c ::~ l) ⟶ G.obj (c ::~ l)))
     (nat_swap : ∀ (x y : C) (l : SList C) (prev : F.obj l ⟶ G.obj l),
-      F.map (β~ x y (l)) ≫ (cons y (x ::~ l) (cons x l prev)) =
-      (cons x (y ::~ l) (cons y l prev)) ≫ G.map (β~ x y (l)))
+      F.map (β~ x y l) ≫ cons y (x ::~ l) (cons x l prev) =
+      cons x (y ::~ l) (cons y l prev) ≫ G.map (β~ x y l))
     (nat_cons : ∀ (c : C) {l l' : SList C} (f : l ⟶ l')
       (h : F.obj l ⟶ G.obj l) (h' : F.obj l' ⟶ G.obj l'),
       (F.map f ≫ h' = h ≫ G.map f) →
@@ -962,12 +962,12 @@ private def recNatTransAux {D : Type*} [Category D] {F G : SList C ⥤ D}
         simpa using nat_cons _ _ _ _ hr
 
 @[simp, grind =]
-public lemma recNatTrans_app_nil {D : Type*} [Category D] {F G : SList C ⥤ D}
+public lemma recNatTrans_app_nil {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (nil : F.obj []~ ⟶ G.obj []~)
     (cons : ∀ (c : C) (l : SList C), (F.obj l ⟶ G.obj l) → (F.obj (c ::~ l) ⟶ G.obj (c ::~ l)))
     (nat_swap : ∀ (x y : C) (l : SList C) (prev : F.obj l ⟶ G.obj l),
-      F.map (β~ x y (l)) ≫ (cons y (x ::~ l) (cons x l prev)) =
-      (cons x (y ::~ l) (cons y l prev)) ≫ G.map (β~ x y (l)))
+      F.map (β~ x y l) ≫ (cons y (x ::~ l) (cons x l prev)) =
+      (cons x (y ::~ l) (cons y l prev)) ≫ G.map (β~ x y l))
     (nat_cons : ∀ (c : C) {l l' : SList C} (f : l ⟶ l')
       (h : F.obj l ⟶ G.obj l) (h' : F.obj l' ⟶ G.obj l'),
       (F.map f ≫ h' = h ≫ G.map f) →
@@ -976,12 +976,12 @@ public lemma recNatTrans_app_nil {D : Type*} [Category D] {F G : SList C ⥤ D}
   (rfl)
 
 @[simp, grind =]
-public lemma recNatTrans_app_cons {D : Type*} [Category D] {F G : SList C ⥤ D}
+public lemma recNatTrans_app_cons {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (nil : F.obj []~ ⟶ G.obj []~)
     (cons : ∀ (c : C) (l : SList C), (F.obj l ⟶ G.obj l) → (F.obj (c ::~ l) ⟶ G.obj (c ::~ l)))
     (nat_swap : ∀ (x y : C) (l : SList C) (prev : F.obj l ⟶ G.obj l),
-      F.map (β~ x y (l)) ≫ (cons y (x ::~ l) (cons x l prev)) =
-      (cons x (y ::~ l) (cons y l prev)) ≫ G.map (β~ x y (l)))
+      F.map (β~ x y l) ≫ (cons y (x ::~ l) (cons x l prev)) =
+      (cons x (y ::~ l) (cons y l prev)) ≫ G.map (β~ x y l))
     (nat_cons : ∀ (c : C) {l l' : SList C} (f : l ⟶ l')
       (h : F.obj l ⟶ G.obj l) (h' : F.obj l' ⟶ G.obj l'),
       (F.map f ≫ h' = h ≫ G.map f) →
@@ -992,7 +992,7 @@ public lemma recNatTrans_app_cons {D : Type*} [Category D] {F G : SList C ⥤ D}
   (rfl)
 
 /-- Auxiliary construction for recNatIso -/
-private def recNatIsoAux {D : Type*} [Category D] {F G : SList C ⥤ D}
+private def recNatIsoAux {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (nil : F.obj []~ ≅ G.obj []~)
     (cons : ∀ (c : C) (l : SList C), (F.obj l ≅ G.obj l) → (F.obj (c ::~ l) ≅ G.obj (c ::~ l))) :
     (x : SListQuiv C) →
@@ -1003,7 +1003,7 @@ private def recNatIsoAux {D : Type*} [Category D] {F G : SList C ⥤ D}
 -- We can’t really define recNatIso with hom and inv defined as
 -- some recNatTrans because the inductive constructors require to construct isomorphisms.
 /-- A recursive natural transformation isomorphisms. -/
-@[no_expose] public def recNatIso {D : Type*} [Category D] {F G : SList C ⥤ D}
+@[no_expose] public def recNatIso {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (nil : F.obj []~ ≅ G.obj []~)
     (cons : ∀ (c : C) (l : SList C), (F.obj l ≅ G.obj l) → (F.obj (c ::~ l) ≅ G.obj (c ::~ l)))
     (nat_swap : ∀ (x y : C) (l : SList C) (prev : F.obj l ≅ G.obj l),
@@ -1035,12 +1035,12 @@ private def recNatIsoAux {D : Type*} [Category D] {F G : SList C ⥤ D}
 
 section
 
-variable {D : Type*} [Category D] {F G : SList C ⥤ D}
+variable {D : Type*} [Category* D] {F G : SList C ⥤ D}
     (nil : F.obj []~ ≅ G.obj []~)
     (cons : ∀ (c : C) (l : SList C), (F.obj l ≅ G.obj l) → (F.obj (c ::~ l) ≅ G.obj (c ::~ l)))
     (nat_swap : ∀ (x y : C) (l : SList C) (prev : F.obj l ≅ G.obj l),
-      F.map (β~ x y (l)) ≫ (cons y (x ::~ l) (cons x l prev)).hom =
-      (cons x (y ::~ l) (cons y l prev)).hom ≫ G.map (β~ x y (l)))
+      F.map (β~ x y l) ≫ (cons y (x ::~ l) (cons x l prev)).hom =
+      (cons x (y ::~ l) (cons y l prev)).hom ≫ G.map (β~ x y l))
     (nat_cons : ∀ (c : C) {l l' : SList C} (f : l ⟶ l')
       (h : F.obj l ≅ G.obj l) (h' : F.obj l' ≅ G.obj l'),
       (F.map f ≫ h'.hom = h.hom ≫ G.map f) →
@@ -1215,7 +1215,7 @@ public def functor : SList C ⥤ D :=
   SList.lift data.freeFunctor <| by
     intros x y f g h
     induction h with
-    | @swap_naturality₀ X Y l l' f =>
+    | @swap_naturality X Y l l' f =>
       simp only [Functor.map_comp, freeFunctor_map_swap, freeFunctor_map_cons,
         freeFunctor_map_ι_map]
       have := (data.swapIso X Y).hom.naturality (data.rawMap f)

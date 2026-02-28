@@ -436,7 +436,7 @@ section NatTrans
 section
 
 def liftNatTransAux
-    {D : Type*} [Category D] [MonoidalCategory D] [SymmetricCategory D]
+    {D : Type*} [Category* D] [MonoidalCategory D] [SymmetricCategory D]
     {G G' : F C ⥤ D}
     [G.Braided] [G'.LaxBraided]
     (e : ∀ c : C, G.obj (of c) ⟶ G'.obj (of c)) :
@@ -449,7 +449,7 @@ def liftNatTransAux
       (Functor.LaxMonoidal.μ G' x y)
 
 variable
-  {D : Type*} [Category D] [MonoidalCategory D] [SymmetricCategory D]
+  {D : Type*} [Category* D] [MonoidalCategory D] [SymmetricCategory D]
   {G G' : F C ⥤ D}
   [G.Braided] [G'.LaxBraided]
   (e : ∀ c : C, G.obj (of c) ⟶ G'.obj (of c))
@@ -537,7 +537,7 @@ instance : (liftNatTrans e).IsMonoidal where
 end
 
 def liftNatIso
-    {D : Type*} [Category D] [MonoidalCategory D] [SymmetricCategory D]
+    {D : Type*} [Category* D] [MonoidalCategory D] [SymmetricCategory D]
     {G G' : FreeSymmetricMonoidalCategory C ⥤ D}
     [G.Braided] [G'.Braided]
     (e : ∀ c : C, G.obj (of c) ≅ G'.obj (of c)) :
@@ -568,7 +568,7 @@ def liftNatIso
 section
 
 variable
-    {D : Type*} [Category D] [MonoidalCategory D] [SymmetricCategory D]
+    {D : Type*} [Category* D] [MonoidalCategory D] [SymmetricCategory D]
     {G G' : FreeSymmetricMonoidalCategory C ⥤ D}
     [G.Braided] [G'.Braided]
     (e : ∀ c : C, G.obj (of c) ≅ G'.obj (of c))
@@ -616,7 +616,7 @@ end
 section
 
 lemma ext_of_monoidal
-    {D : Type*} [Category D] [MonoidalCategory D] [SymmetricCategory D]
+    {D : Type*} [Category* D] [MonoidalCategory D] [SymmetricCategory D]
     {G G' : FreeSymmetricMonoidalCategory C ⥤ D}
     [G.Braided] [G'.LaxBraided]
     {η η' : G ⟶ G'} [η.IsMonoidal] [η'.IsMonoidal]

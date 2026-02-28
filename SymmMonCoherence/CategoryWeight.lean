@@ -14,14 +14,14 @@ is the data of a function from morphisms in `C` to `M`
 that sends identities to the neutral element, and sends
 compositions to multiplications. Under the hood, this is a functor
 from `C` to a one-object category. -/
-public structure weight (C : Type*) [Category C] (M : Type*) [Monoid M] where
+public structure weight (C : Type*) [Category* C] (M : Type*) [Monoid M] where
   F : C ⥤ (SingleObj M)ᵒᵖ
 
 namespace weight
 
 section Monoid
 
-variable {C : Type*} [Category C] {M : Type*} [Monoid M]
+variable {C : Type*} [Category* C] {M : Type*} [Monoid M]
 
 public def app (w : weight C M) {x y : C} (f : x ⟶ y) : M := Quiver.Hom.unop <| w.F.map f
 
@@ -65,7 +65,7 @@ end Monoid
 
 section Group
 
-variable {C : Type*} [Category C] {G : Type*} [Group G]
+variable {C : Type*} [Category* C] {G : Type*} [Group G]
 
 @[simp, grind =]
 public lemma app_inv {w : weight C G} {x y : C} (f : x ⟶ y) [IsIso f] :
