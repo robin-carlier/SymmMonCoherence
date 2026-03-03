@@ -21,4 +21,4 @@ More specifically, here are selected facts and constructions formalized in this 
 - The pseudofunctor out of `EffBurnsideFintype` attached to a symmetric monoidal category is defined in the directory [`SymmMonCoherence/SList/ToPseudofunctor`](SymmMonCoherence/SList/ToPseudofunctor).
 
 ## Paper
-Yet to come.
+[arXiv: 2603.00896](https://arxiv.org/abs/2603.00896)
