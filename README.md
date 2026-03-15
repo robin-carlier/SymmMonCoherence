@@ -19,6 +19,7 @@ More specifically, here are selected facts and constructions formalized in this 
 - Symmetric monoidal equivalences between categories of symmetric lists and various categories related to finite sets: this is in [`SymmMonCoherence/SList/Additive.lean`](SymmMonCoherence/SList/Additive.lean).
 - The Kleisli bicategory for the relative pseudomonad of symmetric lists: this is in [`SymmMonCoherence/SList/Kleisli.lean`](SymmMonCoherence/SList/Kleisli.lean).
 - The pseudofunctor out of `EffBurnsideFintype` attached to a symmetric monoidal category is defined in the directory [`SymmMonCoherence/SList/ToPseudofunctor`](SymmMonCoherence/SList/ToPseudofunctor).
+- A formalization of the basics of relative pseudomonads and their pseudoalgebras, following [Fiore-Gambino-Hyland-Winskel 2018](https://link.springer.com/article/10.1007/s00029-017-0361-3) and [Arkor-Saville-Slattery 2025](https://arxiv.org/abs/2501.12510). This is in [`SymmMonCoherence/RelativePseudomonad.lean`](SymmMonCoherence/RelativePseudomonad.lean).
 
 ## Paper
 [arXiv: 2603.00896](https://arxiv.org/abs/2603.00896)
