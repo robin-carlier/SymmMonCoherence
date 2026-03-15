@@ -526,7 +526,7 @@ scoped instance (A B : T.PseudoAlgebra) : Category (A ⟶ B) where
   id Φ := { α := 𝟙 _ }
   comp {Φ Φ' Φ''} u v := { α := u.α ≫ v.α }
 
-/-- PseudoAlgebras and their lax morphism admit a category structure.
+/-- Pseudoalgebras and their lax morphism admit a category structure.
 Run `open scoped RelativePseudoMonad.PseudoAlgebra.LaxMorphism` to use. -/
 @[simps!]
 scoped instance : CategoryStruct T.PseudoAlgebra where
@@ -555,7 +555,7 @@ scoped instance : CategoryStruct T.PseudoAlgebra where
           ← comp_whiskerRight_assoc, rotate_isos% ← 0 1 Φ.unit f]
         simp }
 
-/-- Constructor for 2-isomorphisms of lax pseudoalgebras. -/
+/-- Constructor for 2-isomorphisms of pseudoalgebras. -/
 @[simps]
 def mkIso₂ {A B : T.PseudoAlgebra} {Φ Φ' : A ⟶ B}
     (α : Φ.h ≅ Φ'.h)
@@ -610,18 +610,144 @@ scoped instance : Bicategory T.PseudoAlgebra where
 
 end LaxMorphism
 
+namespace StrongMorphism
+
+/-! Category structure on strong morphisms of pseudoalgebras -/
+
+/-- Morphisms of strong morphisms are given by 2-morphisms compatible with the
+intertwining maps. -/
+structure Hom {A B : T.PseudoAlgebra} (Φ Φ' : StrongMorphism A B) where
+  /-- The underlying 2-morphism of a morphism between strong morphism. -/
+  α : Φ.h ⟶ Φ'.h
+  w {X : C} (f : J.obj X ⟶ A.A) :
+    B.extension.map (f ◁ α) ≫ (Φ'.ψ _).hom = (Φ.ψ _).hom ≫ A.extension.obj f ◁ α := by cat_disch
+
+attribute [reassoc (attr := local simp)] Hom.w
+
+/-- Morphisms in the bicategory of pseudoalgebra with strong morphisms.
+Run `open scoped RelativePseudoMonad.PseudoAlgebra.StrongMorphism` to use. -/
+scoped instance : Quiver T.PseudoAlgebra where Hom A B := StrongMorphism A B
+
+/-- 2-Morphisms in the bicategory of pseudoalgebras and strong morphism
+Run `open scoped RelativePseudoMonad.PseudoAlgebra.StrongMorphism` to use. -/
+scoped instance (A B : T.PseudoAlgebra) : Quiver (A ⟶ B) where Hom
+
+@[ext]
+lemma ext₂ {A B : T.PseudoAlgebra} {Φ Φ' : A ⟶ B} {u v : Φ ⟶ Φ'} (h : u.α = v.α) :
+    u = v := by
+  cases u
+  cases v
+  grind
+
+/-- Morphisms in the bicategory of pseudoalgebras and strong morphisms form a category.
+Run `open scoped RelativePseudoMonad.PseudoAlgebra.StrongMorphism` to use. -/
+@[simps!]
+scoped instance (A B : T.PseudoAlgebra) : Category (A ⟶ B) where
+  id Φ := { α := 𝟙 _ }
+  comp {Φ Φ' Φ''} u v := { α := u.α ≫ v.α }
+
+/-- Pseudoalgebras and their strong morphism admit a category structure.
+Run `open scoped RelativePseudoMonad.PseudoAlgebra.StrongMorphism` to use. -/
+@[simps!]
+scoped instance : CategoryStruct T.PseudoAlgebra where
+  id A :=
+    { h := 𝟙 _
+      ψ f := A.extension.mapIso (ρ_ _) ≪≫ (ρ_ _).symm }
+  comp {A B C} Φ Φ' :=
+    { h := Φ.h ≫ Φ'.h
+      ψ f := (C.extension.mapIso (α_ _ _ _).symm) ≪≫ (Φ'.ψ _) ≪≫ whiskerRightIso (Φ.ψ _) Φ'.h ≪≫
+        (α_ _ _ _)
+      ψ_natural {X f f'} φ := by simp [← comp_whiskerRight_assoc, -comp_whiskerRight]
+      assoc {X Y} f g := by
+        dsimp
+        simp only [whiskerLeft_comp, Category.assoc, Functor.map_comp, whiskerRight_comp,
+          Iso.hom_inv_id_assoc]
+        simp_rw [← C.μ_natural_right_assoc, whisker_assoc_symm, Category.assoc,
+          Φ'.assoc_assoc f (g ≫ Φ.h), ← Functor.map_comp_assoc]
+        simp only [whisker_assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id,
+          Iso.inv_hom_id_assoc, pentagon_hom_inv_inv_inv_inv, Functor.map_comp, ψ_natural_assoc,
+          pentagon_hom_hom_inv_inv_hom, pentagon_inv_inv_hom_hom_inv]
+        simp_rw [← Functor.map_comp_assoc, associator_inv_naturality_middle,
+          Functor.map_comp_assoc, cancel_epi, ψ_natural_assoc, ← comp_whiskerRight_assoc,
+          ← Φ.assoc f g]
+        simp [-assoc]
+      unit {X} f := by
+        dsimp
+        simp only [whiskerLeft_comp, Category.assoc, whiskerRight_comp]
+        simp_rw [← C.η_natural_assoc, whisker_assoc_symm, Category.assoc, Φ'.unit_assoc,
+          ← comp_whiskerRight_assoc, rotate_isos% ← 0 1 Φ.unit f]
+        simp }
+
+/-- Constructor for 2-isomorphisms of pseudoalgebras. -/
+@[simps]
+def mkIso₂ {A B : T.PseudoAlgebra} {Φ Φ' : A ⟶ B}
+    (α : Φ.h ≅ Φ'.h)
+    (w : ∀ {X : C} (f : J.obj X ⟶ A.A),
+        B.extension.map (f ◁ α.hom) ≫ (Φ'.ψ _).hom = (Φ.ψ _).hom ≫ A.extension.obj f ◁ α.hom := by
+      cat_disch) :
+    Φ ≅ Φ' where
+  hom.α := α.hom
+  inv.α := α.inv
+  inv.w {X} f := by
+    rotate_isos 1 1
+    simp [w]
+
+/-- The bicategory structure on pseudoalgebras with strong morphisms.
+This is [Arkor-Saville-Slattery, Thm. 3.9]. -/
+@[simps! whiskerLeft_α whiskerRight_α
+  associator_hom_α associator_inv_α
+  leftUnitor_hom_α leftUnitor_inv_α
+  rightUnitor_hom_α rightUnitor_inv_α]
+scoped instance : Bicategory T.PseudoAlgebra where
+  homCategory A B := inferInstance
+  whiskerLeft {a b c} f {g h} φ :=
+    { α := f.h ◁ φ.α
+      w {X} m := by
+        dsimp
+        simp_rw [← Functor.map_comp_assoc, associator_inv_naturality_right, Functor.map_comp_assoc,
+          φ.w_assoc, whisker_exchange_assoc]
+        simp }
+  whiskerRight {a b c} {f g} φ h :=
+    { α := φ.α ▷ h.h
+      w {X} m := by
+        dsimp
+        simp_rw [← Functor.map_comp_assoc, associator_inv_naturality_middle, Functor.map_comp_assoc,
+          h.ψ_natural_assoc, Category.assoc, ← associator_naturality_middle,
+          ← comp_whiskerRight_assoc, φ.w] }
+  associator {a b c d} f g h :=
+    mkIso₂ (α_ f.h g.h h.h) fun {X} m ↦ by
+      dsimp
+      simp_rw [Category.assoc, ← Functor.map_comp_assoc, pentagon_hom_inv_inv_inv_inv,
+        Functor.map_comp_assoc,
+        h.ψ_natural_assoc]
+      simp
+  leftUnitor {a b} f :=
+    mkIso₂ (λ_ f.h) fun {X} m ↦ by
+      dsimp
+      simp only [comp_whiskerRight, Category.assoc,
+        triangle_assoc_comp_right_inv, whiskerLeft_inv_hom, Category.comp_id]
+      simp_rw [← f.ψ_natural (ρ_ m).hom, ← Functor.map_comp_assoc, ← triangle, cancelIso]
+  rightUnitor {a b} f :=
+    mkIso₂ (ρ_ f.h) fun {X} m ↦ by simp
+  whisker_exchange {a b c d f g h} u v := by
+    ext
+    simp [whisker_exchange]
+
+end StrongMorphism
+
 end PseudoAlgebra
 
 open PseudoAlgebra in
-open LaxMorphism in
-/-- The pseudofunctor realizing ther Kleisli bicategory as the category of free pseudoalgebras.
+open StrongMorphism in
+/-- The pseudofunctor realizing ther Kleisli bicategory as the category of free pseudoalgebras (with
+strong morphisms).
 TODO: show that it is fully faithful. -/
 @[simps!]
 def KleisliToAlg : T.Kleisli ⥤ᵖ T.PseudoAlgebra where
   obj X := Free X.as
   map {X Y} f :=
     { h := T.extension.obj f.of
-      ψ {Z} g := (T.μ g f.of).hom
+      ψ {Z} g := (T.μ g f.of)
       unit {Z} g := by simpa using (PseudoAlgebra.Free (T := T) Y.as).unit' .. }
   map₂ {X Y} {f g} Φ := { α := T.extension.map Φ.hom }
   mapComp {a b c} f g := mkIso₂ (T.μ ..) (fun {X} m ↦ by simp [← T.assoc_assoc m f.of g.of])
