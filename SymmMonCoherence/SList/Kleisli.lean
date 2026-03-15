@@ -89,6 +89,7 @@ abbrev θ (X : Type*) :
     monoidalLift (ι X) ≅ 𝟭 (SList X) :=
   monoidalLiftNatIso (fun _ ↦ (monoidalLiftConsNilIso ..))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma assoc {X Y Z V : Type*} (f : X → SList Y) (g : Y → SList Z) (h : Z → SList V) :
     (monoidalLiftFunctor ..).map ((Pi.precompFunctor' _ f).map (μ h g).hom) ≫
       (monoidalLiftFunctor ..).map (Pi.precompFunctor'AssocIso ..).hom ≫
@@ -100,6 +101,7 @@ lemma assoc {X Y Z V : Type*} (f : X → SList Y) (g : Y → SList Z) (h : Z →
   intro c
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma assoc' {X Y Z V : Type*} [Category* V] [MonoidalCategory V] [SymmetricCategory V]
     (f : X → SList Y) (g : Y → SList Z) (h : Z → V) :
     (monoidalLiftFunctor ..).map ((Pi.precompFunctor' _ f).map (μ h g).hom) ≫
@@ -112,6 +114,7 @@ lemma assoc' {X Y Z V : Type*} [Category* V] [MonoidalCategory V] [SymmetricCate
   intro c
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma unit {X Y : Type*} (f : X → SList Y) :
     (monoidalLiftFunctor ..).map (η f).hom ≫ (μ f (ι X)).hom ≫
       Functor.whiskerRight (θ X).hom ((monoidalLiftFunctor ..).obj f) =
@@ -176,6 +179,7 @@ abbrev leftUnitor {X Y : Kleisli.{u}} (f : X ⟶ Y) :
     𝟙 _ ≫ f ≅ f :=
   mkIso₂ <| (RelativePseudomonad.η f.of).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps! whiskerRight_hom whiskerLeft_hom associator_hom_hom associator_inv_hom
 rightUnitor_hom_hom rightUnitor_inv_hom leftUnitor_hom_hom leftUnitor_inv_hom]
 instance : Bicategory Kleisli.{u} where
@@ -262,9 +266,11 @@ instance : Bicategory Kleisli.{u} where
       haveI : NatTrans.IsMonoidal <|
         (monoidalLift g.of).whiskerLeft (RelativePseudomonad.μ k.of h.of).inv := by infer_instance
       convert this
-      ext <;> simp [Functor.LaxMonoidal.comp]
+      ext
+      · simp [Functor.LaxMonoidal.ε]
+      · simp [Functor.LaxMonoidal.μ]
     · intro c
-      have := (RelativePseudomonad.μ k.of h.of).inv.naturality ((monoidalLiftConsNilIso g.of c).hom)
+      have := (RelativePseudomonad.μ k.of h.of).inv.naturality (monoidalLiftConsNilIso g.of c).hom
       dsimp at this
       simp [this]
   triangle {f g h} x y := by
@@ -298,6 +304,7 @@ example (C : Type u') [Category.{v'} C]
     [MonoidalCategory C] [SymmetricCategory C] {X Y : Kleisli.{u}}
     {f g : X ⟶ Y} (η : f ⟶ g) : (extendedPullback₂ C η).IsMonoidal := by infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 abbrev extendedPullbackComp (C : Type*) [Category* C] [MonoidalCategory C] [SymmetricCategory C]
     {X Y Z : Kleisli.{u}}
     (f : Z ⟶ Y) (g : Y ⟶ X) :
@@ -314,6 +321,7 @@ abbrev extendedPullbackComp (C : Type*) [Category* C] [MonoidalCategory C] [Symm
       intro c
       simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any symmetric monoidal category can be interpreted as a pseudofunctor
 `Kleisliᵒᵖ ⥤ᵖ Cat`, sending `J` to the category of families `J → C`
 and using monoidal substitutions on arrow:

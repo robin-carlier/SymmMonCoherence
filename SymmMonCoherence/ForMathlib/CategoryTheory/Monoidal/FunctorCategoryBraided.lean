@@ -189,13 +189,14 @@ instance {C : Type*} [Category* C] {D : Type*} [Category* D]
     (λ_ F).hom.IsMonoidal where
   unit := by simp
   tensor X Y := by
-    simp only [tensorObj_obj, tensorUnit_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, μ_def,
+    dsimp
+    simp only [tensorUnit_obj, μ_def,
       tensorμ, id_whiskerLeft, braiding_tensorUnit_right, Functor.LaxMonoidal.right_unitality,
       Category.assoc, comp_whiskerRight, whisker_assoc, leftUnitor_inv_whiskerRight,
       whiskerLeft_comp, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, unitMonoidal_μ, tensorHom_def,
       whiskerRight_tensor, leftUnitor_whiskerRight, pentagon_inv_hom_hom_hom_inv_assoc,
       Iso.inv_hom_id, Category.comp_id, Functor.LaxMonoidal.μ_natural_left_assoc,
-      leftUnitor_hom_app, Functor.LaxMonoidal.left_unitality,
+      Functor.LaxMonoidal.left_unitality,
       Functor.LaxMonoidal.left_unitality_inv_assoc, Iso.map_inv_hom_id, whiskerRight_id,
       triangle_assoc_comp_right_inv, triangle_assoc_comp_right_assoc, tensor_whiskerLeft,
       Functor.LaxMonoidal.μ_natural_right, Iso.cancel_iso_hom_left]

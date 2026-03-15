@@ -586,6 +586,7 @@ public lemma Q_hom_app_cons (x : C) (l₂ : SList C) (y : C) (l₁ : SList C) :
         (tensorObjConsIso y l₁ (x ::~ l₂)).inv := by
   simp [Q]
 
+set_option backward.isDefEq.respectTransparency false in
 @[local simp, reassoc]
 public lemma Q_inv_app_cons (x : C) (l₂ : SList C) (y : C) (l₁ : SList C) :
     (Q x l₂).inv.app (y ::~ l₁) =
@@ -602,6 +603,7 @@ public lemma Q_inv_app_cons (x : C) (l₂ : SList C) (y : C) (l₁ : SList C) :
     Iso.map_hom_inv_id_assoc]
   simp [← Functor.map_comp_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 public lemma Q_hom_app_naturality (x : C) {l₂ l₂' : SList C} (f : l₂ ⟶ l₂') (l₁ : SList C) :
     (x ::~ l₁) ◁ f ≫ (Q x l₂').hom.app l₁ = (Q x l₂).hom.app l₁ ≫ l₁ ◁ (x ::~ₘ f) := by
   induction l₁ using SList.cons_induction with
@@ -662,6 +664,7 @@ end Q
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The braiding `l₁ ⊗ l₂ ≅ l₂ ⊗ l₁` is built inductively by repeated applications of `Q`.
 This corresponds to Lemma 4.29 in Piceghello's thesis.
@@ -835,6 +838,7 @@ public lemma toEquiv_consTensSingletonIso_inv_left (x : C) (l : SList C) :
     Ψ _ _ (.inl <| Φ _ _ <| .inl ()) := by
   simp [consTensSingletonIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Q_hom_app_left (x : C) (l₂ : SList C) (l : SList C) (i : Fin l.length) :
     toEquiv ((Q x l₂).hom.app l) (Ψ _ _ <| .inl i) =
@@ -856,6 +860,7 @@ lemma Q_hom_app_left (x : C) (l₂ : SList C) (l : SList C) (i : Fin l.length) :
       dsimp at U
       simp [Q_hom_app_cons]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma Q_hom_app_right_Φ_inl (x : C) (l₂ : SList C) (l : SList C) :
     toEquiv ((Q x l₂).hom.app l) (Ψ _ _ (.inr <| Φ _ _ <| .inl ())) =
@@ -866,6 +871,7 @@ lemma Q_hom_app_right_Φ_inl (x : C) (l₂ : SList C) (l : SList C) :
     dsimp at ih
     simp [Q_hom_app_cons, ih]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma Q_hom_app_right_right (x : C) (l₂ : SList C) (l : SList C) (i : Fin l₂.length) :
     toEquiv ((Q x l₂).hom.app l) (Ψ _ _ <| .inr <| Φ _ _ <| .inr i) =
@@ -876,6 +882,7 @@ lemma Q_hom_app_right_right (x : C) (l₂ : SList C) (l : SList C) (i : Fin l₂
     dsimp at ih
     simp [Q_hom_app_cons, ih]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The "braiding" morphism we constructed corresponds to the equivalence
 ```
   Fin (l₁ ⊗ l₂).length
@@ -917,11 +924,13 @@ public theorem toEquiv_braidNatIso (l₁ l₂ : SList C) :
 
 @[expose] public abbrev braid (l₁ l₂ : SList C) : l₁ ⊗ l₂ ⟶ l₂ ⊗ l₁ := (braidNatIso l₂|>.hom.app l₁)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 public lemma toEquiv_braid_Ψ_left (l₁ l₂ : SList C) (i : Fin l₂.length) :
     (toEquiv (braid l₁ l₂)) (Ψ l₂ l₁ <| .inl i) = (Ψ l₁ l₂) (.inr i) := by
   simp [toEquiv_braidNatIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 public lemma toEquiv_braid_Ψ_right (l₁ l₂ : SList C) (i : Fin l₁.length) :
     (toEquiv (braid l₁ l₂)) (Ψ l₂ l₁ <| .inr i) = (Ψ l₁ l₂) (.inl i) := by
@@ -981,6 +990,7 @@ public instance : SymmetricCategory (SList C) where
   hexagon_forward x y z := by simpa using braid_hexagon_forward x y z
   hexagon_reverse x y z := by simpa using braid_hexagon_reverse x y z
 
+set_option backward.isDefEq.respectTransparency false in
 public lemma braiding_hom_app_nil (l₁ : SList C) :
     (β_ l₁ []~).hom = (_ ◁ unitIsoNil.inv ≫ (ρ_ _).hom ≫ (λ_ _).inv ≫ unitIsoNil.hom ▷ _) := by
   rw [← IsIso.inv_eq_inv, IsIso.Iso.inv_hom]
@@ -993,6 +1003,7 @@ public lemma braiding_inv_app_nil (l₁ : SList C) :
     (β_ l₁ []~).inv = unitIsoNil.inv ▷ _ ≫ (λ_ _).hom ≫ (ρ_ _).inv ≫ _ ◁ unitIsoNil.hom := by
   simp [BraidedCategory.braiding, braidNatIso_hom_app_nil]
 
+set_option backward.isDefEq.respectTransparency false in
 public lemma braiding_hom_cons_right (x : C) (l₁ l₂ : SList C) :
     (β_ l₁ (x ::~ l₂)).hom =
       (Q x l₂).inv.app l₁ ≫
@@ -1006,6 +1017,7 @@ public lemma braiding_hom_cons_right (x : C) (l₁ l₂ : SList C) :
   rw [← IsIso.inv_eq_inv]
   simp [braidNatIso_hom_cons, ← Functor.map_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 public lemma braiding_hom_cons_left (x : C) (l₁ l₂ : SList C) :
     (β_ (x ::~ l₁) l₂).hom =
       (tensorObjConsIso x l₁ l₂).hom ≫
@@ -1018,6 +1030,7 @@ public lemma braiding_hom_cons_left (x : C) (l₁ l₂ : SList C) :
       IsIso.Iso.inv_hom]
     simp [SymmetricCategory.braiding_swap_eq_inv_braiding]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 public lemma toEquiv_braiding_hom_Ψ_left (l₁ l₂ : SList C) (i : Fin l₂.length) :
     toEquiv (β_ l₁ l₂).hom (Ψ l₂ l₁ <| .inl i) = Ψ l₁ l₂ (.inr i) := by
@@ -1026,6 +1039,6 @@ public lemma toEquiv_braiding_hom_Ψ_left (l₁ l₂ : SList C) (i : Fin l₂.le
 @[simp, grind =]
 public lemma toEquiv_braiding_hom_Ψ_right (l₁ l₂ : SList C) (i : Fin l₁.length) :
     toEquiv (β_ l₁ l₂).hom (Ψ l₂ l₁ <| .inr i) = Ψ l₁ l₂ (.inl i) := by
-  simp [toEquiv_braidNatIso, BraidedCategory.braiding]
+  simp [BraidedCategory.braiding]
 
 end CategoryTheory.SList

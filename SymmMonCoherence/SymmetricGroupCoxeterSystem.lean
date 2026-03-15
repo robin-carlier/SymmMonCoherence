@@ -59,13 +59,13 @@ in the symmetric group. It sends the generator `i` to the transposition `(i, i +
 def CoxeterMatrix.Aₙ_to_perm : (CoxeterMatrix.Aₙ n).Group →* Equiv.Perm (Fin (n + 1)) :=
   (CoxeterMatrix.Aₙ n).toCoxeterSystem.lift
     ⟨fun i ↦ Equiv.swap i.castSucc i.succ, fun i j => by
-        have succ_ne_castSucc : ∀ (i : Fin n), i.succ ≠ i.castSucc := by grind
-        dsimp [CoxeterMatrix.Aₙ]
-        split_ifs with h h' <;> (convert pow_orderOf_eq_one _; symm)
-        · subst h
-          simp
-        · grind [Equiv.Perm.orderOf_swap_mul_swap_eq_three_of_ne]
-        · grind [Equiv.Perm.orderOf_swap_mul_swap_eq_two_of_nodup]⟩
+      have succ_ne_castSucc : ∀ (i : Fin n), i.succ ≠ i.castSucc := by grind
+      dsimp [CoxeterMatrix.Aₙ]
+      split_ifs with h h' <;> (convert pow_orderOf_eq_one _; symm)
+      · subst h
+        simp
+      · grind [Equiv.Perm.orderOf_swap_mul_swap_eq_three_of_ne]
+      · grind [Equiv.Perm.orderOf_swap_mul_swap_eq_two_of_nodup]⟩
 
 @[simp]
 lemma CoxeterMatrix.Aₙ_to_perm_simple {n : ℕ} (j : Fin n) :
@@ -454,7 +454,8 @@ def Aₙ.castLE {n m : ℕ} (h : n ≤ m) : (CoxeterMatrix.Aₙ n).Group →* (C
       dsimp
       have h (i j : Fin n) :
           (CoxeterMatrix.Aₙ n).M i j = (CoxeterMatrix.Aₙ m).M (i.castLE h) (j.castLE h) := by
-        simp [CoxeterMatrix.Aₙ]
+        simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, Fin.castLE_inj, Fin.val_castLE]
+        rfl
       simp [h] ⟩
 
 @[simp, grind =]
@@ -680,6 +681,7 @@ theorem injective_AnToAinfMonoid (n : ℕ) : Function.Injective (AnToAinfMonoid 
     · exact injective_AnToAinf _
   · exact Ainf.monoidToGroupMulEquiv.symm.injective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem image_AnToAinfMonoid (n : ℕ) :
     MonoidHom.mrange (AnToAinfMonoid n) = iioSubmonoid n := by
   rw [le_antisymm_iff]

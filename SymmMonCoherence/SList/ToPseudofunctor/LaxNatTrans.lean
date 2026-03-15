@@ -74,6 +74,8 @@ section
 local notation3 "Θ" => SList.monoidalLift
 local notation3 "□" => Pi.postcompFunctor
 local notation3 "⊚" => Pi.precompFunctor'
+
+set_option backward.isDefEq.respectTransparency false in
 /- The associativity diagram from [arkor2025, 3.5].
 Proving that this commutes is essentially saying that `generalizedμ`
 defines a lax morphism of pseudoalgebras
@@ -106,6 +108,7 @@ variable {C D : Type u} [Category.{v} C] [Category.{v} D]
   [SymmetricCategory C] [SymmetricCategory D]
   (F : C ⥤ D) [F.LaxBraided]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A lax monoidal functor between monoidal categories interprets as a lax natural transformation
 between the pseudofunctors out of the Kleisli bicategory classifying the source and
 target monoidal categories. -/
@@ -114,12 +117,12 @@ def natTransOfLaxBraided {C D : Type u} [Category.{v} C] [Category.{v} D]
     [MonoidalCategory C] [MonoidalCategory D]
     [SymmetricCategory C] [SymmetricCategory D]
     (F : C ⥤ D) [F.LaxBraided] :
-      Lax.LaxTrans
-        (SList.Kleisli.pseudoOfSymmMonCat C).toLax
-        (SList.Kleisli.pseudoOfSymmMonCat D).toLax where
+    Lax.LaxTrans
+      (SList.Kleisli.pseudoOfSymmMonCat C).toLax
+      (SList.Kleisli.pseudoOfSymmMonCat D).toLax where
   app J := Cat.Hom.ofFunctor <| Pi.postcompFunctor J.unop.of F
   naturality {J K} f := Cat.Hom₂.ofNatTrans <|
-    (Functor.associator _ _ _).inv ≫ (Functor.whiskerRight (generalizedμ _ _) _)
+    (Functor.associator _ _ _).inv ≫ Functor.whiskerRight (generalizedμ _ _) _
   naturality_id J := by
     ext X
     dsimp [SList.Kleisli.pseudoOfSymmMonCat] at X ⊢

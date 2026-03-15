@@ -173,6 +173,7 @@ lemma mkWeight_app_ι {M : Type*} [Monoid M] {L : Quiver.Labelling (SListQuiv C)
     (mkWeight L).app ((FreeSListQuiv.ι C).map f) = L f := by
   simp [weight.app_mk, mkWeight]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mkWeight_app_swap {M : Type*} [Monoid M] {L : Quiver.Labelling (SListQuiv C) M}
     {x y : C} (l : FreeSListQuiv C) :
     (mkWeight L).app (FreeSListQuiv.swap x y l) = L (β₀_ x y (FreeSListQuiv.equiv l)) := by
@@ -211,6 +212,7 @@ lemma labelling₂_eq {i j : SListQuiv C} (f : i ⟶ j) :
     labelling₂ f = PresentedGroup.mk _ (labelling₁ f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma w₁_app_consPath {i j : FreeSListQuiv C} (f : i ⟶ j) (x : C) :
     w₁.app (x ::_ₘ f) = shift' (w₁.app f) := by
@@ -219,6 +221,7 @@ lemma w₁_app_consPath {i j : FreeSListQuiv C} (f : i ⟶ j) (x : C) :
   | @comp u v p q r h =>
     simp [h, ← FreeSListQuiv.cons_map_def]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma w₂_app_eq {i j : FreeSListQuiv C} (f : i ⟶ j) :
     w₂.app f = PresentedGroup.mk _ (w₁.app f) := by
   induction f using FreeSListQuiv.hom_induction with
@@ -227,6 +230,7 @@ lemma w₂_app_eq {i j : FreeSListQuiv C} (f : i ⟶ j) :
     simp only [weight.weight_comp, r, FreeSListQuiv.mkWeight_app_ι, map_mul, mul_right_inj]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma w₂_app_eq' {i j : FreeSListQuiv C} (f : i ⟶ j) :
     Ainf.groupToMonoid (w₂.app f) = PresentedMonoid.mk _ (w₀.app f) := by
   induction f using FreeSListQuiv.hom_induction with
@@ -241,6 +245,7 @@ lemma labelling₂_cons {i j : SListQuiv C} (f : i ⟶ j) (x : C) :
     labelling₂ (.cons x f) = Ainf.shift 1 (labelling₂ f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma w₂_app_consPath {i j : FreeSListQuiv C} (f : i ⟶ j) (x : C) :
     w₂.app (x ::_ₘ f) = Ainf.shift 1 (w₂.app f) := by
@@ -294,6 +299,7 @@ private lemma getElem_toList_eq_perm_apply {L₁ L₂ : FreeSListQuiv C} (f : L�
         ((FreeSListQuiv.ι C).map q) i hi
     exact hr (AinfToPerm (labelling₂ q) i) this
 
+set_option backward.isDefEq.respectTransparency false in
 lemma wFin_app_eq' (n : ℕ) {i j : FreeSListQuiv C} (f : i ⟶ j) :
     (wFin n).app f = PresentedMonoid.mk _ ((w₀Fin n).app f) := by
   induction f using FreeSListQuiv.hom_induction with
@@ -553,6 +559,7 @@ lemma eq_of_w₀_eq'' {i j k : FreeSListQuiv C} {f : i ⟶ k} {g : j ⟶ k}
 
 abbrev valEmb (n : ℕ) : FreeMonoid (Fin n) →* FreeMonoid ℕ := FreeMonoid.lift (fun x ↦ .of x.val)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma w₀Fin_consPath_map (n : ℕ) {i j : FreeSListQuiv C} (f : i ⟶ j) (x : C)
       (hn : i.length <= n + 2) :
     (w₀Fin (n + 1)).app (x ::_ₘ f) = succMon _ (w₀Fin n |>.app f) := by
@@ -572,6 +579,7 @@ lemma w₀Fin_consPath_map (n : ℕ) {i j : FreeSListQuiv C} (f : i ⟶ j) (x : 
         rw [← l₁] at this
         grind
 
+set_option backward.isDefEq.respectTransparency false in
 lemma w₀_consPath_map {i j : FreeSListQuiv C} (f : i ⟶ j) (x : C) :
     w₀.app (x ::_ₘ f) = shift'Mon 1 (w₀.app f) := by
   induction f using FreeSListQuiv.hom_induction with
@@ -674,6 +682,7 @@ private lemma _root_.List.eq_cons_cons_of_length_eq_add_two {n : ℕ}
     (l : List C) (h : l.length = n + 2) : ∃ (a b : C) (l' : List C), l = a::b::l' := by
   induction l using List.twoStepInduction <;> grind
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_hom_of_weight_eq (i : FreeSListQuiv C) (n : ℕ) (hj : i.length = n + 2)
     (w : FreeMonoid (Fin (n + 1))) :
     ∃ j : FreeSListQuiv C, ∃ f : i ⟶ j, (w₀Fin n).app f = w := by
@@ -709,6 +718,7 @@ lemma exists_hom_of_weight_eq (i : FreeSListQuiv C) (n : ℕ) (hj : i.length = n
     use j₁, f₀ ≫ f₁
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma exists_cons_eq_of_weight_eq_shift_quiv
     {w : FreeMonoid ℕ} {i j : SListQuiv C}
     {f : i ⟶ j}
@@ -785,6 +795,7 @@ lemma exists_cons_eq_of_weight_eq_shift
         rw [hf₀, hf₁]
         simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is the first main "ugly lemma" where we check by hand that the relations implies that
 morphisms have consistent targets -/
 lemma eq_of_w₀Fin_monoidRelations {L₁ L₂ L₃ : FreeSListQuiv C}
@@ -1359,6 +1370,7 @@ theorem getElem_toList_toEquiv {x y : SList C} (f : x ⟶ y) (i : Fin y.length) 
     weight.postComp_app, toAinf_π]
   exact getElem_toList_eq_perm_apply f _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma doing the heavy lifting (no pun intended) for
 `exists_lift_equiv`. This is essentially a variation on `exists_hom_of_weight_eq`. -/
 private lemma exists_lift_perm {x : SList C} (φ : Equiv.Perm (Fin x.length)) :

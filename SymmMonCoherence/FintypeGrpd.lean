@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Transport
-public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Finite.Sum
 
 /-! # The groupoid of finite types and bijections
 
@@ -29,7 +29,7 @@ namespace CategoryTheory
 abbrev FintypeGrpd := Core FintypeCat.{u}
 
 instance instCoeSort : CoeSort FintypeGrpd Type* :=
-  ⟨fun x ↦ x.of.carrier⟩
+  ⟨fun x ↦ x.of⟩
 
 namespace FintypeGrpd
 
@@ -412,8 +412,9 @@ variable {J}
 
 /-- The tensor product of two objects in FintypeGrpdOver J. -/
 def tensorObj (x y : FintypeGrpdOver J) :
-    FintypeGrpdOver J := .mk (Y := x.left ⊗ y.left) (f :=
-      fun i ↦ (Sum.elim x.hom y.hom) ((FintypeGrpd.tensorObjEquiv x.left y.left).symm i))
+    FintypeGrpdOver J :=
+  .mk (Y := x.left ⊗ y.left)
+    (f := fun i ↦ (Sum.elim x.hom y.hom) ((FintypeGrpd.tensorObjEquiv x.left y.left).symm i))
 
 lemma tensorObj_hom_inl' {x y : FintypeGrpdOver J} (i : x.left) :
     (tensorObj x y).hom (FintypeGrpd.inl _ _ i) = x.hom i := by simp [tensorObj]
@@ -423,6 +424,7 @@ lemma tensorObj_hom_inr' {x y : FintypeGrpdOver J} (i : y.left) :
 
 def tensorUnit : FintypeGrpdOver J := .mk (Y := 𝟙_ _) (f := fun j ↦ PEmpty.elim j)
 
+set_option backward.isDefEq.respectTransparency false in
 def associator (x y z : FintypeGrpdOver J) :
     tensorObj (tensorObj x y) z ≅ tensorObj x (tensorObj y z) :=
   CostructuredArrow.isoMk (α_ x.left y.left z.left) (by
@@ -434,6 +436,7 @@ def associator (x y z : FintypeGrpdOver J) :
       | left t => simp [tensorObj]
     | right t => simp [tensorObj])
 
+set_option backward.isDefEq.respectTransparency false in
 def leftUnitor (x : FintypeGrpdOver J) : tensorObj tensorUnit x ≅ x :=
   CostructuredArrow.isoMk (λ_ x.left) (by
     ext i
@@ -442,6 +445,7 @@ def leftUnitor (x : FintypeGrpdOver J) : tensorObj tensorUnit x ≅ x :=
     | left i => exact PEmpty.elim i
     | right i => simp [tensorObj, tensorUnit])
 
+set_option backward.isDefEq.respectTransparency false in
 def rightUnitor (x : FintypeGrpdOver J) : tensorObj x tensorUnit ≅ x :=
   CostructuredArrow.isoMk (ρ_ x.left) (by
     ext i

@@ -31,6 +31,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable [Limits.HasPullbacks C]
 noncomputable section
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: some API for this one
 /-- In bicategories of spans, the 1-morphisms `(Spans.inr C).map f.toLoc` and
 `(Spans.inl C).map f.op.toLoc` are adjoint to each other -/
@@ -126,6 +127,7 @@ def baseChangeIso :
       (Spans.mkHom (C := C) (Wₗ := ⊤) (Wᵣ := ⊤) c₀ l t (by tauto) (by tauto))).symm ≪≫
     isoCompOfIsPullback S
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The "base change" isomorphism we manually defined above is the same as the
 base change morphism that comes from the calculus of mates. This
 proves that this morphism is indeed invertible. -/
@@ -159,6 +161,7 @@ lemma _root_.CategoryTheory.Bicategory.Adj.eqToHom_τr
   subst h
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction (inr f) ⊣ (inl f) is pseudofunctorial. -/
 def toAdjPseudofunctor : LocallyDiscrete C ⥤ᵖ Adj (Spans C ⊤ ⊤) :=
   pseudofunctorOfIsLocallyDiscrete

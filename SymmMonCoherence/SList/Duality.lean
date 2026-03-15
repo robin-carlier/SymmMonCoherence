@@ -36,10 +36,9 @@ lemma duality_obj_multiset [Fintype J] (X : J → SList K) (k : K) :
   simp only [fib₁_inv_multiset_count, Pi.flipFunctor_obj, Pi.postcompFunctor_obj,
     Multiset.count_sum', Multiset.count_replicate, Finset.sum_ite_eq',
     Finset.mem_univ, ↓reduceIte]
-  have := fiber_card k (X i)
-  rw [Fintype.card_eq_nat_card] at this
-  simp only [fib₁, fib₀, eval₀, Functor.comp_obj, Functor.pi_obj, Functor.pi'_obj, Fin.getElem_fin,
-    ofFintype_length]
+  have := fiber_card' k (X i)
+  simp only [fib₁, fib₀, eval₀, Functor.comp_obj, Functor.pi_obj, Functor.pi'_obj,
+    Nat.card_eq_fintype_card, ofFinite_length]
   rw [Fintype.card_eq_nat_card, this]
   simp [multiset]
 

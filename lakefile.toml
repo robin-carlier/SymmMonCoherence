@@ -14,7 +14,7 @@ experimental.module = true
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.28.0"
+rev = "master-2026-03-15"
 
 [[lean_lib]]
 name = "SymmMonCoherence"

@@ -10,7 +10,6 @@ public import SymmMonCoherence.ForMathlib.CategoryTheory.Bicategory.Adjunction.P
 public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.RotateIso
 public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.BicategoryElaborators
 public import SymmMonCoherence.ForMathlib.Tactic.CategoryTheory.CatNFElaborator
-public import SymmMonCoherence.ForMathlib.Tactic.DsimpPercent
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 

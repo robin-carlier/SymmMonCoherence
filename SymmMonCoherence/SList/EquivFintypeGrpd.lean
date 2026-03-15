@@ -40,8 +40,8 @@ irreducible_def toFintypeGrpdFunctor.ι (x : SList PUnit.{v + 1}) :
 
 @[simp]
 lemma toFintypeGrpdFunctor_card (x : SList PUnit.{v + 1}) :
-    Fintype.card (toFintypeGrpdFunctor.{v, u}.obj x) = x.length := by
-  simp [← Fintype.card_eq.mpr ⟨toFintypeGrpdFunctor.ι.{v, u} _⟩]
+    Nat.card (toFintypeGrpdFunctor.{v, u}.obj x) = x.length := by
+  simp [← Finite.card_eq.mpr ⟨toFintypeGrpdFunctor.ι.{v, u} _⟩]
 
 open toFintypeGrpdFunctor
 
@@ -199,14 +199,14 @@ instance : toFintypeGrpdFunctor.{v, u}.Braided where
     cases i using FintypeGrpd.tensor_obj_cases with
     | left t =>
       obtain ⟨t, rfl⟩ := (ι _).surjective t
-      simp only [Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, coreCategory_comp_iso,
+      simp only [coreCategory_comp_iso,
         Iso.trans_hom, ConcreteCategory.comp_apply, toFintypeGrpdFunctor_μ_iso_hom_left,
         Equiv.symm_apply_apply, FintypeGrpd.braiding_iso_hom_inl,
         toFintypeGrpdFunctor_μ_iso_hom_right]
       simp [toEquiv_symm, ← SymmetricCategory.braiding_swap_eq_inv_braiding]
     | right t =>
       obtain ⟨i, rfl⟩ := (ι _).surjective t
-      simp only [Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, coreCategory_comp_iso,
+      simp only [coreCategory_comp_iso,
         Iso.trans_hom, ConcreteCategory.comp_apply, toFintypeGrpdFunctor_μ_iso_hom_right,
         Equiv.symm_apply_apply, FintypeGrpd.braiding_iso_hom_inr,
         toFintypeGrpdFunctor_μ_iso_hom_left]
@@ -214,6 +214,7 @@ instance : toFintypeGrpdFunctor.{v, u}.Braided where
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: move this somewhere better
 instance
     {C D : Type*} [Category* C] [Category* D]
@@ -230,65 +231,66 @@ instance
 
 end
 
-section ofFintypeGrpd
+section ofFiniteGrpd
 
+-- TODO: rename
 @[pp_with_univ]
-def ofFintype (X : Type u) [Fintype X] : SList PUnit.{v + 1} :=
-  listEquiv.symm <| List.replicate (Fintype.card X) .unit
+noncomputable def ofFinite (X : Type u) [Finite X] : SList PUnit.{v + 1} :=
+  listEquiv.symm <| List.replicate (Nat.card X) .unit
 
-lemma ofFintype_length (X : Type*) [Fintype X] :
-  (ofFintype X).length = Fintype.card X := by simp [ofFintype]
+lemma ofFinite_length (X : Type*) [Finite X] :
+  (ofFinite X).length = Nat.card X := by simp [ofFinite]
 
-/- The equivalence between `Fin (ofFintype X).length` and `X` induced by the
+/- The equivalence between `Fin (ofFinite X).length` and `X` induced by the
 equality of their cardinalities. -/
 @[pp_with_univ]
-noncomputable irreducible_def ofFintype.ι.{s, t} (X : Type t) [Fintype X] :
-    X ≃ Fin (ofFintype.{s, t} X).length :=
-  Fintype.equivFinOfCardEq (ofFintype_length _).symm
+noncomputable irreducible_def ofFinite.ι.{s, t} (X : Type t) [Finite X] :
+    X ≃ Fin (ofFinite.{s, t} X).length :=
+  Finite.equivFinOfCardEq (ofFinite_length _).symm
 
-noncomputable def ofFintypeHomOfEquiv {X Y : Type*} [Fintype X] [Fintype Y] (e : X ≃ Y) :
-    ofFintype X ⟶ ofFintype Y :=
+noncomputable def ofFiniteHomOfEquiv {X Y : Type*} [Finite X] [Finite Y] (e : X ≃ Y) :
+    ofFinite X ⟶ ofFinite Y :=
   liftEquiv
-    ((ofFintype.ι _).symm.trans e.symm |>.trans (ofFintype.ι _))
+    ((ofFinite.ι _).symm.trans e.symm |>.trans (ofFinite.ι _))
     (fun _ ↦ rfl)
 
 section
-variable {X Y Z : Type*} [Fintype X] [Fintype Y] [Fintype Z]
+variable {X Y Z : Type*} [Finite X] [Finite Y] [Finite Z]
 
 @[simp, grind =]
-lemma toEquiv_ofFintypeHomOfEquiv_ι (e : X ≃ Y) (y : Y) :
-    toEquiv (ofFintypeHomOfEquiv e) (ofFintype.ι _ y) = ofFintype.ι _ (e.symm y) := by
-  simp [ofFintypeHomOfEquiv]
+lemma toEquiv_ofFiniteHomOfEquiv_ι (e : X ≃ Y) (y : Y) :
+    toEquiv (ofFiniteHomOfEquiv e) (ofFinite.ι _ y) = ofFinite.ι _ (e.symm y) := by
+  simp [ofFiniteHomOfEquiv]
 
 @[simp, grind =]
-lemma toEquiv_ofFintypeHomOfEquiv_symm_ι (e : X ≃ Y) (x : X) :
-    (toEquiv (ofFintypeHomOfEquiv e)).symm (ofFintype.ι _ x) = ofFintype.ι _ (e x) := by
-  simp [ofFintypeHomOfEquiv]
+lemma toEquiv_ofFiniteHomOfEquiv_symm_ι (e : X ≃ Y) (x : X) :
+    (toEquiv (ofFiniteHomOfEquiv e)).symm (ofFinite.ι _ x) = ofFinite.ι _ (e x) := by
+  simp [ofFiniteHomOfEquiv]
 
 variable (X) in
 @[simp, grind =]
-lemma ofFintypeHomOfEquiv_refl : ofFintypeHomOfEquiv (.refl X) = 𝟙 _ := by
+lemma ofFiniteHomOfEquiv_refl : ofFiniteHomOfEquiv (.refl X) = 𝟙 _ := by
   rw [hom_eq_iff_toEquiv_eq]
   ext i
-  obtain ⟨i, rfl⟩ := (ofFintype.ι X).surjective i
+  obtain ⟨i, rfl⟩ := (ofFinite.ι X).surjective i
   simp
 
 @[simp, grind =]
-lemma ofFintypeHomOfEquiv_trans (e₁ : X ≃ Y) (e₂ : Y ≃ Z) :
-    ofFintypeHomOfEquiv (e₁.trans e₂) = ofFintypeHomOfEquiv e₁ ≫ ofFintypeHomOfEquiv e₂ := by
+lemma ofFiniteHomOfEquiv_trans (e₁ : X ≃ Y) (e₂ : Y ≃ Z) :
+    ofFiniteHomOfEquiv (e₁.trans e₂) = ofFiniteHomOfEquiv e₁ ≫ ofFiniteHomOfEquiv e₂ := by
   rw [hom_eq_iff_toEquiv_eq]
   ext i
-  obtain ⟨i, rfl⟩ := (ofFintype.ι Z).surjective i
+  obtain ⟨i, rfl⟩ := (ofFinite.ι Z).surjective i
   simp
 
 @[simp, push]
-lemma ofFintypeHomOfEquiv_symm (e : X ≃ Y) :
-    inv (ofFintypeHomOfEquiv e) = ofFintypeHomOfEquiv e.symm := by
+lemma ofFiniteHomOfEquiv_symm (e : X ≃ Y) :
+    inv (ofFiniteHomOfEquiv e) = ofFiniteHomOfEquiv e.symm := by
   symm
   apply IsIso.eq_inv_of_inv_hom_id
   rw [hom_eq_iff_toEquiv_eq]
   ext i : 1
-  obtain ⟨i, rfl⟩ := (ofFintype.ι Y).surjective i
+  obtain ⟨i, rfl⟩ := (ofFinite.ι Y).surjective i
   simp
 
 end
@@ -337,42 +339,42 @@ end
 
 -- This is an abbrev so that things check out at reducible transparency.
 @[pp_with_univ, simps]
-noncomputable abbrev ofFintypeGrpdFunctor : FintypeGrpd.{u} ⥤ SList PUnit.{v + 1} where
-  obj X := ofFintype X
-  map f := ofFintypeHomOfEquiv (FintypeCat.equivEquivIso.symm f.iso)
+noncomputable abbrev ofFiniteGrpdFunctor : FintypeGrpd.{u} ⥤ SList PUnit.{v + 1} where
+  obj X := ofFinite X
+  map f := ofFiniteHomOfEquiv (FintypeCat.equivEquivIso.symm f.iso)
 
-instance (X : FintypeGrpd) [IsEmpty X] : IsEmpty (Fin (ofFintypeGrpdFunctor.{u}.obj X).length) := by
-  rw [← Equiv.isEmpty_congr (ofFintype.ι _)]
+instance (X : FintypeGrpd) [IsEmpty X] : IsEmpty (Fin (ofFiniteGrpdFunctor.{u}.obj X).length) := by
+  rw [← Equiv.isEmpty_congr (ofFinite.ι _)]
   infer_instance
 
-public noncomputable instance : ofFintypeGrpdFunctor.{v, u}.Monoidal :=
-  letI : ofFintypeGrpdFunctor.{v, u}.CoreMonoidal :=
+public noncomputable instance : ofFiniteGrpdFunctor.{v, u}.Monoidal :=
+  letI : ofFiniteGrpdFunctor.{v, u}.CoreMonoidal :=
     { εIso :=
         SList.liftEquivIso ((Equiv.equivEmpty _).trans (Equiv.equivEmpty _).symm)
           (fun _ ↦ rfl)
       μIso X Y :=
         SList.liftEquivIso
-          (ofFintype.ι _ |>.symm.trans <|
+          (ofFinite.ι _ |>.symm.trans <|
             (FintypeGrpd.tensorObjEquiv X Y).symm.trans <|
-            (Equiv.sumCongr (ofFintype.ι _) (ofFintype.ι _)).trans <|
-            (Ψ (ofFintype X) (ofFintype Y)))
+            (Equiv.sumCongr (ofFinite.ι _) (ofFinite.ι _)).trans <|
+            (Ψ (ofFinite X) (ofFinite Y)))
           (fun _ ↦ rfl)
       μIso_hom_natural_left {X Y} f Z := by
         rw [hom_eq_iff_toEquiv_eq]
         ext i : 1
-        obtain ⟨i, rfl⟩ := (ofFintype.ι _).surjective i
+        obtain ⟨i, rfl⟩ := (ofFinite.ι _).surjective i
         obtain ⟨i, rfl⟩ := (FintypeGrpd.tensorObjEquiv _ _).surjective i
         cases i with simp
       μIso_hom_natural_right X {Y Z} f := by
         rw [hom_eq_iff_toEquiv_eq]
         ext i : 1
-        obtain ⟨i, rfl⟩ := (ofFintype.ι _).surjective i
+        obtain ⟨i, rfl⟩ := (ofFinite.ι _).surjective i
         obtain ⟨i, rfl⟩ := (FintypeGrpd.tensorObjEquiv _ _).surjective i
         cases i with simp
       associativity X Y Z := by
         rw [hom_eq_iff_toEquiv_eq]
         ext i : 1
-        obtain ⟨i, rfl⟩ := (ofFintype.ι _).surjective i
+        obtain ⟨i, rfl⟩ := (ofFinite.ι _).surjective i
         obtain ⟨i, rfl⟩ := (FintypeGrpd.tensorObjEquiv _ _).surjective i
         cases i with
         | inl i => simp
@@ -382,86 +384,88 @@ public noncomputable instance : ofFintypeGrpdFunctor.{v, u}.Monoidal :=
       left_unitality X := by
         rw [hom_eq_iff_toEquiv_eq]
         ext i : 1
-        obtain ⟨i, rfl⟩ := (ofFintype.ι _).surjective i
+        obtain ⟨i, rfl⟩ := (ofFinite.ι _).surjective i
         simp
       right_unitality X := by
         rw [hom_eq_iff_toEquiv_eq]
         ext i : 1
-        obtain ⟨i, rfl⟩ := (ofFintype.ι _).surjective i
+        obtain ⟨i, rfl⟩ := (ofFinite.ι _).surjective i
         simp }
   this.toMonoidal
 
-lemma ofFintypeGrpdFunctor_μIso_hom_def (X Y : FintypeGrpd.{u}) :
-    (Functor.Monoidal.μIso ofFintypeGrpdFunctor X Y).hom =
+lemma ofFiniteGrpdFunctor_μIso_hom_def (X Y : FintypeGrpd.{u}) :
+    (Functor.Monoidal.μIso ofFiniteGrpdFunctor X Y).hom =
     SList.liftEquiv
-      (ofFintype.ι _ |>.symm.trans <|
+      (ofFinite.ι _ |>.symm.trans <|
         (FintypeGrpd.tensorObjEquiv X Y).symm.trans <|
-        (Equiv.sumCongr (ofFintype.ι _) (ofFintype.ι _)).trans <|
-        (Ψ (ofFintype X) (ofFintype Y)))
+        (Equiv.sumCongr (ofFinite.ι _) (ofFinite.ι _)).trans <|
+        (Ψ (ofFinite X) (ofFinite Y)))
       (fun _ ↦ rfl) := rfl
 
-lemma ofFintypeGrpdFunctor_μIso_inv_def (X Y : FintypeGrpd.{u}) :
-    (Functor.Monoidal.μIso ofFintypeGrpdFunctor X Y).inv =
+lemma ofFiniteGrpdFunctor_μIso_inv_def (X Y : FintypeGrpd.{u}) :
+    (Functor.Monoidal.μIso ofFiniteGrpdFunctor X Y).inv =
     SList.liftEquiv
-      (Ψ (ofFintype X) (ofFintype Y)|>.symm.trans <|
-        (Equiv.sumCongr (ofFintype.ι _).symm (ofFintype.ι _).symm).trans <|
-        (FintypeGrpd.tensorObjEquiv X Y).trans <| ofFintype.ι _ )
+      (Ψ (ofFinite X) (ofFinite Y)|>.symm.trans <|
+        (Equiv.sumCongr (ofFinite.ι _).symm (ofFinite.ι _).symm).trans <|
+        (FintypeGrpd.tensorObjEquiv X Y).trans <| ofFinite.ι _ )
       (fun _ ↦ rfl) := rfl
 
 section
 
 @[simp, grind =]
-lemma toEquiv_ofFintypeGrpdFunctor_μ_left (X Y : FintypeGrpd.{u}) (x : X) :
-    toEquiv (Functor.LaxMonoidal.μ ofFintypeGrpdFunctor.{v, u} X Y)
-      (ofFintype.ι _ (FintypeGrpd.inl _ _ x)) =
-    Ψ _ _ (.inl <| ofFintype.ι _ x) := by
-  simp [← Functor.Monoidal.μIso_hom, ofFintypeGrpdFunctor_μIso_hom_def]
+lemma toEquiv_ofFiniteGrpdFunctor_μ_left (X Y : FintypeGrpd.{u}) (x : X) :
+    toEquiv (Functor.LaxMonoidal.μ ofFiniteGrpdFunctor.{v, u} X Y)
+      (ofFinite.ι _ (FintypeGrpd.inl _ _ x)) =
+    Ψ _ _ (.inl <| ofFinite.ι _ x) := by
+  simp [← Functor.Monoidal.μIso_hom, ofFiniteGrpdFunctor_μIso_hom_def]
 
 @[simp, grind =]
-lemma toEquiv_ofFintypeGrpdFunctor_μ_right (X Y : FintypeGrpd.{u}) (y : Y) :
-    toEquiv (Functor.LaxMonoidal.μ ofFintypeGrpdFunctor.{v, u} X Y)
-      (ofFintype.ι _ <| FintypeGrpd.inr _ _ y) =
-    Ψ _ _ (.inr <| ofFintype.ι _ y) := by
-  simp [← Functor.Monoidal.μIso_hom, ofFintypeGrpdFunctor_μIso_hom_def]
+lemma toEquiv_ofFiniteGrpdFunctor_μ_right (X Y : FintypeGrpd.{u}) (y : Y) :
+    toEquiv (Functor.LaxMonoidal.μ ofFiniteGrpdFunctor.{v, u} X Y)
+      (ofFinite.ι _ <| FintypeGrpd.inr _ _ y) =
+    Ψ _ _ (.inr <| ofFinite.ι _ y) := by
+  simp [← Functor.Monoidal.μIso_hom, ofFiniteGrpdFunctor_μIso_hom_def]
 
 @[simp, grind =]
-lemma toEquiv_ofFintypeGrpdFunctor_δ_left (X Y : FintypeGrpd.{u}) (x : X) :
-    toEquiv (Functor.OplaxMonoidal.δ ofFintypeGrpdFunctor.{v, u} X Y)
-      (Ψ _ _ <| .inl <| ofFintype.ι _ x) = ofFintype.ι _ (FintypeGrpd.inl _ _ x) := by
-  simp [← Functor.Monoidal.μIso_inv, ofFintypeGrpdFunctor_μIso_inv_def]
+lemma toEquiv_ofFiniteGrpdFunctor_δ_left (X Y : FintypeGrpd.{u}) (x : X) :
+    toEquiv (Functor.OplaxMonoidal.δ ofFiniteGrpdFunctor.{v, u} X Y)
+      (Ψ _ _ <| .inl <| ofFinite.ι _ x) = ofFinite.ι _ (FintypeGrpd.inl _ _ x) := by
+  simp [← Functor.Monoidal.μIso_inv, ofFiniteGrpdFunctor_μIso_inv_def]
 
 @[simp, grind =]
-lemma toEquiv_ofFintypeGrpdFunctor_δ_right (X Y : FintypeGrpd.{u}) (y : Y) :
-    toEquiv (Functor.OplaxMonoidal.δ ofFintypeGrpdFunctor.{v, u} X Y)
-      (Ψ _ _ <| .inr <| ofFintype.ι _ y) = ofFintype.ι _ (FintypeGrpd.inr _ _ y) := by
-  simp [← Functor.Monoidal.μIso_inv, ofFintypeGrpdFunctor_μIso_inv_def]
+lemma toEquiv_ofFiniteGrpdFunctor_δ_right (X Y : FintypeGrpd.{u}) (y : Y) :
+    toEquiv (Functor.OplaxMonoidal.δ ofFiniteGrpdFunctor.{v, u} X Y)
+      (Ψ _ _ <| .inr <| ofFinite.ι _ y) = ofFinite.ι _ (FintypeGrpd.inr _ _ y) := by
+  simp [← Functor.Monoidal.μIso_inv, ofFiniteGrpdFunctor_μIso_inv_def]
 
 end
 
-noncomputable instance : ofFintypeGrpdFunctor.{v, u}.Braided where
+noncomputable instance : ofFiniteGrpdFunctor.{v, u}.Braided where
   braided X Y := by
     rw [hom_eq_iff_toEquiv_eq]
     ext i : 1
-    obtain ⟨i, rfl⟩ := (ofFintype.ι _).surjective i
+    obtain ⟨i, rfl⟩ := (ofFinite.ι _).surjective i
     obtain ⟨i, rfl⟩ := (FintypeGrpd.tensorObjEquiv _ _).surjective i
     cases i with
     | inl i =>
-      simp [← Functor.Monoidal.μIso_hom, ofFintypeGrpdFunctor_μIso_hom_def]
+      simp [← Functor.Monoidal.μIso_hom, ofFiniteGrpdFunctor_μIso_hom_def]
     | inr i =>
-      simp [← Functor.Monoidal.μIso_hom, ofFintypeGrpdFunctor_μIso_hom_def]
+      simp [← Functor.Monoidal.μIso_hom, ofFiniteGrpdFunctor_μIso_hom_def]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def unitEquivalence.counitIso :
-    ofFintypeGrpdFunctor.{v, u} ⋙ toFintypeGrpdFunctor.{v, u} ≅ 𝟭 FintypeGrpd.{u} :=
+    ofFiniteGrpdFunctor.{v, u} ⋙ toFintypeGrpdFunctor.{v, u} ≅ 𝟭 FintypeGrpd.{u} :=
   NatIso.ofComponents
     (fun _ ↦ FintypeGrpd.mkIso <| (toFintypeGrpdFunctor.ι.{v, u} _).symm.trans
-      (ofFintype.ι.{v, u} _).symm)
+      (ofFinite.ι.{v, u} _).symm)
     (fun {x y} f ↦ by
       ext i
       dsimp at i ⊢
       obtain ⟨i, rfl⟩ := (toFintypeGrpdFunctor.ι _).surjective i
-      obtain ⟨i, rfl⟩ := (ofFintype.ι _).surjective i
+      obtain ⟨i, rfl⟩ := (ofFinite.ι _).surjective i
       simp)
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [-simp] Adjunction.rightAdjointLaxMonoidal_μ in -- this declaration causes timeouts here
 instance : unitEquivalence.counitIso.{v, u}.hom.IsMonoidal where
   tensor X Y := by
@@ -471,26 +475,26 @@ instance : unitEquivalence.counitIso.{v, u}.hom.IsMonoidal where
     cases i with
     | inl i =>
       obtain ⟨i, rfl⟩ := (toFintypeGrpdFunctor.ι _).surjective i
-      obtain ⟨i, rfl⟩ := (ofFintype.ι _).surjective i
-      simp [← Functor.Monoidal.μIso_hom, ofFintypeGrpdFunctor_μIso_hom_def,
+      obtain ⟨i, rfl⟩ := (ofFinite.ι _).surjective i
+      simp [← Functor.Monoidal.μIso_hom, ofFiniteGrpdFunctor_μIso_hom_def,
         toFintypeGrpdFunctor_μIso_def, unitEquivalence.counitIso]
     | inr i =>
       obtain ⟨i, rfl⟩ := (toFintypeGrpdFunctor.ι _).surjective i
-      obtain ⟨i, rfl⟩ := (ofFintype.ι _).surjective i
-      simp [← Functor.Monoidal.μIso_hom, ofFintypeGrpdFunctor_μIso_hom_def,
+      obtain ⟨i, rfl⟩ := (ofFinite.ι _).surjective i
+      simp [← Functor.Monoidal.μIso_hom, ofFiniteGrpdFunctor_μIso_hom_def,
         toFintypeGrpdFunctor_μIso_def, unitEquivalence.counitIso]
   unit := by -- cat_disch works but is a bit slow
     ext i
     grind [IsEmpty.false i]
 
-/- The composition `toFintypeGrpdFunctor ⋙ ofFintypeGrpdFunctor`  is naturally
+/- The composition `toFintypeGrpdFunctor ⋙ ofFiniteGrpdFunctor`  is naturally
 isomorphic to the identity since both functors are symmetric monoidal.
 Note that such an isomorphism, if it exists, must be unique. -/
 noncomputable def unitEquivalence.unitIso :
-      𝟭 (SList PUnit.{v + 1}) ≅ toFintypeGrpdFunctor.{v, u} ⋙ ofFintypeGrpdFunctor.{v, u} :=
+      𝟭 (SList PUnit.{v + 1}) ≅ toFintypeGrpdFunctor.{v, u} ⋙ ofFiniteGrpdFunctor.{v, u} :=
   monoidalLiftNatIso <| fun x ↦
     SList.liftEquivIso
-      (Fintype.equivOfCardEq (by simp [ofFintype_length]))
+      (Fintype.equivOfCardEq (by simp [ofFinite_length]))
       (fun _ ↦ rfl)
 
 instance : NatTrans.IsMonoidal unitEquivalence.unitIso.hom := by
@@ -499,7 +503,7 @@ instance : NatTrans.IsMonoidal unitEquivalence.unitIso.hom := by
 
 noncomputable abbrev unitEquivalence :  SList PUnit.{v + 1} ≌ FintypeGrpd.{u} where
   functor := toFintypeGrpdFunctor.{v, u}
-  inverse := ofFintypeGrpdFunctor.{v, u}
+  inverse := ofFiniteGrpdFunctor.{v, u}
   counitIso := unitEquivalence.counitIso.{v, u}
   unitIso := unitEquivalence.unitIso.{v, u}
   functor_unitIso_comp X := by
@@ -514,21 +518,21 @@ noncomputable abbrev unitEquivalence :  SList PUnit.{v + 1} ≌ FintypeGrpd.{u} 
     apply monoidalNatTrans_ext_app_singleton
     intro c
     simp only [NatTrans.comp_app, Functor.comp_obj, Functor.id_obj, Functor.leftUnitor_inv_app,
-      ofFintypeGrpdFunctor_obj, Functor.whiskerRight_app, Functor.associator_hom_app,
+      ofFiniteGrpdFunctor_obj, Functor.whiskerRight_app, Functor.associator_hom_app,
       Functor.whiskerLeft_app, Functor.rightUnitor_hom_app, Category.comp_id, Category.id_comp,
       NatTrans.id_app]
     ext i
     haveI : Subsingleton <| toFintypeGrpdFunctor.{v, u}.obj [c]~ := by
-      simp [← Fintype.card_le_one_iff_subsingleton]
+      simp [← Finite.card_le_one_iff_subsingleton]
     subsingleton
 
 instance : toFintypeGrpdFunctor.{v,u}.IsEquivalence :=
   unitEquivalence.isEquivalence_functor
 
-instance : ofFintypeGrpdFunctor.{v,u}.IsEquivalence :=
+instance : ofFiniteGrpdFunctor.{v,u}.IsEquivalence :=
   unitEquivalence.isEquivalence_inverse
 
-end ofFintypeGrpd
+end ofFiniteGrpd
 
 end
 
@@ -582,6 +586,7 @@ public instance : IsEmpty ((toFintypeGrpdOverFunctor J).obj (𝟙_ (SList J))).l
   dsimp [toFintypeGrpdOverFunctor, tensorUnit_length]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 public instance : (toFintypeGrpdOverFunctor J).Monoidal :=
   letI : (toFintypeGrpdOverFunctor J).CoreMonoidal :=
     { εIso := CostructuredArrow.isoMk (FintypeGrpd.mkIso
@@ -647,7 +652,7 @@ public instance : (toFintypeGrpdOverFunctor J).Monoidal :=
         | right t => exact IsEmpty.elim inferInstance t }
   this.toMonoidal
 
-lemma ofFintypeGrpdOverFunctor_μIso_hom_left_def (X Y : SList J) :
+lemma ofFiniteGrpdOverFunctor_μIso_hom_left_def (X Y : SList J) :
     (Functor.Monoidal.μIso (toFintypeGrpdOverFunctor J) X Y).hom.left =
     (FintypeGrpd.mkIso <|
       FintypeGrpd.tensorObjEquiv _ _ |>.symm.trans <|
@@ -656,7 +661,7 @@ lemma ofFintypeGrpdOverFunctor_μIso_hom_left_def (X Y : SList J) :
         (toFintypeGrpdOverFunctor.ι Y).symm |>.trans <|
       Ψ .. |>.trans <| toFintypeGrpdOverFunctor.ι (X ⊗ Y)).hom := rfl
 
-lemma ofFintypeGrpdOverFunctor_μIso_inv_left_def (X Y : SList J) :
+lemma ofFiniteGrpdOverFunctor_μIso_inv_left_def (X Y : SList J) :
     (Functor.Monoidal.μIso (toFintypeGrpdOverFunctor J) X Y).inv.left =
     (FintypeGrpd.mkIso <|
       FintypeGrpd.tensorObjEquiv _ _ |>.symm.trans <|
@@ -670,70 +675,79 @@ variable {X Y : SList J} (x : Fin X.length) (y : Fin Y.length)
     -- (l : ((toFintypeGrpdFunctor J).hom.obj X))
     -- (r : (toFintypeGrpdFunctor.{v, u}.obj Y))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toFintypeGrpdOverFunctor_μ_iso_hom_left :
     (Functor.LaxMonoidal.μ (toFintypeGrpdOverFunctor J) X Y).left.iso.hom
       (FintypeGrpd.inl _ _ (toFintypeGrpdOverFunctor.ι X x)) =
     toFintypeGrpdOverFunctor.ι _ (Ψ _ _ <| .inl <| x) := by
-  rw [← Functor.Monoidal.μIso_hom, ofFintypeGrpdOverFunctor_μIso_hom_left_def]
+  rw [← Functor.Monoidal.μIso_hom, ofFiniteGrpdOverFunctor_μIso_hom_left_def]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toFintypeGrpdOverFunctor_μ_iso_hom_right :
     (Functor.LaxMonoidal.μ (toFintypeGrpdOverFunctor J) X Y).left.iso.hom
       (FintypeGrpd.inr _ _ (toFintypeGrpdOverFunctor.ι _ y)) =
     toFintypeGrpdOverFunctor.ι _ (Ψ _ _ <| .inr <| y) := by
-  rw [← Functor.Monoidal.μIso_hom, ofFintypeGrpdOverFunctor_μIso_hom_left_def]
+  rw [← Functor.Monoidal.μIso_hom, ofFiniteGrpdOverFunctor_μIso_hom_left_def]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toFintypeGrpdOverFunctor_μ_iso_inv_left :
     (Functor.LaxMonoidal.μ (toFintypeGrpdOverFunctor J) X Y).left.iso.inv
       (toFintypeGrpdOverFunctor.ι _ <| Ψ _ _ <| .inl <| x) =
     (FintypeGrpd.inl _ _ (toFintypeGrpdOverFunctor.ι _ x)) := by
-  rw [← Functor.Monoidal.μIso_hom, ofFintypeGrpdOverFunctor_μIso_hom_left_def]
+  rw [← Functor.Monoidal.μIso_hom, ofFiniteGrpdOverFunctor_μIso_hom_left_def]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toFintypeGrpdOverFunctor_μ_iso_inv_right :
     (Functor.LaxMonoidal.μ (toFintypeGrpdOverFunctor J) X Y).left.iso.inv
       (toFintypeGrpdOverFunctor.ι _ <| Ψ _ _ <| .inr y) =
     (FintypeGrpd.inr _ _ <| toFintypeGrpdOverFunctor.ι _ y) := by
-  rw [← Functor.Monoidal.μIso_hom, ofFintypeGrpdOverFunctor_μIso_hom_left_def]
+  rw [← Functor.Monoidal.μIso_hom, ofFiniteGrpdOverFunctor_μIso_hom_left_def]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toFintypeGrpdOverFunctor_δ_iso_hom_left :
     (Functor.OplaxMonoidal.δ (toFintypeGrpdOverFunctor J) X Y).left.iso.hom
       (toFintypeGrpdOverFunctor.ι _ <| Ψ _ _ <| .inl x) =
     (FintypeGrpd.inl _ _ (toFintypeGrpdOverFunctor.ι _ x)) := by
-  rw [← Functor.Monoidal.μIso_inv, ofFintypeGrpdOverFunctor_μIso_inv_left_def]
+  rw [← Functor.Monoidal.μIso_inv, ofFiniteGrpdOverFunctor_μIso_inv_left_def]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toFintypeGrpdOverFunctor_δ_iso_hom_right :
     (Functor.OplaxMonoidal.δ (toFintypeGrpdOverFunctor J) X Y).left.iso.hom
       (toFintypeGrpdOverFunctor.ι _ <| Ψ _ _ <| .inr y) =
     (FintypeGrpd.inr _ _ (toFintypeGrpdOverFunctor.ι _ y)) := by
-  rw [← Functor.Monoidal.μIso_inv, ofFintypeGrpdOverFunctor_μIso_inv_left_def]
+  rw [← Functor.Monoidal.μIso_inv, ofFiniteGrpdOverFunctor_μIso_inv_left_def]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toFintypeGrpdOverFunctor_δ_iso_inv_left :
     (Functor.OplaxMonoidal.δ (toFintypeGrpdOverFunctor J) X Y).left.iso.inv
       (FintypeGrpd.inl _ _ (toFintypeGrpdOverFunctor.ι _ x)) =
     (toFintypeGrpdOverFunctor.ι _ <| Ψ _ _ <| .inl x) := by
-  rw [← Functor.Monoidal.μIso_inv, ofFintypeGrpdOverFunctor_μIso_inv_left_def]
+  rw [← Functor.Monoidal.μIso_inv, ofFiniteGrpdOverFunctor_μIso_inv_left_def]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toFintypeGrpdOverFunctor_δ_iso_inv_right :
     (Functor.OplaxMonoidal.δ (toFintypeGrpdOverFunctor J) X Y).left.iso.inv
       (FintypeGrpd.inr _ _ (toFintypeGrpdOverFunctor.ι _ y)) =
     (toFintypeGrpdOverFunctor.ι _ <| Ψ _ _ <| .inr <| y) := by
-  rw [← Functor.Monoidal.μIso_inv, ofFintypeGrpdOverFunctor_μIso_inv_left_def]
+  rw [← Functor.Monoidal.μIso_inv, ofFiniteGrpdOverFunctor_μIso_inv_left_def]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (toFintypeGrpdOverFunctor J).Braided where
   braided x y := by
     ext i
@@ -742,28 +756,29 @@ instance : (toFintypeGrpdOverFunctor J).Braided where
     | left i =>
       obtain ⟨i, rfl⟩ := (toFintypeGrpdOverFunctor.ι _).surjective i;
       dsimp
-      rw [← Functor.Monoidal.μIso_hom, ofFintypeGrpdOverFunctor_μIso_hom_left_def]
+      rw [← Functor.Monoidal.μIso_hom, ofFiniteGrpdOverFunctor_μIso_hom_left_def]
       simp only [FintypeGrpd.mkIso_hom_iso_hom_apply, Equiv.trans_apply,
         FintypeGrpd.tensorObjEquiv_symm_inl, Equiv.sumCongr_apply, Sum.map_inl,
         Equiv.symm_apply_apply, toFintypeGrpdOverFunctor_map_ι, toEquiv_symm, IsIso.Iso.inv_hom,
         ← SymmetricCategory.braiding_swap_eq_inv_braiding, toEquiv_braiding_hom_Ψ_left,
         FintypeGrpd.braiding_iso_hom_inl]
-      rw [← Functor.Monoidal.μIso_hom, ofFintypeGrpdOverFunctor_μIso_hom_left_def]
+      rw [← Functor.Monoidal.μIso_hom, ofFiniteGrpdOverFunctor_μIso_hom_left_def]
       simp
     | right i =>
       obtain ⟨i, rfl⟩ := (toFintypeGrpdOverFunctor.ι _).surjective i;
       dsimp
-      rw [← Functor.Monoidal.μIso_hom, ofFintypeGrpdOverFunctor_μIso_hom_left_def]
+      rw [← Functor.Monoidal.μIso_hom, ofFiniteGrpdOverFunctor_μIso_hom_left_def]
       simp only [FintypeGrpd.mkIso_hom_iso_hom_apply, Equiv.trans_apply,
         FintypeGrpd.tensorObjEquiv_symm_inr, Equiv.sumCongr_apply, Sum.map_inr,
         Equiv.symm_apply_apply, toFintypeGrpdOverFunctor_map_ι, toEquiv_symm, IsIso.Iso.inv_hom,
         ← SymmetricCategory.braiding_swap_eq_inv_braiding, toEquiv_braiding_hom_Ψ_right,
         FintypeGrpd.braiding_iso_hom_inr]
-      rw [← Functor.Monoidal.μIso_hom, ofFintypeGrpdOverFunctor_μIso_hom_left_def]
+      rw [← Functor.Monoidal.μIso_hom, ofFiniteGrpdOverFunctor_μIso_hom_left_def]
       simp
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def fullyFaithfulToFintypeGrpdOverFunctor :
     (toFintypeGrpdOverFunctor J).FullyFaithful where
   preimage {X Y} f := SList.liftEquiv
@@ -789,12 +804,13 @@ instance : (toFintypeGrpdOverFunctor J).Full :=
 instance : (toFintypeGrpdOverFunctor J).Faithful :=
   fullyFaithfulToFintypeGrpdOverFunctor.faithful
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (toFintypeGrpdOverFunctor J).EssSurj where
   mem_essImage X := by
     classical
-    let e := Fintype.equivFin X.left.of
+    let e := Finite.equivFin X.left.of
     let L₀ : SList J := SList.ofList <| List.ofFn (X.hom ∘ e.symm)
-    let hcard₁ : L₀.length = Fintype.card X.left.of := by
+    let hcard₁ : L₀.length = Nat.card X.left.of := by
       simp [L₀]
     let e₁ : Fin L₀.length ≃ X.left.of := (finCongr hcard₁).trans e.symm
     use L₀

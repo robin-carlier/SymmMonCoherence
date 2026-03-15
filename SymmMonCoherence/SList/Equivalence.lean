@@ -124,6 +124,7 @@ end Inclusion
 
 section MonoidalStructure
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism of bifunctors J(-) ⊗ J(-) ⟶ J(- ⊗ -)
 that defines the monoidal structure on J. -/
 public def μIso :
@@ -220,6 +221,7 @@ lemma μIso_natural_right
     ((μIso C).hom.app z).app x ≫ (J C).map (z ◁ f) := by
   simpa [-NatTrans.naturality] using ((μIso C).hom.app z).naturality f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition to define the monoidal structure on J C. -/
 @[expose] public def JCoreMonoidal : (J C).CoreMonoidal where
   εIso := JObjNilIso.symm ≪≫ (J C).mapIso unitIsoNil.symm
@@ -256,7 +258,7 @@ lemma μIso_natural_right
       rw [show (α_ x y z) = SList.associator x y z by rfl,
         show α_ (c ::~ x) y z = SList.associator _ _ _ by rfl]
       simp [SList.associator, tensorObjConsIso, JObjConsIso, eqToHom_map]
-  left_unitality x := by simp [← Functor.map_comp_assoc]
+  left_unitality x := by simp
   right_unitality x := by
     induction x using SList.cons_induction with
     | nil => simp [whisker_exchange_assoc, unitors_equal, unitors_inv_equal]
@@ -333,7 +335,7 @@ lemma braiding_hom_J_obj_nil_right (x : FreeSymmetricMonoidalCategory C) :
 lemma J_braided_nil_nil :
     Functor.LaxMonoidal.μ (J C) []~ []~ ≫ (J C).map (β_ []~ []~).hom =
     (β_ ((J C).obj []~) ((J C).obj []~)).hom ≫ Functor.LaxMonoidal.μ (J C) []~ []~ := by
-  simp only [Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, J_μ_app_nil_app,
+  simp only [J_μ_app_nil_app,
     Functor.LaxMonoidal.left_unitality, Functor.map_comp, Category.assoc,
     Iso.map_hom_inv_id_assoc, braiding_hom_app_nil]
   simp_rw [← Functor.LaxMonoidal.μ_natural_left, ← Functor.LaxMonoidal.μ_natural_left_assoc,
@@ -353,7 +355,7 @@ lemma J_braided_nil_left (x : SList C) :
   induction x using SList.cons_induction with
   | nil => exact J_braided_nil_nil
   | cons c x hr =>
-    simp only [Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, J_μ_app_cons_app]
+    simp only [J_μ_app_cons_app]
     have := hr =≫ (J C).map (β_ x []~).inv
     simp only [Category.assoc, Iso.map_hom_inv_id, Category.comp_id] at this
     rw [this]
@@ -440,6 +442,7 @@ private lemma whiskerLeft_inv_hom_whiskerRight
   x ◁ e.inv ▷ t ≫ x ◁ e.hom ▷ t = 𝟙 _ := by
   simp [← whiskerLeft_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `J C` is braided (and hence symmetric). Note that by the universal
 property of the free symmetric monoidal category, this statement "defines"
 the counit of the equivalence `SList C ≌ FreeSymmetricMonoidalCategory C`, as thanks to
@@ -457,7 +460,7 @@ public instance : (J C).Braided where
         First the idea is to get rid of the terms of form
         Functor.LaxMonoidal.μ (J C) (c ::~ l) (c' ::~ l') and use existing commutations
         to partially swap out some terms. -/
-        simp only [Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, J_μ_app_cons_app]
+        simp only [J_μ_app_cons_app]
         have := hr c l ih =≫ (J C).map (β_ l' (c ::~ l)).inv
         simp only [Category.assoc, Iso.map_hom_inv_id, Category.comp_id] at this
         simp only [this, J_μ_app_cons_app]
@@ -491,15 +494,14 @@ public instance : (J C).Braided where
           BraidedCategory.braiding_tensor_right_inv]
         /- A second cleanup round is able to clear some noise now. -/
         monoidal_simps
-        simp only [Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, Functor.comp_obj,
+        simp only [Functor.comp_obj,
           Functor.flip_obj_obj, curriedTensor_obj_obj, whiskerLeft_inv_hom_assoc,
           pentagon_hom_hom_inv_hom_hom_assoc, inv_hom_whiskerRight_assoc, Iso.inv_hom_id_assoc,
           pentagon_inv_assoc, cancel_epi]
         /- Now we rewrite Functor.LaxMonoidal.μ (J C) l' l in terms of
         Functor.LaxMonoidal.μ (J C) l l' -/
         have := ih l' =≫ (J C).map (β_ l' l).inv
-        simp only [Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, Category.assoc,
-          Iso.map_hom_inv_id, Category.comp_id] at this
+        simp only [Category.assoc, Iso.map_hom_inv_id, Category.comp_id] at this
         simp only [this, whiskerLeft_comp, whiskerLeft_whiskerLeft_inv_hom_assoc,
           ← SymmetricCategory.braiding_swap_eq_inv_braiding (of c'),
           whiskerLeft_inv_hom_whiskerRight_assoc]
@@ -524,6 +526,7 @@ noncomputable section Equivalence
 
 attribute [-simp] Functor.LaxMonoidal.left_unitality
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `η : 𝟭 ≅ J ⋙ K` on `SList C`. -/
 public def unitIso : 𝟭 (SList C) ≅ J C ⋙ normalization C :=
   recNatIso
@@ -541,7 +544,7 @@ public def unitIso : 𝟭 (SList C) ≅ J C ⋙ normalization C :=
       simp only [Functor.id_obj, Functor.comp_obj, Functor.id_map, Functor.mapIso_trans,
         Functor.mapIso_symm, Iso.trans_assoc, whiskerLeftIso_trans, Iso.trans_hom, Iso.symm_hom,
         Functor.mapIso_inv, Functor.mapIso_hom, whiskerRightIso_hom, whiskerLeftIso_hom,
-        Functor.Monoidal.μIso_hom, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, Functor.comp_map,
+        Functor.Monoidal.μIso_hom, Functor.comp_map,
         J_map_swap, Category.assoc, Functor.map_comp, Iso.map_inv_hom_id_assoc]
       have e₁ := Functor.LaxMonoidal.μ_natural_right (normalization C) (of x) (JObjConsIso y l').inv
       have e₂ := Functor.LaxMonoidal.μ_natural_right (normalization C) (of y) (JObjConsIso x l').inv
@@ -551,8 +554,7 @@ public def unitIso : 𝟭 (SList C) ≅ J C ⋙ normalization C :=
       simp_rw [Functor.Monoidal.map_whiskerRight_assoc (F := normalization C), Functor.map_braiding,
         Functor.Monoidal.map_associator_inv]
       -- simp?
-      simp only [normalization_of, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
-        Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, comp_whiskerRight, Category.assoc,
+      simp only [normalization_of, comp_whiskerRight, Category.assoc,
         Functor.LaxMonoidal.associativity, Functor.Monoidal.μ_δ_assoc,
         Functor.Monoidal.whiskerRight_μ_δ_assoc, Functor.Monoidal.whiskerLeft_μ_δ_assoc]
       --cancel equal terms on the right, we definitely need a simproc for this
@@ -600,10 +602,8 @@ public def unitIso : 𝟭 (SList C) ≅ J C ⋙ normalization C :=
         Functor.map_comp, cancel_epi]
       simp only [← Category.assoc, cancel_mono]; simp only [Category.assoc]
       simp_rw [Functor.Monoidal.map_whiskerLeft, Functor.Monoidal.μ_δ_assoc]
-      simp only [Functor.OplaxMonoidal.left_unitality,
-        Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, Functor.map_comp, Category.assoc,
-        normalization_of, whiskerLeft_cons, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
-        Iso.inv_hom_id_assoc]
+      simp only [Functor.OplaxMonoidal.left_unitality, Functor.map_comp, Category.assoc,
+        normalization_of, whiskerLeft_cons, Iso.inv_hom_id_assoc]
       simp only [← Category.assoc, cancel_mono]; simp only [Category.assoc]
       simp only [← Functor.map_comp, ← Functor.map_comp_assoc]; congr 1
       simp [← whisker_exchange, -Functor.map_comp, ← Functor.map_comp_assoc ])
@@ -627,6 +627,7 @@ lemma unitIso_hom_app_cons (c : C) (l : SList C) :
       (normalization C).map (JObjConsIso c l).inv := by
   simp [unitIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 lemma unitIso_inv_app_nil :
     (unitIso C).inv.app []~ =
@@ -635,6 +636,7 @@ lemma unitIso_inv_app_nil :
   rw [← IsIso.inv_eq_inv]
   simp [unitIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 lemma unitIso_inv_app_cons (c : C) (l : SList C) :
     (unitIso C).inv.app (c ::~ l) =
@@ -648,24 +650,26 @@ lemma unitIso_inv_app_cons (c : C) (l : SList C) :
   simp only [← Functor.map_inv, IsIso.Iso.inv_hom, IsIso.inv_comp]
   simp [unitIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma unitIso_inv_app_singleton (c : C) :
     (unitIso C).inv.app ([c]~) =
     (normalization C).map ((JObjConsIso c []~).hom ≫ of c ◁ JObjNilIso.hom ≫ (ρ_ (of c)).hom) := by
   simp only [Functor.comp_obj, Functor.id_obj, unitIso_inv_app_cons, normalization_of,
-    Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, unitIso_inv_app_nil, whiskerLeft_comp,
+    unitIso_inv_app_nil, whiskerLeft_comp,
     Category.assoc, Functor.map_comp, Functor.Monoidal.map_whiskerLeft,
-    Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, Functor.Monoidal.map_rightUnitor,
+    Functor.Monoidal.map_rightUnitor,
     Functor.Monoidal.μ_δ_assoc]
   simp only [whiskerLeft_cons, whiskerLeft_nil, Functor.OplaxMonoidal.left_unitality,
-    unitors_inv_equal, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, Category.assoc,
-    ← Functor.map_comp_assoc, whiskerRight_id, Iso.inv_hom_id_assoc, ← Functor.map_comp,
-    hom_inv_whiskerRight_assoc, Iso.inv_hom_id, Category.comp_id, Iso.hom_inv_id_assoc,
+    unitors_inv_equal, Category.assoc, ← Functor.map_comp_assoc, whiskerRight_id,
+    Iso.inv_hom_id_assoc, ← Functor.map_comp, hom_inv_whiskerRight_assoc, Iso.inv_hom_id,
+    Category.comp_id, Iso.hom_inv_id_assoc,
     Functor.OplaxMonoidal.left_unitality_hom_assoc]
   congr 3
   simp only [← unitors_inv_equal]
   simp [rightUnitor_cons]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma unitIso_hom_app_singleton (c : C) :
     (unitIso C).hom.app ([c]~) =
@@ -673,6 +677,7 @@ lemma unitIso_hom_app_singleton (c : C) :
   rw [← IsIso.inv_eq_inv, ← NatIso.isIso_inv_app, IsIso.Iso.inv_hom, unitIso_inv_app_singleton]
   simp [← Functor.map_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 public instance : (unitIso C).hom.IsMonoidal where
   unit := by
     have := (unitIso C).hom.naturality unitIsoNil.inv
@@ -692,7 +697,7 @@ public instance : (unitIso C).hom.IsMonoidal where
       simp only [Functor.comp_obj, Iso.trans_inv, whiskerRightIso_inv, Iso.symm_inv,
         Functor.map_comp, tensorHom_def, comp_whiskerRight, Category.assoc,
         ← whisker_exchange_assoc, Functor.LaxMonoidal.μ_natural_left_assoc, id_whiskerLeft,
-        Functor.OplaxMonoidal.left_unitality, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
+        Functor.OplaxMonoidal.left_unitality,
         Functor.Monoidal.whiskerRight_η_ε_assoc, Functor.Monoidal.δ_μ_assoc,
         hom_inv_whiskerRight_assoc, Iso.inv_hom_id_assoc, cancel_epi, e₁]
       simp [← Functor.map_comp, J_μ_app_nil_app]
@@ -704,8 +709,7 @@ public instance : (unitIso C).hom.IsMonoidal where
         whiskerRight_tensor, Functor.map_comp, Category.assoc, Functor.comp_map] at nat₁
       rw [← cancel_epi (tensorObjConsIso c x y).inv, nat₁, hr]
       simp only [Functor.comp_obj, tensorHom_def, Category.assoc, whiskerLeft_comp,
-        comp_whiskerRight, whisker_assoc, J_μ_app_cons_app,
-        Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, Functor.map_comp]
+        comp_whiskerRight, whisker_assoc, J_μ_app_cons_app, Functor.map_comp]
       simp_rw [Functor.Monoidal.map_whiskerLeft_assoc, Functor.Monoidal.map_whiskerRight_assoc,
         Functor.Monoidal.μ_δ_assoc, whisker_exchange_assoc, ← comp_whiskerRight_assoc,
         Iso.map_inv_hom_id, Category.comp_id, ← whisker_exchange_assoc,
@@ -739,12 +743,14 @@ lemma counitIso_inv_app_unit :
       Functor.LaxMonoidal.ε (J C) ≫ (J C).map (Functor.LaxMonoidal.ε (normalization C)) := by
   simp [counitIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma counitIso_hom_app_of (c : C) :
     (counitIso C).hom.app (of c) =
     (JObjConsIso c _).hom ≫ (of c) ◁ JObjNilIso.hom ≫ (ρ_ _).hom := by
   simp [counitIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma counitIso_inv_app_of (c : C) :
     (counitIso C).inv.app (of c) =
@@ -782,6 +788,7 @@ instance : (Equivalence.adjointifyη η ε).hom.IsMonoidal := by
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coherence theorem: `SList C` is equivalent to `FreeSymmetricMonoidalCategory C`
 as a symmetric monoidal category. -/
 @[simps, expose]
@@ -831,6 +838,7 @@ public instance : (equivalence C).functor.Braided := inferInstanceAs (J C).Braid
 public instance : (equivalence C).inverse.Monoidal := inferInstanceAs (normalization C).Monoidal
 public instance : (equivalence C).inverse.Braided := inferInstanceAs (normalization C).Braided
 
+set_option backward.isDefEq.respectTransparency false in
 /-- TODO: this should be generalized -/
 public instance : (equivalence C).IsMonoidal where
   leftAdjoint_ε := by
@@ -928,6 +936,7 @@ instance {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal]
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 public instance {F G : SList C ⥤ D} [F.Braided] [G.LaxBraided]
     (φ : ∀ (c : C), F.obj [c]~ ⟶ G.obj [c]~) : (monoidalLiftNatTrans φ).IsMonoidal := by
   dsimp [monoidalLiftNatTrans]
@@ -945,6 +954,7 @@ public instance {F G : SList C ⥤ D} [F.Braided] [G.LaxBraided]
 
 public section
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma monoidalLiftNatTrans_app_singleton
     {F G : SList C ⥤ D} [F.Braided] [G.LaxBraided] (φ : ∀ (c : C), F.obj [c]~ ⟶ G.obj [c]~)

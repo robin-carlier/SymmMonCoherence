@@ -28,6 +28,7 @@ namespace CategoryTheory.Spans
 
 variable (C : Type*) [Category* C] [Limits.HasPullbacks C]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def spanOverEquivalenceLeftOfIsTerminal
     (x y : Spans C ⊤ ⊤) (hx : Limits.IsTerminal x.of) :
     (x ⟶ y) ≌ Over y.of where
@@ -42,6 +43,7 @@ noncomputable def spanOverEquivalenceLeftOfIsTerminal
   unitIso := NatIso.ofComponents (fun S ↦ Spans.mkIso₂ (.refl _) (by apply hx.hom_ext))
   counitIso := NatIso.ofComponents (fun S ↦ .refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def spanOverEquivalenceRightOfIsTerminal
     (x y : Spans C ⊤ ⊤) (hx : Limits.IsTerminal y.of) :
     (x ⟶ y) ≌ Over x.of where

@@ -80,6 +80,7 @@ private lemma isPullback_πₗ_comp_iso_hom_πᵣ
       (by simp) (by simp) (by simp) (by simp)
   exact this
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map₂_whisker_left_aux₁ {a b c : EffBurnside C} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
     (ρ_ (P.u f.of.r ≫ P.v h.of.l)).inv ≫
     (α_ (P.u f.of.r) (P.v h.of.l) (𝟙 (P.obj h.of.apex))).hom ≫
@@ -282,7 +283,7 @@ lemma map₂_whisker_right_aux {a b c : EffBurnside C} {f g : a ⟶ b} (η : f �
       (by simp)
   rw [γ₂] at γ₁
   rw [γ₁] at this
-  dsimp [bicategoricalComp] at this
+  dsimp [bicategoricalComp, BicategoricalCoherence.iso] at this
   simp only [P.vComp'_id_l, Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, whiskerLeft_comp,
     P.baseChangeIso_unit_horiz, Category.id_comp, whiskerRight_comp, id_whiskerRight,
     Iso.inv_hom_id, Category.comp_id, Category.assoc, pentagon_hom_inv_inv_inv_inv, Iso.trans_inv,
@@ -376,6 +377,7 @@ end whiskerRight
 
 section left_unitor
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map₂_left_unitor {a b : EffBurnside C} (f : a ⟶ b) :
     P.map₂ (λ_ f).hom =
     (P.mapComp (𝟙 a) f).hom ≫ ((P.mapId a).hom ▷ P.map f) ≫ (λ_ (P.map f)).hom := by
@@ -450,6 +452,7 @@ end left_unitor
 
 section right_unitor
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map₂_right_unitor {a b : EffBurnside C} (f : a ⟶ b) :
   P.map₂ (ρ_ f).hom =
   (P.mapComp f (𝟙 b)).hom ≫ (P.map f ◁ (P.mapId b).hom) ≫ (ρ_ (P.map f)).hom := by

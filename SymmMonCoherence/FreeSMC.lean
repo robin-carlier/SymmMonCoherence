@@ -142,10 +142,8 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
 
 /-- We say that two formal morphisms in the free monoidal category are equivalent if they become
 equal if we apply the relations that are true in a symmetric monoidal category. -/
-def setoidHom (X Y : F C) : Setoid (X ⟶ᵐ Y) :=
+instance setoidHom (X Y : F C) : Setoid (X ⟶ᵐ Y) :=
   ⟨HomEquiv, ⟨HomEquiv.refl, HomEquiv.symm _ _, HomEquiv.trans⟩⟩
-
-attribute [instance] setoidHom
 
 section
 
@@ -348,6 +346,7 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
   | _, _, Hom.whiskerRight p X => projectMapAux p ▷ projectObj f X
   | _, _, Hom.tensor f g => projectMapAux f ⊗ₘ projectMapAux g
 
+set_option backward.isDefEq.respectTransparency false in
 -- Porting note: this declaration generates the same panic.
 /-- Auxiliary definition for `FreeSymmetricMonoidalCategory.project`. -/
 def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :=
@@ -411,6 +410,7 @@ def project : F C ⥤ D where
   map := projectMap f _ _
   map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 instance : (project f).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
@@ -423,10 +423,10 @@ instance : (project f).Monoidal :=
         induction f using Quotient.recOn
         all_goals aesop }
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (project f).Braided where
   braided X Y := by
-    simp only [Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, μ_def,
-      Category.id_comp, Category.comp_id]
+    simp only [μ_def, Category.id_comp, Category.comp_id]
     rfl
 
 end Functor

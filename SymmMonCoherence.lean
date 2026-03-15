@@ -5,6 +5,7 @@ Authors: Robin Carlier
 -/
 import SymmMonCoherence.SList.ToPseudofunctor.Specs
 import SymmMonCoherence.SList.ToPseudofunctor.StrongTrans
+import SymmMonCoherence.RelativePseudomonad
 
 open CategoryTheory
 
@@ -164,7 +165,7 @@ example : FintypeGrpd ≌ Core (FintypeCat) := .refl
 #guard_msgs in
 #synth SList.unitEquivalence.functor.Braided
 
-/-- info: SList.instBraidedFintypeGrpdPUnitOfFintypeGrpdFunctor -/
+/-- info: SList.instBraidedFintypeGrpdPUnitOfFiniteGrpdFunctor -/
 #guard_msgs in
 #synth SList.unitEquivalence.inverse.Braided
 

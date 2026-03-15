@@ -90,10 +90,12 @@ def tensorObj (X Y : J ⟶ K) : J ⟶ K :=
       wl := by tauto
       wr := by tauto }
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: cleanup this once automation has improved on FintypeCat
 /-- The associator isomorphism for the monoidal structure on spans.
 Under the hood, this is `Equiv.sumAssoc`. -/
-def associator (X Y Z : J ⟶ K) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
+noncomputable def associator (X Y Z : J ⟶ K) : 
+    tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
   Core.isoMk <| Spans.mkIso₂ (FintypeCat.equivEquivIso <| Equiv.sumAssoc _ _ _)
     (by
       ext i
@@ -135,9 +137,10 @@ def associator (X Y Z : J ⟶ K) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (
         rw [FintypeCat.homMk_apply]
         simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The left unitor isomorphism for the monoidal structure on spans.
 Under the hood, this is `Equiv.emptySum`. -/
-def leftUnitor (X : J ⟶ K) : tensorObj (tensorUnit J K) X ≅ X :=
+noncomputable def leftUnitor (X : J ⟶ K) : tensorObj (tensorUnit J K) X ≅ X :=
   Core.isoMk <| Spans.mkIso₂ (FintypeCat.equivEquivIso <| Equiv.emptySum _ _)
     (by
       ext i
@@ -158,9 +161,10 @@ def leftUnitor (X : J ⟶ K) : tensorObj (tensorUnit J K) X ≅ X :=
         rw [Sum.elim_inr, FintypeCat.equivEquivIso_apply_hom, FintypeCat.homMk_apply]
         simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right unitor isomorphism for the monoidal structure on spans.
 Under the hood, this is `Equiv.sumEmpty`. -/
-def rightUnitor (X : J ⟶ K) : tensorObj X (tensorUnit J K) ≅ X :=
+noncomputable def rightUnitor (X : J ⟶ K) : tensorObj X (tensorUnit J K) ≅ X :=
   Core.isoMk <| Spans.mkIso₂ (FintypeCat.equivEquivIso <| Equiv.sumEmpty _ _)
     (by
       ext i
@@ -181,9 +185,10 @@ def rightUnitor (X : J ⟶ K) : tensorObj X (tensorUnit J K) ≅ X :=
         simp
       | inr i => exact i.elim)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of two morphisms for the monoidal structure on spans.
 Under the hood, this is `Equiv.sumCongr`. -/
-def tensorHom {X X' Y Y' : J ⟶ K} (f : X ⟶ X') (g : Y ⟶ Y') :
+noncomputable def tensorHom {X X' Y Y' : J ⟶ K} (f : X ⟶ X') (g : Y ⟶ Y') :
     tensorObj X Y ⟶ tensorObj X' Y' :=
   .mk <| Spans.mkIso₂ (FintypeCat.equivEquivIso <|
     Equiv.sumCongr

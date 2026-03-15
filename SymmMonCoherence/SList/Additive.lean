@@ -105,6 +105,11 @@ lemma fiber_card (k : K) (L : SList K) :
     · simp only [Pi.disjoint_iff, «Prop».disjoint_iff, not_and, not_exists, and_imp]
       grind
 
+open scoped Classical in
+lemma fiber_card' (k : K) (L : SList K) :
+    Nat.card (fiber k L) = L.toList.count k := by
+  simp
+
 end fiber
 
 section Pi
@@ -130,6 +135,7 @@ lemma totEquivOfHom_apply {X Y : K → SList J} (f : X ⟶ Y)
 lemma totEquivOfHom_id (X : K → SList J) : totEquivOfHom (𝟙 X) = .refl _ := by
   ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma totEquivOfHom_comp {X Y Z : K → SList J} (f : X ⟶ Y) (g : Y ⟶ Z) :
       totEquivOfHom (f ≫ g) = (totEquivOfHom g).trans (totEquivOfHom f)  := by
@@ -151,6 +157,7 @@ lemma totTensEquiv_inl (X Y : K → SList J) (j : Tot X) :
 lemma totTensEquiv_inr (X Y : K → SList J) (j : Tot Y) :
   (totTensEquiv X Y (.inr j)) = ⟨j.fst, Ψ _ _ (.inr j.snd)⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma totTensEquiv_natural_right (X : K → SList J) {Y Y' : K → SList J} (f : Y ⟶ Y')
     (i : Tot X ⊕ Tot Y') :
     totEquivOfHom (X ◁ f) (totTensEquiv X Y' i) =
@@ -159,6 +166,7 @@ lemma totTensEquiv_natural_right (X : K → SList J) {Y Y' : K → SList J} (f :
     (simp only [totEquivOfHom, Equiv.sigmaCongrRight_apply, Equiv.sumCongr_apply]
      simp)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma totTensEquiv_natural_left (X : K → SList J) {Y Y' : K → SList J} (f : Y ⟶ Y')
     (i : Tot Y' ⊕ Tot X) :
     totEquivOfHom (f ▷ X) (totTensEquiv Y' X i) =
@@ -384,6 +392,7 @@ def eval₀ (k : K) : SList K ⥤ FintypeGrpd where
 public irreducible_def eval₀.ι {k : K} {L : SList K} : L.fiber k ≃ (eval₀ k).obj L := .refl _
 
 open eval₀
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 public lemma eval₀_map_iso_hom_ι (k : K) {L L' : SList K} (f : L ⟶ L') (i : L.fiber k) :
     ((eval₀ k).map f).iso.hom (ι i) = ι (fiberEquivOfHom k (inv f) i) := by
@@ -391,6 +400,7 @@ public lemma eval₀_map_iso_hom_ι (k : K) {L L' : SList K} (f : L ⟶ L') (i :
   rw [ι_def, FintypeGrpd.mkHom_iso_hom_apply, ι_def]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 public lemma eval₀_map_iso_inv_ι (k : K) {L L' : SList K} (f : L ⟶ L') (i : L'.fiber k) :
     ((eval₀ k).map f).iso.inv (ι i) = ι (fiberEquivOfHom k f i) := by
@@ -536,7 +546,7 @@ instance (k : K) : (eval₀ k).Braided where
       obtain ⟨i, rfl⟩ := eval₀.ι.surjective i
       simp [fiberEquivOfHom, toEquiv_symm, ← SymmetricCategory.braiding_swap_eq_inv_braiding]
 
-public def eval (k : K) : SList K ⥤ SList Unit := (eval₀ k) ⋙ ofFintypeGrpdFunctor
+public def eval (k : K) : SList K ⥤ SList Unit := (eval₀ k) ⋙ ofFiniteGrpdFunctor
   deriving Functor.Braided
 
 variable (K) in
@@ -545,7 +555,7 @@ public def fib₀ : SList K ⥤ (K → FintypeGrpd) := Functor.pi' (eval₀ ·)
 
 variable (K) in
 public def fib₁ : SList K ⥤ (K → SList Unit) :=
-    fib₀ K ⋙ Functor.pi (fun _ ↦ ofFintypeGrpdFunctor.{0})
+    fib₀ K ⋙ Functor.pi (fun _ ↦ ofFiniteGrpdFunctor.{0})
   deriving Functor.Braided
 
 -- TODO API for eval: need a natural equivalence w/ Tot', characterization as monoidalLift (δ k)
@@ -553,7 +563,7 @@ public def fib₁ : SList K ⥤ (K → SList Unit) :=
 public irreducible_def fib₀.ι (L : SList K) k : (fib₀ K |>.obj L) k ≃ L.fiber k := eval₀.ι.symm
 
 public irreducible_def fib₁.ι (L : SList K) k : Fin ((fib₁ K |>.obj L) k).length ≃ L.fiber k :=
-    ofFintype.ι _ |>.symm.trans eval₀.ι.symm
+    ofFinite.ι _ |>.symm.trans eval₀.ι.symm
 
 public irreducible_def fib₁.ι' (L : SList K) : Tot (fib₁ K |>.obj L) ≃ Tot' L :=
   Equiv.sigmaCongrRight (fun k ↦ fib₁.ι L k)
@@ -568,12 +578,14 @@ lemma fib₁.ι'_symm_fst (L : SList K) (t : Tot' L) : (fib₁.ι' L |>.symm t).
   rw [fib₁.ι'_def]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 public lemma fib₁_map_apply {L L' : SList K} (f : L ⟶ L') (k : K) (l : L'.fiber k) :
     totEquivOfHom (fib₁ K |>.map f) ⟨k, (fib₁.ι _ _).symm l⟩ =
       ⟨k, (fib₁.ι _ _).symm (fiberEquivOfHom _ f l)⟩ := by
   simp [fib₁, fib₁.ι_def, fib₀]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 public lemma fib₁_map_apply_ι' {L L' : SList K} (f : L ⟶ L') (t : Tot' L') :
     totEquivOfHom (fib₁ K |>.map f) ((fib₁.ι' _).symm t) =
@@ -590,70 +602,75 @@ public lemma fib₁_map_apply_ι' {L L' : SList K} (f : L ⟶ L') (t : Tot' L') 
 --   simp [fib₁.ι'_def, Tot'.tot'EquivOfHom, Equiv.sigmaCongrRight,
 --     fib₁, fib₁.ι_def, fib₀]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 public lemma fib₁_δ_left {L L' : SList K} (t : Tot' L) :
     totEquivOfHom (Functor.OplaxMonoidal.δ (fib₁ K) L L')
       (totTensEquiv _ _ <| .inl <| (fib₁.ι' _).symm t) =
     (fib₁.ι' _).symm (Tot'.tot'TensEquiv _ _ <| .inl t) := by
   simp only [fib₁, fib₀, Functor.comp_obj, Functor.OplaxMonoidal.comp_δ, totEquivOfHom_comp,
-    fib₁.ι'_def, Equiv.sigmaCongrRight, Functor.pi_obj, Functor.pi'_obj, ofFintypeGrpdFunctor_obj,
+    fib₁.ι'_def, Equiv.sigmaCongrRight, Functor.pi_obj, Functor.pi'_obj, ofFiniteGrpdFunctor_obj,
     fib₁.ι_def, Equiv.trans_apply, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk,
     totTensEquiv_inl, Pi.monoidalCategoryStruct_tensorObj, totEquivOfHom_apply,
-    Pi.opLaxMonoidalPi_δ, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, Functor.pi_map,
+    Pi.opLaxMonoidalPi_δ, Functor.pi_map,
     Pi.opLaxMonoidalPi'_δ, Tot'.tot'TensEquiv_apply_inl, Fin.getElem_fin, Sigma.mk.injEq, heq_eq_eq,
     true_and]
-  rw [toEquiv_ofFintypeGrpdFunctor_δ_left]
+  rw [toEquiv_ofFiniteGrpdFunctor_δ_left]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 public lemma fib₁_δ_right {L L' : SList K} (t : Tot' L') :
     totEquivOfHom (Functor.OplaxMonoidal.δ (fib₁ K) L L')
       (totTensEquiv _ _ <| .inr <| (fib₁.ι' _).symm t) =
     (fib₁.ι' _).symm (Tot'.tot'TensEquiv _ _ <| .inr t) := by
   simp only [fib₁, fib₀, Functor.comp_obj, Functor.OplaxMonoidal.comp_δ, totEquivOfHom_comp,
-    fib₁.ι'_def, Equiv.sigmaCongrRight, Functor.pi_obj, Functor.pi'_obj, ofFintypeGrpdFunctor_obj,
+    fib₁.ι'_def, Equiv.sigmaCongrRight, Functor.pi_obj, Functor.pi'_obj, ofFiniteGrpdFunctor_obj,
     fib₁.ι_def, Equiv.trans_apply, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk,
     totTensEquiv_inr, Pi.monoidalCategoryStruct_tensorObj, totEquivOfHom_apply,
-    Pi.opLaxMonoidalPi_δ, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, Functor.pi_map,
+    Pi.opLaxMonoidalPi_δ, Functor.pi_map,
     Pi.opLaxMonoidalPi'_δ, Tot'.tot'TensEquiv_apply_inr, Fin.getElem_fin, Sigma.mk.injEq, heq_eq_eq,
     true_and]
-  rw [toEquiv_ofFintypeGrpdFunctor_δ_right]
+  rw [toEquiv_ofFiniteGrpdFunctor_δ_right]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 public lemma fib₁_μ_left {L L' : SList K} (t : Tot' L) :
     totEquivOfHom (Functor.LaxMonoidal.μ (fib₁ K) L L')
       ((fib₁.ι' _).symm (Tot'.tot'TensEquiv _ _ <| .inl t)) =
     (totTensEquiv _ _ <| .inl <| (fib₁.ι' _).symm t) := by
   simp only [fib₁, fib₀, Functor.comp_obj, Functor.LaxMonoidal.comp_μ, totEquivOfHom_comp,
-    fib₁.ι'_def, Equiv.sigmaCongrRight, Functor.pi_obj, Functor.pi'_obj, ofFintypeGrpdFunctor_obj,
+    fib₁.ι'_def, Equiv.sigmaCongrRight, Functor.pi_obj, Functor.pi'_obj, ofFiniteGrpdFunctor_obj,
     fib₁.ι_def, Equiv.trans_apply, Equiv.symm_trans_apply, Equiv.symm_symm,
     Tot'.tot'TensEquiv_apply_inl, Fin.getElem_fin, Equiv.coe_fn_symm_mk, totEquivOfHom_apply,
     Pi.monoidalCategoryStruct_tensorObj, Functor.pi_map, Pi.laxMonoidalPi'_μ,
-    Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, toEquiv_ofFintypeHomOfEquiv_ι,
+    toEquiv_ofFiniteHomOfEquiv_ι,
     FintypeCat.equivEquivIso_symm_apply_symm_apply, eval₀_δ_inv_left, Pi.laxMonoidalPi_μ,
     totTensEquiv_inl, Sigma.mk.injEq, heq_eq_eq, true_and]
-  rw [toEquiv_ofFintypeGrpdFunctor_μ_left]
+  rw [toEquiv_ofFiniteGrpdFunctor_μ_left]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 public lemma fib₁_μ_right {L L' : SList K} (t : Tot' L') :
     totEquivOfHom (Functor.LaxMonoidal.μ (fib₁ K) L L')
       ((fib₁.ι' _).symm (Tot'.tot'TensEquiv _ _ <| .inr t)) =
     (totTensEquiv _ _ <| .inr <| (fib₁.ι' _).symm t) := by
   simp only [fib₁, fib₀, Functor.comp_obj, Functor.LaxMonoidal.comp_μ, totEquivOfHom_comp,
-    fib₁.ι'_def, Equiv.sigmaCongrRight, Functor.pi_obj, Functor.pi'_obj, ofFintypeGrpdFunctor_obj,
+    fib₁.ι'_def, Equiv.sigmaCongrRight, Functor.pi_obj, Functor.pi'_obj, ofFiniteGrpdFunctor_obj,
     fib₁.ι_def, Equiv.trans_apply, Equiv.symm_trans_apply, Equiv.symm_symm,
     Tot'.tot'TensEquiv_apply_inr, Fin.getElem_fin, Equiv.coe_fn_symm_mk, totEquivOfHom_apply,
     Pi.monoidalCategoryStruct_tensorObj, Functor.pi_map, Pi.laxMonoidalPi'_μ,
-    Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, toEquiv_ofFintypeHomOfEquiv_ι,
+    toEquiv_ofFiniteHomOfEquiv_ι,
     FintypeCat.equivEquivIso_symm_apply_symm_apply, eval₀_δ_inv_right, Pi.laxMonoidalPi_μ,
     totTensEquiv_inr, Sigma.mk.injEq, heq_eq_eq, true_and]
-  rw [toEquiv_ofFintypeGrpdFunctor_μ_right]
+  rw [toEquiv_ofFiniteGrpdFunctor_μ_right]
 
 end eval₀
 
 end eval
 
+set_option backward.isDefEq.respectTransparency false in
 /- A (noncomputable) construction of an explicit object in SList K isomorphic
 to the image by fib₀ of a given family.
 It’s useful to know a model of such an object rather than the generic
@@ -664,7 +681,7 @@ be used to construct the symmetric list.) -/
 def fib₀.liftEssIm [Finite K] (X : K → FintypeGrpd) : SList K :=
   letI φ := Finite.equivFin K
   SList.ofList <| List.flatten <| .ofFn (n := (Nat.card K)) (fun l ↦
-    List.replicate (Fintype.card <| X (φ.symm l)) (φ.symm l))
+    List.replicate (Nat.card <| X (φ.symm l)) (φ.symm l))
 
 private lemma fib₀.liftEssImIso_aux [Finite K] (X : K → FintypeGrpd) :
     Nonempty ((fib₀ K).obj (fib₀.liftEssIm X) ≅ X) := by
@@ -677,10 +694,9 @@ private lemma fib₀.liftEssImIso_aux [Finite K] (X : K → FintypeGrpd) :
   refine ⟨FintypeGrpd.mkIso ?_⟩
   dsimp [fib₀]
   refine (eval₀.ι).symm.trans ?_
-  refine Fintype.equivOfCardEq ?_
+  refine (Finite.card_eq.mp ?_).some
   have := fiber_card (φ.symm l) (fib₀.liftEssIm X)
-  rw [Fintype.card_eq_nat_card] at this ⊢
-  rw [this]
+  simp only [Nat.card_eq_fintype_card, this]
   simp [fib₀.liftEssIm, List.count_flatten, List.sum_ofFn, List.count_replicate,
     Equiv.symm_apply_eq]
 
@@ -694,16 +710,17 @@ def fib₁.liftEssIm [Finite K] (X : K → SList Unit) : SList K :=
 def fib₁.liftEssImIso [Finite K] (X : K → SList Unit) :
     (fib₁ K).obj (fib₁.liftEssIm X) ≅ X :=
   Pi.isoMk fun k ↦
-    ofFintypeGrpdFunctor.{0, 0}.mapIso
+    ofFiniteGrpdFunctor.{0, 0}.mapIso
       (Pi.isoApp (fib₀.liftEssImIso (fun k ↦ toFintypeGrpdFunctor.{0,0}.obj (X k))) k) ≪≫
     unitEquivalence.unitIso.symm.app _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Finite K] : (fib₀ K).EssSurj where
   mem_essImage X := by
     let φ := Finite.equivFin K
     let L₀ :=
-      SList.ofList <| List.flatten <| .ofFn (n := (Nat.card K)) (fun l ↦
-        List.replicate (Fintype.card <| X (φ.symm l)) (φ.symm l))
+      SList.ofList <| List.flatten <| .ofFn (n := Nat.card K) (fun l ↦
+        List.replicate (Nat.card <| X (φ.symm l)) (φ.symm l))
     use L₀
     refine ⟨Pi.isoMk ?_⟩
     intro i
@@ -711,16 +728,14 @@ instance [Finite K] : (fib₀ K).EssSurj where
     obtain ⟨l, rfl⟩ := φ.symm.surjective i
     refine ⟨FintypeGrpd.mkIso ?_⟩
     dsimp [fib₀]
-    refine (eval₀.ι).symm.trans ?_
-    refine Fintype.equivOfCardEq ?_
-    have := fiber_card ((φ.symm l)) L₀
-    rw [Fintype.card_eq_nat_card] at this ⊢
-    rw [this]
+    refine (eval₀.ι).symm.trans (Finite.card_eq.mp ?_).some
+    rw [fiber_card']
     simp [L₀, List.count_flatten, List.sum_ofFn, List.count_replicate]
 
 instance [Finite K] : (fib₁ K).EssSurj :=
   Functor.essSurj_comp ..
 
+set_option backward.isDefEq.respectTransparency false in
 def fullyFaithfulFib₁ : (fib₁ K).FullyFaithful where
   preimage {X Y} φ :=
     liftEquiv
@@ -753,6 +768,7 @@ instance : (fib₁ K).Full := fullyFaithfulFib₁.full
 
 instance [Finite K] : (fib₁ K).IsEquivalence where
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Finite K] : (fib₁ K).inv.Braided :=
   letI : (Functor.asEquivalence (fib₁ K)).functor.Braided := inferInstanceAs
     (fib₁ K).Braided

@@ -413,9 +413,10 @@ lemma append_nil_map {y z : FreeSListQuiv C} (f : y ⟶ z) :
   induction f with
   | id => simp [append_def]
   | comp p q h =>
-    simp only [append_def, Functor.map_comp, h, eqToHom_refl, Category.comp_id, Category.id_comp]
+    simp only [append_def, Functor.map_comp, h]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 public def appendNilIso : ([]_>>) ≅ 𝟭 (FreeSListQuiv C) :=
   NatIso.ofComponents (fun x ↦ .refl _) (by simp [append_nil_map])
 
@@ -429,9 +430,10 @@ lemma append_cons_map (x : C) (y : FreeSListQuiv C) {z z' : FreeSListQuiv C} (f 
   induction f with
   | id => simp
   | comp p q h =>
-    simp only [append_def, Functor.map_comp, h, eqToHom_refl, Category.comp_id, Category.id_comp]
+    simp only [append_def, Functor.map_comp, h]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 public def appendConsIso (x : C) (l : FreeSListQuiv C) : ((x::_ l)>>) ≅ (l>>) ⋙ cons x :=
   NatIso.ofComponents (fun x ↦ .refl _) (by simp [append_cons_map])
 
@@ -469,6 +471,7 @@ public inductive HomEquiv : HomRel (FreeSListQuiv C)
   | cons (X : C) {l l' : FreeSListQuiv C} (f f' : l ⟶ l') :
       HomEquiv f f' → HomEquiv (X ::_ₘ f) (X ::_ₘ f')
 
+set_option backward.isDefEq.respectTransparency false in
 public lemma HomEquiv.prepend (l : FreeSListQuiv C) {l' l'' : FreeSListQuiv C} (f f' : l' ⟶ l'')
     (hff' : HomEquiv C f f') : HomEquiv C (l>> |>.map f) (l>> |>.map f') := by
   cases l with | h l =>
@@ -639,6 +642,7 @@ public lemma π_obj_cons (x : C) (l : FreeSListQuiv C) :
     (π C).obj (x ::_ l) = (x>~).obj ((π C).obj l) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 public lemma π_map_cons (x : C) {l l' : FreeSListQuiv C} (f : l ⟶ l') :
     (π C).map ((x>_).map f) =
       eqToHom (by simp [π_obj_cons]) ≫
@@ -692,6 +696,7 @@ public lemma lift_π_obj {D : Type*} [Category* D] (F : FreeSListQuiv C ⥤ D)
     (x : FreeSListQuiv C) :
     (lift F h).obj ((π C).obj x) = F.obj x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 public lemma lift_π_map {D : Type*} [Category* D] (F : FreeSListQuiv C ⥤ D)
     {h : ∀ {x y : FreeSListQuiv C} {f g : x ⟶ y},
       FreeSListQuiv.HomEquiv _ f g → F.map f = F.map g}
@@ -761,6 +766,7 @@ public def swap (x y : C) (l : SList C) :
 
 scoped notation "β~" => swap
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped FreeSListQuiv in
 public lemma swap_π_def (x y : C) (l : FreeSListQuiv C) :
     (π C).map (β₁_ x y l) =
@@ -809,6 +815,7 @@ public lemma swap_hexagon (x y z : C) (l : SList C) :
     (x ::~ₘ β~ y z l) ≫ β~ x z (y ::~ l) ≫ z ::~ₘ β~ x y l:=
   Quotient.sound _ (.triple x y z l.as)
 
+set_option backward.isDefEq.respectTransparency false in
 public lemma prepend_congr {i j : FreeSListQuiv C} (f g : i ⟶ j) (p : FreeSListQuiv C)
     (h : (π C).map f = (π C).map g) :
     (π C).map (p ++ₘ f) = (π C).map (p ++ₘ g) := by
@@ -819,6 +826,7 @@ public lemma prepend_congr {i j : FreeSListQuiv C} (f g : i ⟶ j) (p : FreeSLis
     simp [FreeSListQuiv.append_cons_map, FreeSListQuiv.cons_obj_eq,
       π_map_cons, hrec]
 
+set_option backward.isDefEq.respectTransparency false in
 public instance : IsGroupoid (SList C) where
   all_isIso {x y} f := by
     have : ∀ {x y : SListQuiv C} (f : x ⟶ y), IsIso ((π C).map <| (FreeSListQuiv.ι C).map f) := by
@@ -1179,6 +1187,7 @@ lemma freeFunctor_map_ι_map {x y : SListQuiv C} (f : x ⟶ y) :
     data.freeFunctor.map ((FreeSListQuiv.ι C).map f) = data.rawMap f := by
   simp [freeFunctor]
 
+set_option backward.isDefEq.respectTransparency false in
 @[local simp]
 lemma freeFunctor_map_swap' {x y : C} (l : SListQuiv C) :
     (data.freeFunctor.map (β₁_ x y ((ι C).obj l))) =
@@ -1193,12 +1202,14 @@ lemma freeFunctor_map_swap {c c' : C} (l : FreeSListQuiv C) :
   simp only [freeFunctor_map_swap']
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma freeFunctor_map_ι (z : C) {l l' : SListQuiv C} (f : l ⟶ l') :
     data.freeFunctor.map (z ::_ₘ ((ι C).map f)) =
       ((data.consF z).map (data.freeFunctor.map f)) := by
   change data.freeFunctor.map ((ι C).map (z ::…ₘ f)) = _
   simp [rawMap]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma freeFunctor_map_cons (z : C) {l l' : FreeSListQuiv C} (f : l ⟶ l') :
     data.freeFunctor.map (z ::_ₘ f) =
       ((data.consF z).map (data.freeFunctor.map f)) := by
@@ -1210,6 +1221,7 @@ lemma freeFunctor_map_cons (z : C) {l l' : FreeSListQuiv C} (f : l ⟶ l') :
     simp only [Functor.map_comp, freeFunctor_map_ι] at ih ⊢
     simp [ih]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The recursive functor constructed from the data. -/
 public def functor : SList C ⥤ D :=
   SList.lift data.freeFunctor <| by
@@ -1248,16 +1260,16 @@ public lemma functor_map_cons_map (c : C) {l l' : SList C} (f : l ⟶ l') :
     (data.functorObjConsIso _ _).hom ≫
       (data.consF c).map (data.functor.map f) ≫
       (data.functorObjConsIso _ _).inv := by
-  simp only [functorObjConsIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, Category.id_comp]
+  simp only [functorObjConsIso]
   induction f with | h f =>
   simp only [functor]
   generalize_proofs h
   change
     ((lift data.freeFunctor h).map ((π C).map _)) = _
-  simp only [lift_π_map, eqToHom_refl, freeFunctor_map_cons, Category.comp_id, Category.id_comp]
-  erw [Category.comp_id] -- TODO clear this erw
+  simp only [lift_π_map, freeFunctor_map_cons]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 public lemma functor_map_swap (c c' : C) (l : SList C) :
     data.functor.map (β~ c c' l) =

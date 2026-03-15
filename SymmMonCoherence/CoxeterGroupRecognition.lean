@@ -381,7 +381,7 @@ private lemma nonReduced_case
   -- The idea is to simplify the words to get relations between shorters words,
   -- which are handled by our induction hypothesis.
   -- first we "cut" the words according to a maximal reduced prefix
-  obtain ⟨i, hi₀, hi₁, hi₂⟩ := S.exists_index_max_nonreduced_suffix ω (by grind)
+  obtain ⟨i, hi₀, hi₁, hi₂⟩ := S.exists_index_max_nonreduced_suffix ω (by assumption)
   obtain ⟨i', hi₀', hi₁', hi₂'⟩ := S.exists_index_max_nonreduced_suffix ω' (by grind)
   -- we can use the exchange property to reduce s₁ :: ω to a shorter word:
   obtain ⟨j, hj₁, hj₂⟩ := E (List.drop (i + 1) ω) hi₁ ω[i] <| by
@@ -391,7 +391,7 @@ private lemma nonReduced_case
     List.cons_append, List.nil_append, CoxeterSystem.wordprod_self_cons] at hj₂
   have eq₁ := congr(S.hom (M.toCoxeterSystem.wordProd (ω.take (i + 1))) * $hj₂)
   simp only [← map_mul, ← CoxeterSystem.wordProd_append, List.take_append_drop] at eq₁
-  rw [List.take_succ_eq_append_getElem (by grind)] at eq₁
+  rw [List.take_succ_eq_append_getElem (by lia)] at eq₁
   simp only [List.append_assoc, List.singleton_append, CoxeterSystem.wordProd_append,
     CoxeterSystem.wordprod_self_cons] at eq₁
   simp only [← CoxeterSystem.wordProd_append] at eq₁
@@ -403,27 +403,31 @@ private lemma nonReduced_case
     List.cons_append, List.nil_append, CoxeterSystem.wordprod_self_cons] at hj₂'
   have eq₁' := congr(S.hom (M.toCoxeterSystem.wordProd (ω'.take (i' + 1))) * $hj₂')
   simp only [← map_mul, ← CoxeterSystem.wordProd_append, List.take_append_drop] at eq₁'
-  rw [List.take_succ_eq_append_getElem (by grind)] at eq₁'
+  rw [List.take_succ_eq_append_getElem (by lia)] at eq₁'
   simp only [List.append_assoc, List.singleton_append, CoxeterSystem.wordProd_append,
     CoxeterSystem.wordprod_self_cons] at eq₁'
   simp only [← CoxeterSystem.wordProd_append] at eq₁'
   -- Then we apply the induction hyp to get equalities in the Coxeter group, as all
   -- of the relations derived above are between words of shorter length
-  have ind₁ := ih _ (by grind)
+  have ind₁ := ih _ (by simp; grind)
     (List.take i ω ++ (List.drop (i + 1) ω).eraseIdx j)
     (List.take i' ω' ++ (List.drop (i' + 1) ω').eraseIdx j')
     rfl
-    (by grind)
+    (by simp; grind)
     (by grind)
   have ind₂ := ih _ (by grind) _ _ rfl (by grind) hj₂
   have ind₂' := ih _ (by grind) _ _ rfl (by grind) hj₂'
   have eq₁'' := congr(M.toCoxeterSystem.wordProd (ω.take (i + 1)) * $ind₂)
   simp only [← CoxeterSystem.wordProd_append, List.take_append_drop] at eq₁''
-  rw [List.take_succ_eq_append_getElem (by grind)] at eq₁''
+  rw [List.take_succ_eq_append_getElem (by lia)] at eq₁''
   have eq₁''' := congr(M.toCoxeterSystem.wordProd (ω'.take (i' + 1)) * $ind₂')
   simp only [← CoxeterSystem.wordProd_append, List.take_append_drop] at eq₁'''
-  rw [List.take_succ_eq_append_getElem (by grind)] at eq₁'''
-  grind [CoxeterSystem.wordProd_append, CoxeterSystem.wordprod_self_cons]
+  rw [List.take_succ_eq_append_getElem (by lia)] at eq₁'''
+  simp only [eq₁'', eq₁''', CoxeterSystem.wordProd_append,
+    CoxeterSystem.wordProd_cons, CoxeterSystem.wordProd_nil, mul_one] at ind₁ ind₂ ind₂' ⊢
+  simp_rw [mul_assoc, ← mul_assoc (M.toCoxeterSystem.simple _) _ _,
+    CoxeterSystem.simple_mul_simple_self, one_mul]
+  exact ind₁
 
 /-- This is "Case 1" in [Björner-Brenti, proof of 1.5.1 (p.19)](bjorner2005) : when
 applying the exchange property, this is the case that has to be handled if the index

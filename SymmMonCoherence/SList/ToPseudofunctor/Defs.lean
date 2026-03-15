@@ -67,9 +67,10 @@ lemma monoidalLift_multiset {J K : Type*} (f : J → SList K) (L : SList J) :
 lemma linearOfIsPullback {X Y Z T : FintypeCat} {u : X ⟶ Y} {v : X ⟶ Z} {f : Y ⟶ T} {g : Z ⟶ T}
     (S : IsPullback u v f g) (z : Z) :
     ((monoidalLift (pushforwardAux f)).obj
-      (RelativePseudomonad.ι T.carrier (g z))).Linear := by
+      (RelativePseudomonad.ι T (g z))).Linear := by
   classical
   rw [SList.linear_iff', Multiset.nodup_iff_count_eq_one]
+  letI : Fintype Y := Fintype.ofFinite _
   intro y hy
   simp only [pushforwardAux, monoidalLift_multiset, multiset_singleton, Multiset.map_singleton,
     duality_obj_multiset, Multiset.count_singleton,
@@ -91,6 +92,7 @@ noncomputable def pseudoFunctorCore :
   v {X Y} f := Quiver.Hom.op <| .mk <| RelativePseudomonad.ι _ ∘ f
   uId' {X} f h := Iso.op2 <| Kleisli.mkIso₂ <| Pi.isoMk <| fun x ↦ isoOfMultisetEq _ _ <| by
     classical
+    letI : Fintype X := Fintype.ofFinite _
     ext t
     simp only [pushforwardAux, h, ConcreteCategory.id_apply, duality_obj_multiset,
       multiset_singleton, Multiset.count_singleton, Multiset.count_sum',
@@ -100,6 +102,8 @@ noncomputable def pseudoFunctorCore :
   uComp' {X Y Z} f g fg hfg :=
     Iso.op2 <| Kleisli.mkIso₂ <| Pi.isoMk <| fun x ↦ isoOfMultisetEq _ _ <| by
       classical
+      letI : Fintype X := Fintype.ofFinite _
+      letI : Fintype Y := Fintype.ofFinite _
       ext t
       simp only [pushforwardAux, ← hfg, ConcreteCategory.comp_apply, duality_obj_multiset,
         multiset_singleton, Multiset.count_singleton, Multiset.count_sum',
@@ -115,6 +119,9 @@ noncomputable def pseudoFunctorCore :
     Iso.op2 <| Kleisli.mkIso₂ <| Pi.isoMk <| fun z ↦ isoOfMultisetEq _ _ <| by
       dsimp
       classical
+      letI : Fintype X := Fintype.ofFinite _
+      letI : Fintype Y := Fintype.ofFinite _
+      letI : Fintype Z := Fintype.ofFinite _
       ext t
       simp only [pushforwardAux, Function.comp_apply,
         monoidalLift_multiset, multiset_singleton, Multiset.map_singleton, duality_obj_multiset,
@@ -164,7 +171,7 @@ noncomputable def pseudoFunctorCore :
     have : IsPullback (𝟙 _) f f (𝟙 _) := .of_horiz_isIso (by simp)
     haveI :
       ((monoidalLift (pushforwardAux f)).obj
-        (RelativePseudomonad.ι Y.carrier i)).Linear := linearOfIsPullback this i
+        (RelativePseudomonad.ι Y i)).Linear := linearOfIsPullback this i
     dsimp at this
     subsingleton
   baseChangeIso_comp_horiz {x y z t m n} {f g h k u v w} S₁ S₂ := by
@@ -174,7 +181,7 @@ noncomputable def pseudoFunctorCore :
     have := S₁.paste_horiz S₂
     haveI :
         ((monoidalLift (pushforwardAux u)).obj
-        (RelativePseudomonad.ι n.carrier (w (v i)))).Linear :=
+        (RelativePseudomonad.ι n (w (v i)))).Linear :=
       linearOfIsPullback this i
     subsingleton
   baseChangeIso_comp_vert {x y z t m n} {f g h k u v w} S₁ S₂ := by
@@ -184,7 +191,7 @@ noncomputable def pseudoFunctorCore :
     have := S₁.paste_vert S₂
     haveI :
         ((monoidalLift (pushforwardAux (h ≫ w))).obj
-        (RelativePseudomonad.ι n.carrier (u i))).Linear :=
+        (RelativePseudomonad.ι n (u i))).Linear :=
       linearOfIsPullback this i
     subsingleton
 
